@@ -12,7 +12,6 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"db:start": "docker compose up",
 		"db:push": "drizzle-kit push",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio"
@@ -25,6 +24,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/better-sqlite3": "^7.6.12",
 		"@types/node": "^22",
 		"drizzle-kit": "^0.30.2",
 		"eslint": "^9.18.0",
@@ -42,15 +42,13 @@
 		"vite": "^6.2.6"
 	},
 	"dependencies": {
-		"@node-rs/argon2": "^2.0.2",
-		"@oslojs/crypto": "^1.0.1",
-		"@oslojs/encoding": "^1.1.0",
-		"drizzle-orm": "^0.40.0",
-		"postgres": "^3.4.5"
+		"better-sqlite3": "^11.8.0",
+		"drizzle-orm": "^0.40.0"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
-			"esbuild"
+			"esbuild",
+			"better-sqlite3"
 		]
 	}
 }
