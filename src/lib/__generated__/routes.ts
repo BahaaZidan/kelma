@@ -11,6 +11,9 @@
 const PAGES = {
   "/": `/`,
   "/console": `/console`,
+  "/console/[website_id]": (params: { website_id: (string | number) }) => {
+    return `/console/${params['website_id']}`
+  },
   "/embeds/[website_id]/[page_id]/comments": (params: { website_id: (string | number), page_id: (string | number) }) => {
     return `/embeds/${params['website_id']}/${params['page_id']}/comments`
   },
@@ -145,7 +148,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/console': never, '/embeds/[website_id]/[page_id]/comments': 'website_id' | 'page_id', '/embeds/[website_id]/newsletter': 'website_id' }
+  PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/embeds/[website_id]/[page_id]/comments': 'website_id' | 'page_id', '/embeds/[website_id]/newsletter': 'website_id' }
   SERVERS: Record<string, never>
   ACTIONS: { 'default /console': never }
   LINKS: Record<string, never>
