@@ -1,4 +1,5 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
+import { foreignKey, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const user = sqliteTable('user', {
 	id: text('id').primaryKey(),
@@ -13,7 +14,7 @@ export const user = sqliteTable('user', {
 		.notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull()
+		.notNull(),
 });
 
 export const session = sqliteTable('session', {
@@ -26,7 +27,7 @@ export const session = sqliteTable('session', {
 	userAgent: text('user_agent'),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' })
+		.references(() => user.id, { onDelete: 'cascade' }),
 });
 
 export const account = sqliteTable('account', {
@@ -44,7 +45,7 @@ export const account = sqliteTable('account', {
 	scope: text('scope'),
 	password: text('password'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
 
 export const verification = sqliteTable('verification', {
@@ -57,5 +58,61 @@ export const verification = sqliteTable('verification', {
 	),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(
 		() => /* @__PURE__ */ new Date()
-	)
+	),
 });
+
+export const website = sqliteTable('website', {
+	id: integer('id').primaryKey(),
+	ownerId: text('owner_id')
+		.notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	name: text().notNull(),
+	domains: text('domains', { mode: 'json' })
+		.notNull()
+		.$type<string[]>()
+		.default(sql`'[]'`),
+});
+
+export const page = sqliteTable(
+	'page',
+	{
+		id: text('id').notNull(),
+		websiteId: integer('website_id')
+			.notNull()
+			.references(() => website.id, { onDelete: 'cascade' }),
+		name: text(),
+	},
+	(self) => [primaryKey({ columns: [self.id, self.websiteId] })]
+);
+
+export const comment = sqliteTable(
+	'comment',
+	{
+		id: integer('id').primaryKey(),
+		content: text('content').notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		websiteId: integer('website_id')
+			.notNull()
+			.references(() => website.id, { onDelete: 'cascade' }),
+		pageId: text('page_id').notNull(),
+		authorId: text('author_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		parentId: integer('parent_id'),
+	},
+	(self) => [
+		foreignKey({
+			columns: [self.parentId],
+			foreignColumns: [self.id],
+		}).onDelete('cascade'),
+		foreignKey({
+			columns: [self.websiteId, self.pageId],
+			foreignColumns: [page.id, page.websiteId],
+		}).onDelete('cascade'),
+	]
+);
