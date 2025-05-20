@@ -14,8 +14,8 @@ const PAGES = {
   "/console/[website_id]": (params: { website_id: (string | number) }) => {
     return `/console/${params['website_id']}`
   },
-  "/embeds/[website_id]/[page_id]/comments": (params: { website_id: (string | number), page_id: (string | number) }) => {
-    return `/embeds/${params['website_id']}/${params['page_id']}/comments`
+  "/embeds/[website_id]/[page_slug]/comments": (params: { website_id: (string | number), page_slug: (string | number) }) => {
+    return `/embeds/${params['website_id']}/${params['page_slug']}/comments`
   },
   "/embeds/[website_id]/newsletter": (params: { website_id: (string | number) }) => {
     return `/embeds/${params['website_id']}/newsletter`
@@ -33,7 +33,10 @@ const SERVERS = {
  * ACTIONS
  */
 const ACTIONS = {
-  "default /console": `/console`
+  "default /console": `/console`,
+  "default /embeds/[website_id]/[page_slug]/comments": (params: { website_id: (string | number), page_slug: (string | number) }) => {
+    return `/embeds/${params['website_id']}/${params['page_slug']}/comments`
+  }
 }
 
 /**
@@ -148,9 +151,9 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/embeds/[website_id]/[page_id]/comments': 'website_id' | 'page_id', '/embeds/[website_id]/newsletter': 'website_id' }
+  PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id' }
   SERVERS: Record<string, never>
-  ACTIONS: { 'default /console': never }
+  ACTIONS: { 'default /console': never, 'default /embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug' }
   LINKS: Record<string, never>
-  Params: { 'website_id': never, 'page_id': never }
+  Params: { 'website_id': never, 'page_slug': never }
 }

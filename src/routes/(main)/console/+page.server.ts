@@ -19,7 +19,6 @@ export const actions: Actions = {
 		const session = await auth.api.getSession({
 			headers: request.headers,
 		});
-
 		if (!session) return fail(401);
 
 		const form = await superValidate(request, valibot(schema));

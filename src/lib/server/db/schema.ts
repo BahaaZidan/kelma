@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { foreignKey, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const user = sqliteTable('user', {
 	id: text('id').primaryKey(),
@@ -76,43 +76,29 @@ export const website = sqliteTable('website', {
 export const page = sqliteTable(
 	'page',
 	{
-		id: text('id').notNull(),
+		id: integer('id').primaryKey(),
+		slug: text('slug').notNull(),
 		websiteId: integer('website_id')
 			.notNull()
 			.references(() => website.id, { onDelete: 'cascade' }),
 		name: text(),
 	},
-	(self) => [primaryKey({ columns: [self.id, self.websiteId] })]
+	(self) => [uniqueIndex('slug_websiteId_uniq').on(self.slug, self.websiteId)]
 );
 
-export const comment = sqliteTable(
-	'comment',
-	{
-		id: integer('id').primaryKey(),
-		content: text('content').notNull(),
-		createdAt: integer('created_at', { mode: 'timestamp' })
-			.$defaultFn(() => /* @__PURE__ */ new Date())
-			.notNull(),
-		updatedAt: integer('updated_at', { mode: 'timestamp' })
-			.$defaultFn(() => /* @__PURE__ */ new Date())
-			.notNull(),
-		websiteId: integer('website_id')
-			.notNull()
-			.references(() => website.id, { onDelete: 'cascade' }),
-		pageId: text('page_id').notNull(),
-		authorId: text('author_id')
-			.notNull()
-			.references(() => user.id, { onDelete: 'cascade' }),
-		parentId: integer('parent_id'),
-	},
-	(self) => [
-		foreignKey({
-			columns: [self.parentId],
-			foreignColumns: [self.id],
-		}).onDelete('cascade'),
-		foreignKey({
-			columns: [self.websiteId, self.pageId],
-			foreignColumns: [page.id, page.websiteId],
-		}).onDelete('cascade'),
-	]
-);
+export const comment = sqliteTable('comment', {
+	id: integer('id').primaryKey(),
+	content: text('content').notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.notNull(),
+	pageId: integer('page_id')
+		.notNull()
+		.references(() => page.id, { onDelete: 'cascade' }),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
+});
