@@ -44,10 +44,17 @@ export const actions: Actions = {
 	},
 };
 
+const searchParamsSchema = v.object({
+	name: v.pipe(v.string(), v.trim(), v.nonEmpty()),
+	callback_url: v.pipe(v.string(), v.trim(), v.url()),
+});
+
 export const load: PageServerLoad = async ({ params, url }) => {
 	const { page_slug: pageSlug, website_id } = params;
 	const websiteId = Number(website_id);
-	const name = url.searchParams.get('name');
+	const searchParams = v.parse(searchParamsSchema, Object.fromEntries(url.searchParams.entries()));
+	const name = searchParams.name;
+	const callbackURL = searchParams.callback_url;
 
 	const page_ = (
 		await db
@@ -74,5 +81,5 @@ export const load: PageServerLoad = async ({ params, url }) => {
 
 	const form = await superValidate(valibot(schema));
 
-	return { form, comments, url: url.toString() };
+	return { form, comments, url: url.toString(), callbackURL };
 };

@@ -15,4 +15,6 @@ export const auth = betterAuth({
 			clientSecret: GITHUB_CLIENT_SECRET,
 		},
 	},
+	// TODO: only trust paying customers
+	trustedOrigins: ['*'],
 });

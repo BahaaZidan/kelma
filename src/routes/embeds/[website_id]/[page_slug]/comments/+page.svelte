@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { siGithub } from 'simple-icons';
 	import { onMount } from 'svelte';
 	import { superForm } from 'sveltekit-superforms';
 
+	import { route } from '$lib/__generated__/routes';
 	import { authClient } from '$lib/client/auth';
-	import BrandIcon from '$lib/components/BrandIcon.svelte';
 	import Comment from '$lib/components/Comment.svelte';
 	import TextArea from '$lib/components/TextArea.svelte';
 
@@ -14,27 +13,23 @@
 	const superform = superForm(data.form);
 
 	const session = authClient.useSession();
-	async function githubSignIn() {
-		await authClient.signIn.social({ provider: 'github', callbackURL: data.url });
-	}
 	async function signOut() {
 		await authClient.signOut();
 	}
 
+	function sendHeight() {
+		const height = document.body.scrollHeight;
+		window.parent.postMessage(
+			{
+				type: 'resize',
+				height: height,
+			},
+			'*'
+		);
+	}
+
 	onMount(() => {
-		function sendHeight() {
-			const height = document.body.scrollHeight;
-			window.parent.postMessage(
-				{
-					type: 'resize',
-					height: height,
-				},
-				'*'
-			);
-		}
-
 		window.addEventListener('load', sendHeight);
-
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 	});
@@ -48,8 +43,16 @@
 			</div>
 			<button class="btn btn-ghost" onclick={signOut}>Logout</button>
 		{:else}
-			<div>You must login to comment</div>
-			<button onclick={githubSignIn} class="btn">Login <BrandIcon icon={siGithub} /></button>
+			<span>
+				You must <a
+					class="link font-bold"
+					target="_top"
+					href="{route('/embeds/login')}?callback_url={data.callbackURL}"
+				>
+					login
+				</a>
+				to comment
+			</span>
 		{/if}
 	</div>
 	<form method="post" use:superform.enhance class="flex w-full flex-col items-end gap-2">
