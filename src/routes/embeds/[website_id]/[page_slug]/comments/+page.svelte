@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { siGithub } from 'simple-icons';
+	import { onMount } from 'svelte';
 	import { superForm } from 'sveltekit-superforms';
 
 	import { authClient } from '$lib/client/auth';
@@ -19,6 +20,24 @@
 	async function signOut() {
 		await authClient.signOut();
 	}
+
+	onMount(() => {
+		function sendHeight() {
+			const height = document.body.scrollHeight;
+			window.parent.postMessage(
+				{
+					type: 'resize',
+					height: height,
+				},
+				'*'
+			);
+		}
+
+		window.addEventListener('load', sendHeight);
+
+		const observer = new MutationObserver(sendHeight);
+		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+	});
 </script>
 
 <div class="flex flex-col items-center gap-2 p-4">
@@ -52,3 +71,9 @@
 		Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
 	</span>
 </div>
+
+<style>
+	:root {
+		background: transparent !important;
+	}
+</style>
