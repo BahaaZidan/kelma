@@ -5,7 +5,7 @@ import * as v from 'valibot';
 
 import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { comment, page } from '$lib/server/db/schema';
+import { comment, page, user } from '$lib/server/db/schema';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -57,7 +57,20 @@ export const load: PageServerLoad = async ({ params, url }) => {
 			.returning()
 	)[0];
 
-	const comments = await db.select().from(comment).where(eq(comment.pageId, page_.id));
+	const comments = await db
+		.select({
+			id: comment.id,
+			content: comment.content,
+			createdAt: comment.createdAt,
+			author: {
+				id: user.id,
+				name: user.name,
+				image: user.image,
+			},
+		})
+		.from(comment)
+		.where(eq(comment.pageId, page_.id))
+		.leftJoin(user, eq(comment.authorId, user.id));
 
 	const form = await superValidate(valibot(schema));
 

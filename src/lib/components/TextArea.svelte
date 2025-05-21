@@ -1,4 +1,5 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
+	import type { ClassValue } from 'svelte/elements';
 	import { formFieldProxy, type FormPathLeaves, type SuperForm } from 'sveltekit-superforms';
 
 	let {
@@ -6,22 +7,24 @@
 		field,
 		label,
 		disabled,
+		class: class_,
 	}: {
 		superform: SuperForm<T>;
 		field: FormPathLeaves<T>;
 		label?: string;
 		disabled?: boolean;
+		class?: ClassValue;
 	} = $props();
 
 	const { value, errors, constraints } = formFieldProxy(superform, field);
 </script>
 
-<div class="flex flex-col">
+<div class="flex w-full flex-col">
 	<div>
-		<label class="floating-label w-xs">
+		<label class="floating-label">
 			<textarea
 				placeholder={label}
-				class={['textarea', { 'textarea-error': !!$errors }]}
+				class={['textarea', { 'textarea-error': !!$errors }, class_]}
 				name={field}
 				bind:value={$value}
 				aria-invalid={$errors ? 'true' : undefined}

@@ -4,6 +4,7 @@
 
 	import { authClient } from '$lib/client/auth';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
+	import Comment from '$lib/components/Comment.svelte';
 	import TextArea from '$lib/components/TextArea.svelte';
 
 	import type { PageProps } from './$types';
@@ -32,16 +33,22 @@
 			<button onclick={githubSignIn} class="btn">Login <BrandIcon icon={siGithub} /></button>
 		{/if}
 	</div>
-	<form method="post" use:superform.enhance class="flex flex-col items-end gap-2">
-		<TextArea {superform} field="comment" label="Comment" disabled={!$session.data} />
+	<form method="post" use:superform.enhance class="flex w-full flex-col items-end gap-2">
+		<TextArea
+			{superform}
+			field="comment"
+			label="Comment"
+			disabled={!$session.data}
+			class="w-full"
+		/>
 		<button type="submit" class="btn">Submit</button>
 	</form>
-	<div class="flex flex-col gap-2">
+	<div class="flex w-full flex-col gap-4">
 		{#each data.comments as comment (comment.id)}
-			<pre>{comment.content}</pre>
+			<Comment author={comment.author} content={comment.content} createdAt={comment.createdAt} />
 		{/each}
 	</div>
-	<div>
-		Powered by <b>gebna.tools</b>
-	</div>
+	<span class="py-6">
+		Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
+	</span>
 </div>
