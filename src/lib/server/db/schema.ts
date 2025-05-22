@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
-export const user = sqliteTable('user', {
+export const userTable = sqliteTable('user', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	email: text('email').notNull().unique(),
@@ -17,7 +17,7 @@ export const user = sqliteTable('user', {
 		.notNull(),
 });
 
-export const session = sqliteTable('session', {
+export const sessionTable = sqliteTable('session', {
 	id: text('id').primaryKey(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 	token: text('token').notNull().unique(),
@@ -27,16 +27,16 @@ export const session = sqliteTable('session', {
 	userAgent: text('user_agent'),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
+		.references(() => userTable.id, { onDelete: 'cascade' }),
 });
 
-export const account = sqliteTable('account', {
+export const accountTable = sqliteTable('account', {
 	id: text('id').primaryKey(),
 	accountId: text('account_id').notNull(),
 	providerId: text('provider_id').notNull(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
+		.references(() => userTable.id, { onDelete: 'cascade' }),
 	accessToken: text('access_token'),
 	refreshToken: text('refresh_token'),
 	idToken: text('id_token'),
@@ -48,7 +48,7 @@ export const account = sqliteTable('account', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
 });
 
-export const verification = sqliteTable('verification', {
+export const verificationTable = sqliteTable('verification', {
 	id: text('id').primaryKey(),
 	identifier: text('identifier').notNull(),
 	value: text('value').notNull(),
@@ -61,11 +61,11 @@ export const verification = sqliteTable('verification', {
 	),
 });
 
-export const website = sqliteTable('website', {
+export const websiteTable = sqliteTable('website', {
 	id: integer('id').primaryKey(),
 	ownerId: text('owner_id')
 		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
+		.references(() => userTable.id, { onDelete: 'cascade' }),
 	name: text().notNull(),
 	domains: text('domains', { mode: 'json' })
 		.notNull()
@@ -73,20 +73,20 @@ export const website = sqliteTable('website', {
 		.default(sql`'[]'`),
 });
 
-export const page = sqliteTable(
+export const pageTable = sqliteTable(
 	'page',
 	{
 		id: integer('id').primaryKey(),
 		slug: text('slug').notNull(),
 		websiteId: integer('website_id')
 			.notNull()
-			.references(() => website.id, { onDelete: 'cascade' }),
+			.references(() => websiteTable.id, { onDelete: 'cascade' }),
 		name: text(),
 	},
 	(self) => [uniqueIndex('slug_websiteId_uniq').on(self.slug, self.websiteId)]
 );
 
-export const comment = sqliteTable('comment', {
+export const commentTable = sqliteTable('comment', {
 	id: integer('id').primaryKey(),
 	content: text('content').notNull(),
 	createdAt: integer('created_at', { mode: 'timestamp' })
@@ -97,8 +97,8 @@ export const comment = sqliteTable('comment', {
 		.notNull(),
 	pageId: integer('page_id')
 		.notNull()
-		.references(() => page.id, { onDelete: 'cascade' }),
+		.references(() => pageTable.id, { onDelete: 'cascade' }),
 	authorId: text('author_id')
 		.notNull()
-		.references(() => user.id, { onDelete: 'cascade' }),
+		.references(() => userTable.id, { onDelete: 'cascade' }),
 });

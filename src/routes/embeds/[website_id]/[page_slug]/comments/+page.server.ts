@@ -1,11 +1,11 @@
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
 import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { comment, page, user } from '$lib/server/db/schema';
+import { commentTable, pageTable, userTable } from '$lib/server/db/schema';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -28,12 +28,17 @@ export const actions: Actions = {
 		const pageId = (
 			await db
 				.select()
-				.from(page)
-				.where(and(eq(page.slug, params.page_slug), eq(page.websiteId, Number(params.website_id))))
+				.from(pageTable)
+				.where(
+					and(
+						eq(pageTable.slug, params.page_slug),
+						eq(pageTable.websiteId, Number(params.website_id))
+					)
+				)
 		)[0]?.id;
 		if (!pageId) fail(401);
 
-		const insertResult = await db.insert(comment).values({
+		const insertResult = await db.insert(commentTable).values({
 			content: form.data.comment,
 			authorId: session.user.id,
 			pageId,
@@ -58,26 +63,27 @@ export const load: PageServerLoad = async ({ params, url }) => {
 
 	const page_ = (
 		await db
-			.insert(page)
+			.insert(pageTable)
 			.values({ slug: pageSlug, websiteId, name })
-			.onConflictDoUpdate({ target: [page.slug, page.websiteId], set: { name } })
+			.onConflictDoUpdate({ target: [pageTable.slug, pageTable.websiteId], set: { name } })
 			.returning()
 	)[0];
 
 	const comments = await db
 		.select({
-			id: comment.id,
-			content: comment.content,
-			createdAt: comment.createdAt,
+			id: commentTable.id,
+			content: commentTable.content,
+			createdAt: commentTable.createdAt,
 			author: {
-				id: user.id,
-				name: user.name,
-				image: user.image,
+				id: userTable.id,
+				name: userTable.name,
+				image: userTable.image,
 			},
 		})
-		.from(comment)
-		.where(eq(comment.pageId, page_.id))
-		.leftJoin(user, eq(comment.authorId, user.id));
+		.from(commentTable)
+		.orderBy(desc(commentTable.createdAt))
+		.where(eq(commentTable.pageId, page_.id))
+		.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
 
 	const form = await superValidate(valibot(schema));
 

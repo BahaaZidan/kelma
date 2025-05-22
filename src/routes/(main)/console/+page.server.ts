@@ -4,7 +4,7 @@ import * as v from 'valibot';
 
 import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
-import { website } from '$lib/server/db/schema';
+import { websiteTable } from '$lib/server/db/schema';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -27,7 +27,7 @@ export const actions: Actions = {
 		}
 
 		const insertResult = await db
-			.insert(website)
+			.insert(websiteTable)
 			.values({ ownerId: session.user.id, name: form.data.name, domains: [form.data.domain] });
 
 		if (insertResult.changes > 0) return message(form, 'Website created successfully!');
