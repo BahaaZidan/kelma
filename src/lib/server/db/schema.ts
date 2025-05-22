@@ -82,6 +82,7 @@ export const pageTable = sqliteTable(
 			.notNull()
 			.references(() => websiteTable.id, { onDelete: 'cascade' }),
 		name: text(),
+		url: text(),
 	},
 	(self) => [uniqueIndex('slug_websiteId_uniq').on(self.slug, self.websiteId)]
 );

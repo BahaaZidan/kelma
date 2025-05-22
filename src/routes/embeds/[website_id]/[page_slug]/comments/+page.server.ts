@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit';
 import { and, desc, eq } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
@@ -51,21 +52,28 @@ export const actions: Actions = {
 
 const searchParamsSchema = v.object({
 	name: v.pipe(v.string(), v.trim(), v.nonEmpty()),
-	callback_url: v.pipe(v.string(), v.trim(), v.url()),
+	url: v.pipe(v.string(), v.trim(), v.url()),
 });
 
 export const load: PageServerLoad = async ({ params, url }) => {
 	const { page_slug: pageSlug, website_id } = params;
 	const websiteId = Number(website_id);
-	const searchParams = v.parse(searchParamsSchema, Object.fromEntries(url.searchParams.entries()));
-	const name = searchParams.name;
-	const callbackURL = searchParams.callback_url;
+	const searchParamsValidation = v.safeParse(
+		searchParamsSchema,
+		Object.fromEntries(url.searchParams.entries())
+	);
+	if (!searchParamsValidation.success)
+		return error(400, searchParamsValidation.issues.map((i) => i.message).join('\n'));
 
-	const page_ = (
+	const searchParams = searchParamsValidation.output;
+	const page = (
 		await db
 			.insert(pageTable)
-			.values({ slug: pageSlug, websiteId, name })
-			.onConflictDoUpdate({ target: [pageTable.slug, pageTable.websiteId], set: { name } })
+			.values({ slug: pageSlug, websiteId, name: searchParams.name, url: searchParams.url })
+			.onConflictDoUpdate({
+				target: [pageTable.slug, pageTable.websiteId],
+				set: { name: searchParams.name, url: searchParams.url },
+			})
 			.returning()
 	)[0];
 
@@ -82,10 +90,10 @@ export const load: PageServerLoad = async ({ params, url }) => {
 		})
 		.from(commentTable)
 		.orderBy(desc(commentTable.createdAt))
-		.where(eq(commentTable.pageId, page_.id))
+		.where(eq(commentTable.pageId, page.id))
 		.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
 
 	const form = await superValidate(valibot(schema));
 
-	return { form, comments, url: url.toString(), callbackURL };
+	return { form, comments, url: url.toString(), callbackURL: searchParams.url };
 };
