@@ -1,28 +1,125 @@
 <script lang="ts">
+	import { ChevronsUpDownIcon, XIcon } from '@lucide/svelte';
+
+	import { navigating, page } from '$app/state';
+
+	import { route } from '$lib/__generated__/routes';
+	import WebsiteSelector from '$lib/components/WebsiteSelector.svelte';
+
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
+
+	let dialog: HTMLDialogElement;
+
+	let currentWebsite = $derived(
+		page.params.website_id
+			? data.websites.find((w) => w.id === Number(page.params.website_id))
+			: data.websites[0]
+	);
+
+	$effect(() => {
+		if (navigating.to) dialog.close();
+	});
+
+	function isActive(route: string) {
+		return page.route.id === `/(main)/console${route}`;
+	}
 </script>
 
 <div class="flex gap-4 p-6">
 	<div class="flex flex-col gap-4">
 		<ul class="menu bg-base-200 rounded-box w-56">
-			<li><a>Home</a></li>
-			<li><a>Billing</a></li>
+			<li>
+				<a href={route('/console')} class={{ 'menu-active': isActive('') }}>Home</a>
+			</li>
+			<li>
+				<a href={route('/console/billing')} class={{ 'menu-active': isActive('/billing') }}>
+					Billing
+				</a>
+			</li>
 		</ul>
-		{#if data.websites.length > 0}
+		{#if currentWebsite}
 			<ul class="menu bg-base-200 rounded-box w-56">
-				<li><a>{data.websites[0].name}</a></li>
-				<li><a>Overview</a></li>
-				<li><a>Comments</a></li>
-				<li><a>Pages</a></li>
-				<li><a>Users</a></li>
-				<li><a>Newsletter</a></li>
+				<li>
+					<button onclick={() => dialog.showModal()} class="flex justify-between">
+						<div class="flex flex-col">
+							<span class="font-bold">{currentWebsite.name}</span>
+							<div class="text-secondary">
+								ID: <div class="badge badge-secondary badge-xs rounded-xl">
+									{currentWebsite.id}
+								</div>
+							</div>
+						</div>
+						<ChevronsUpDownIcon size={16} />
+					</button>
+				</li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]') }}
+						href={route('/console/[website_id]', { website_id: currentWebsite.id })}
+					>
+						Overview
+					</a>
+				</li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]/comments') }}
+						href={route('/console/[website_id]/comments', { website_id: currentWebsite.id })}
+					>
+						Comments
+					</a>
+				</li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]/pages') }}
+						href={route('/console/[website_id]/pages', { website_id: currentWebsite.id })}
+					>
+						Pages
+					</a>
+				</li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]/users') }}
+						href={route('/console/[website_id]/users', { website_id: currentWebsite.id })}
+					>
+						Users
+					</a>
+				</li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]/newsletter') }}
+						href={route('/console/[website_id]/newsletter', { website_id: currentWebsite.id })}
+					>
+						Newsletter
+					</a>
+				</li>
 				<div class="divider"></div>
-				<li><a>Tools</a></li>
-				<li><a>Settings</a></li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]/tools') }}
+						href={route('/console/[website_id]/tools', { website_id: currentWebsite.id })}
+					>
+						Tools
+					</a>
+				</li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]/settings') }}
+						href={route('/console/[website_id]/settings', { website_id: currentWebsite.id })}
+					>
+						Settings
+					</a>
+				</li>
 				<div class="divider"></div>
-				<li><a>Install</a></li>
+				<li>
+					<a
+						class={{ 'menu-active': isActive('/[website_id]/install') }}
+						href={route('/console/[website_id]/install', { website_id: currentWebsite.id })}
+					>
+						Install
+					</a>
+				</li>
 			</ul>
 		{/if}
 	</div>
@@ -30,3 +127,18 @@
 		{@render children()}
 	</div>
 </div>
+
+<dialog bind:this={dialog} class="modal">
+	<div class="modal-box">
+		<div class="flex flex-col gap-4">
+			<div class="flex items-center justify-between">
+				<h3 class="text-lg font-bold">Choose a Website</h3>
+				<form method="dialog">
+					<button class="btn btn-circle btn-ghost"><XIcon /></button>
+				</form>
+			</div>
+
+			<WebsiteSelector websites={data.websites} />
+		</div>
+	</div>
+</dialog>

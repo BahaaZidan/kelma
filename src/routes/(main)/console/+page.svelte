@@ -3,6 +3,7 @@
 	import { superForm } from 'sveltekit-superforms';
 
 	import Input from '$lib/components/Input.svelte';
+	import WebsiteSelector from '$lib/components/WebsiteSelector.svelte';
 
 	import type { PageProps } from './$types';
 
@@ -48,20 +49,5 @@
 	</dialog>
 
 	<div class="divider"></div>
-	<h2 class="text-xl font-bold">Websites you own</h2>
-	<p class="text-secondary">
-		You are the owner of these websites. Your subscription applies to all of them.
-	</p>
-	<ul class="menu bg-base-200 rounded-box w-full">
-		{#each data.websites as website (website.id)}
-			<li>
-				<a class="flex flex-col items-start">
-					<div class="font-bold">{website.name}</div>
-					<div class="text-secondary">
-						ID: <div class="badge badge-neutral">{website.id}</div>
-					</div>
-				</a>
-			</li>
-		{/each}
-	</ul>
+	<WebsiteSelector websites={data.websites} />
 </div>
