@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EllipsisVerticalIcon, MessageCircleIcon, Trash2Icon } from '@lucide/svelte';
+	import { EllipsisVerticalIcon, MessageSquareIcon, Trash2Icon } from '@lucide/svelte';
 
 	import type { PageProps } from './$types';
 
@@ -38,7 +38,7 @@
 					<td><a href={page.url} class="link">{page.url}</a></td>
 					<td>
 						<button class="btn" disabled={!page.commentsCount}>
-							<MessageCircleIcon />
+							<MessageSquareIcon />
 							{page.commentsCount}
 						</button>
 					</td>

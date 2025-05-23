@@ -1,5 +1,18 @@
 <script lang="ts">
-	import { ChevronsUpDownIcon, XIcon } from '@lucide/svelte';
+	import {
+		BitcoinIcon,
+		ChartColumnIncreasingIcon,
+		ChevronsUpDownIcon,
+		CodeIcon,
+		FileTextIcon,
+		HouseIcon,
+		MailIcon,
+		MessageSquareIcon,
+		SettingsIcon,
+		UsersIcon,
+		WrenchIcon,
+		XIcon,
+	} from '@lucide/svelte';
 
 	import { navigating, page } from '$app/state';
 
@@ -25,17 +38,21 @@
 	function isActive(route: string) {
 		return page.route.id === `/(main)/console${route}`;
 	}
+
+	const menuIconSize = 18;
 </script>
 
 <div class="flex gap-4 p-6">
 	<div class="flex flex-col gap-4">
 		<ul class="menu bg-base-200 rounded-box w-56">
 			<li>
-				<a href={route('/console')} class={{ 'menu-active': isActive('') }}>Home</a>
+				<a href={route('/console')} class={{ 'menu-active': isActive('') }}>
+					<HouseIcon size={menuIconSize} /> Home
+				</a>
 			</li>
 			<li>
 				<a href={route('/console/billing')} class={{ 'menu-active': isActive('/billing') }}>
-					Billing
+					<BitcoinIcon size={menuIconSize} /> Billing
 				</a>
 			</li>
 		</ul>
@@ -59,7 +76,7 @@
 						class={{ 'menu-active': isActive('/[website_id]') }}
 						href={route('/console/[website_id]', { website_id: currentWebsite.id })}
 					>
-						Overview
+						<ChartColumnIncreasingIcon size={menuIconSize} /> Overview
 					</a>
 				</li>
 				<li>
@@ -67,7 +84,7 @@
 						class={{ 'menu-active': isActive('/[website_id]/comments') }}
 						href={route('/console/[website_id]/comments', { website_id: currentWebsite.id })}
 					>
-						Comments
+						<MessageSquareIcon size={menuIconSize} /> Comments
 					</a>
 				</li>
 				<li>
@@ -75,7 +92,7 @@
 						class={{ 'menu-active': isActive('/[website_id]/pages') }}
 						href={route('/console/[website_id]/pages', { website_id: currentWebsite.id })}
 					>
-						Pages
+						<FileTextIcon size={menuIconSize} /> Pages
 					</a>
 				</li>
 				<li>
@@ -83,7 +100,7 @@
 						class={{ 'menu-active': isActive('/[website_id]/users') }}
 						href={route('/console/[website_id]/users', { website_id: currentWebsite.id })}
 					>
-						Users
+						<UsersIcon size={menuIconSize} /> Users
 					</a>
 				</li>
 				<li>
@@ -91,7 +108,7 @@
 						class={{ 'menu-active': isActive('/[website_id]/newsletter') }}
 						href={route('/console/[website_id]/newsletter', { website_id: currentWebsite.id })}
 					>
-						Newsletter
+						<MailIcon size={menuIconSize} /> Newsletter
 					</a>
 				</li>
 				<div class="divider"></div>
@@ -100,7 +117,7 @@
 						class={{ 'menu-active': isActive('/[website_id]/tools') }}
 						href={route('/console/[website_id]/tools', { website_id: currentWebsite.id })}
 					>
-						Tools
+						<WrenchIcon size={menuIconSize} /> Tools
 					</a>
 				</li>
 				<li>
@@ -108,7 +125,7 @@
 						class={{ 'menu-active': isActive('/[website_id]/settings') }}
 						href={route('/console/[website_id]/settings', { website_id: currentWebsite.id })}
 					>
-						Settings
+						<SettingsIcon size={menuIconSize} /> Settings
 					</a>
 				</li>
 				<div class="divider"></div>
@@ -117,7 +134,7 @@
 						class={{ 'menu-active': isActive('/[website_id]/install') }}
 						href={route('/console/[website_id]/install', { website_id: currentWebsite.id })}
 					>
-						Install
+						<CodeIcon size={menuIconSize} /> Install
 					</a>
 				</li>
 			</ul>
