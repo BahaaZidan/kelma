@@ -2,7 +2,6 @@ import { fail, message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
-import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import { websiteTable } from '$lib/server/db/schema';
 
@@ -15,11 +14,8 @@ const schema = v.object({
 });
 
 export const actions: Actions = {
-	default: async ({ request }) => {
-		const session = await auth.api.getSession({
-			headers: request.headers,
-		});
-		if (!session) return fail(401);
+	default: async ({ request, locals }) => {
+		if (!locals.session) return fail(401);
 
 		const form = await superValidate(request, valibot(schema));
 		if (!form.valid) {
@@ -28,7 +24,11 @@ export const actions: Actions = {
 
 		const insertResult = await db
 			.insert(websiteTable)
-			.values({ ownerId: session.user.id, name: form.data.name, domains: [form.data.domain] });
+			.values({
+				ownerId: locals.session.user.id,
+				name: form.data.name,
+				domains: [form.data.domain],
+			});
 
 		if (insertResult.changes > 0) return message(form, 'Website created successfully!');
 

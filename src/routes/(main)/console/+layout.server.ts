@@ -1,23 +1,18 @@
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
-import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import { websiteTable } from '$lib/server/db/schema';
 
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ request }) => {
-	const session = await auth.api.getSession({
-		headers: request.headers,
-	});
-
-	if (!session) return error(404);
+export const load: LayoutServerLoad = async ({ locals }) => {
+	if (!locals.session) return error(404);
 
 	const websites = await db
 		.select()
 		.from(websiteTable)
-		.where(eq(websiteTable.ownerId, session.user.id));
+		.where(eq(websiteTable.ownerId, locals.session.user.id));
 
 	return { websites };
 };

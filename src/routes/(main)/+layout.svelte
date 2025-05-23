@@ -2,17 +2,13 @@
 	import { siGithub } from 'simple-icons';
 
 	import { route } from '$lib/__generated__/routes';
-	import { authClient } from '$lib/client/auth';
+	import { authClient, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
-	const session = authClient.useSession();
 	async function githubSignIn() {
 		await authClient.signIn.social({ provider: 'github' });
-	}
-	async function signOut() {
-		await authClient.signOut();
 	}
 </script>
 
@@ -68,7 +64,7 @@
 		</ul>
 	</div>
 	<div class="navbar-end">
-		{#if $session.data}
+		{#if data.session}
 			<button onclick={signOut} class="btn">Signout</button>
 			<a href={route('/console')} class="btn">Console</a>
 		{:else}

@@ -18,3 +18,5 @@ export const auth = betterAuth({
 	// TODO: only trust paying customers
 	trustedOrigins: ['*'],
 });
+
+export type Session = typeof auth.$Infer.Session;

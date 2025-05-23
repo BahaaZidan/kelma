@@ -3,7 +3,7 @@
 	import { superForm } from 'sveltekit-superforms';
 
 	import { route } from '$lib/__generated__/routes';
-	import { authClient } from '$lib/client/auth';
+	import { signOut } from '$lib/client/auth';
 	import Comment from '$lib/components/Comment.svelte';
 	import TextArea from '$lib/components/TextArea.svelte';
 
@@ -11,11 +11,6 @@
 
 	let { data }: PageProps = $props();
 	const superform = superForm(data.form);
-
-	const session = authClient.useSession();
-	async function signOut() {
-		await authClient.signOut();
-	}
 
 	function sendHeight() {
 		const height = document.body.scrollHeight;
@@ -37,9 +32,9 @@
 
 <div class="flex flex-col items-center gap-2 p-4">
 	<div class="flex w-full items-center justify-between">
-		{#if $session.data}
+		{#if data.session}
 			<div>
-				Logged in as <b>{$session.data.user.name}</b>
+				Logged in as <b>{data.session.user.name}</b>
 			</div>
 			<button class="btn btn-ghost" onclick={signOut}>Logout</button>
 		{:else}
@@ -56,13 +51,7 @@
 		{/if}
 	</div>
 	<form method="post" use:superform.enhance class="flex w-full flex-col items-end gap-2">
-		<TextArea
-			{superform}
-			field="comment"
-			label="Comment"
-			disabled={!$session.data}
-			class="w-full"
-		/>
+		<TextArea {superform} field="comment" label="Comment" disabled={!data.session} class="w-full" />
 		<button type="submit" class="btn">Submit</button>
 	</form>
 	<div class="flex w-full flex-col gap-4">
