@@ -62,6 +62,10 @@
 				content={comment.content}
 				createdAt={comment.createdAt}
 				permissions={comment.permissions}
+				redirect_url={route('/embeds/[website_id]/[page_slug]/comments', {
+					website_id: data.websiteId,
+					page_slug: data.pageSlug,
+				})}
 			/>
 		{/each}
 	</div>

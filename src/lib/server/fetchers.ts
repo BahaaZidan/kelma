@@ -37,6 +37,7 @@ export async function fetchPageComments(pageId: number, loggedInUserId?: string)
 		author: c.author,
 		permissions: {
 			delete: c.author?.id === loggedInUserId || c.website?.ownerId === loggedInUserId,
+			edit: c.author?.id === loggedInUserId,
 		},
 	}));
 

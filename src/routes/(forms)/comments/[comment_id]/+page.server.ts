@@ -1,12 +1,45 @@
-import { fail } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { fail, redirect } from '@sveltejs/kit';
+import { and, eq } from 'drizzle-orm';
+import * as v from 'valibot';
 
 import { db } from '$lib/server/db';
 import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
 
 import type { Actions } from './$types';
 
+const schema = v.object({
+	content: v.pipe(v.string(), v.trim(), v.nonEmpty(), v.maxLength(500)),
+	redirect_url: v.pipe(v.string()),
+});
+
 export const actions: Actions = {
+	edit: async ({ params, locals, request }) => {
+		if (!locals.session) return fail(401);
+
+		const formData = await request.formData();
+		const form = v.safeParse(schema, {
+			content: formData.get('content'),
+			redirect_url: formData.get('redirect_url'),
+		});
+		if (!form.success) return fail(400);
+
+		const commentUpdate = await db
+			.update(commentTable)
+			.set({
+				content: form.output.content,
+				updatedAt: new Date(),
+			})
+			.where(
+				and(
+					eq(commentTable.id, Number(params.comment_id)),
+					eq(commentTable.authorId, locals.session.user.id)
+				)
+			);
+
+		if (commentUpdate.changes === 0) return fail(400);
+
+		return redirect(303, form.output.redirect_url);
+	},
 	delete: async ({ params, locals }) => {
 		if (!locals.session) return fail(401);
 

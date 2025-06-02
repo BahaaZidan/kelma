@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EllipsisVerticalIcon, Trash2Icon } from '@lucide/svelte';
+	import { EllipsisVerticalIcon, SquarePenIcon, Trash2Icon } from '@lucide/svelte';
 	import { formatDistance } from 'date-fns';
 
 	import { enhance } from '$app/forms';
@@ -17,10 +17,13 @@
 		} | null;
 		permissions: {
 			delete: boolean;
+			edit: boolean;
 		};
+		redirect_url: string;
 	};
 
-	let { id, content, createdAt, author, permissions }: Props = $props();
+	let { id, content, createdAt, author, permissions, redirect_url }: Props = $props();
+	let editing = $state(false);
 
 	let dialog: HTMLDialogElement;
 </script>
@@ -28,33 +31,62 @@
 {#if author}
 	<div class="flex items-start gap-4">
 		<img src={author.image} alt="{author.name} profile picture" class="mt-1 size-10 rounded-full" />
-		<div class="flex grow flex-col">
-			<span>
-				<b>{author.name}</b>
-				<span class="text-secondary text-sm">
-					{formatDistance(createdAt, new Date(), { addSuffix: true })}
+		{#if !editing}
+			<div class="flex grow flex-col">
+				<span>
+					<b>{author.name}</b>
+					<span class="text-secondary text-sm">
+						{formatDistance(createdAt, new Date(), { addSuffix: true })}
+					</span>
 				</span>
-			</span>
-			<span class="whitespace-pre-wrap">{content}</span>
-		</div>
-		<div class="dropdown dropdown-end">
-			<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
-				<EllipsisVerticalIcon size={18} />
+				<span class="whitespace-pre-wrap">{content}</span>
 			</div>
-			<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-				{#if permissions.delete}
-					<li>
-						<button
-							onclick={() => {
-								dialog.showModal();
-							}}
-						>
-							<Trash2Icon /> Delete
-						</button>
-					</li>
-				{/if}
-			</ul>
-		</div>
+			<div class="dropdown dropdown-end">
+				<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
+					<EllipsisVerticalIcon size={18} />
+				</div>
+				<ul
+					tabindex="0"
+					class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+				>
+					{#if permissions.delete}
+						<li>
+							<button
+								onclick={() => {
+									dialog.showModal();
+								}}
+							>
+								<Trash2Icon /> Delete
+							</button>
+						</li>
+					{/if}
+					{#if permissions.edit}
+						<li>
+							<button
+								onclick={() => {
+									editing = true;
+								}}
+							>
+								<SquarePenIcon /> Edit
+							</button>
+						</li>
+					{/if}
+				</ul>
+			</div>
+		{:else}
+			<form
+				class="flex grow flex-col gap-3"
+				method="post"
+				action={route('edit /comments/[comment_id]', { comment_id: id })}
+			>
+				<input type="hidden" name="redirect_url" value={redirect_url} />
+				<textarea class="textarea w-full" name="content">{content}</textarea>
+				<div class="flex justify-end gap-2">
+					<button class="btn" type="button" onclick={() => (editing = false)}>Cancel</button>
+					<button class="btn" type="submit">Submit</button>
+				</div>
+			</form>
+		{/if}
 	</div>
 
 	<dialog bind:this={dialog} class="modal">

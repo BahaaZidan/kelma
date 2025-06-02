@@ -20,6 +20,10 @@
 			content={comment.content}
 			createdAt={comment.createdAt}
 			permissions={comment.permissions}
+			redirect_url={route('/console/[website_id]/pages/[page_id]/comments', {
+				page_id: data.pageId,
+				website_id: data.websiteId,
+			})}
 		/>
 	{/each}
 </div>
