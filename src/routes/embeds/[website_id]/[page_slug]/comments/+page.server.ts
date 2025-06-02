@@ -52,7 +52,7 @@ const searchParamsSchema = v.object({
 	url: v.pipe(v.string(), v.trim(), v.url()),
 });
 
-export const load: PageServerLoad = async ({ params, url }) => {
+export const load: PageServerLoad = async ({ params, url, locals }) => {
 	const { page_slug: pageSlug, website_id } = params;
 	const websiteId = Number(website_id);
 	const searchParamsValidation = v.safeParse(
@@ -74,7 +74,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 			.returning()
 	)[0];
 
-	const comments = await fetchPageComments(page.id);
+	const comments = await fetchPageComments(page.id, locals.session?.user.id);
 
 	const form = await superValidate(valibot(schema));
 

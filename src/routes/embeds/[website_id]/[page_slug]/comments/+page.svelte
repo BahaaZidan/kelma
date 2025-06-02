@@ -56,7 +56,13 @@
 	</form>
 	<div class="flex w-full flex-col gap-4">
 		{#each data.comments as comment (comment.id)}
-			<Comment author={comment.author} content={comment.content} createdAt={comment.createdAt} />
+			<Comment
+				id={comment.id}
+				author={comment.author}
+				content={comment.content}
+				createdAt={comment.createdAt}
+				permissions={comment.permissions}
+			/>
 		{/each}
 	</div>
 	<span class="py-6">

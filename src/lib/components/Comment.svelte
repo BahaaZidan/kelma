@@ -1,22 +1,34 @@
 <script lang="ts">
+	import { EllipsisVerticalIcon, Trash2Icon } from '@lucide/svelte';
 	import { formatDistance } from 'date-fns';
 
+	import { enhance } from '$app/forms';
+
+	import { route } from '$lib/__generated__/routes';
+
 	type Props = {
-		author?: {
-			image?: string | null;
-			name: string;
-		} | null;
-		createdAt: Date;
+		id: number;
 		content: string;
+		createdAt: Date;
+		author?: {
+			id: string;
+			name: string;
+			image?: string | null;
+		} | null;
+		permissions: {
+			delete: boolean;
+		};
 	};
 
-	let { author, createdAt, content }: Props = $props();
+	let { id, content, createdAt, author, permissions }: Props = $props();
+
+	let dialog: HTMLDialogElement;
 </script>
 
 {#if author}
 	<div class="flex items-start gap-4">
 		<img src={author.image} alt="{author.name} profile picture" class="mt-1 size-10 rounded-full" />
-		<div class="flex flex-col">
+		<div class="flex grow flex-col">
 			<span>
 				<b>{author.name}</b>
 				<span class="text-secondary text-sm">
@@ -25,5 +37,42 @@
 			</span>
 			<span class="whitespace-pre-wrap">{content}</span>
 		</div>
+		<div class="dropdown dropdown-end">
+			<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
+				<EllipsisVerticalIcon size={18} />
+			</div>
+			<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+				{#if permissions.delete}
+					<li>
+						<button
+							onclick={() => {
+								dialog.showModal();
+							}}
+						>
+							<Trash2Icon /> Delete
+						</button>
+					</li>
+				{/if}
+			</ul>
+		</div>
 	</div>
+
+	<dialog bind:this={dialog} class="modal">
+		<div class="modal-box max-w-xs">
+			<h3 class="text-lg font-bold">Delete comment</h3>
+			<p class="py-4">Are you sure you want to delete this comment ?</p>
+			<div class="flex justify-end gap-2">
+				<form method="dialog">
+					<button class="btn">Cancel</button>
+				</form>
+				<form
+					method="post"
+					action={route('delete /comments/[comment_id]', { comment_id: id })}
+					use:enhance
+				>
+					<button class="btn" type="submit">Delete</button>
+				</form>
+			</div>
+		</div>
+	</dialog>
 {/if}
