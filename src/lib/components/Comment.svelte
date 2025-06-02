@@ -2,7 +2,7 @@
 	import { EllipsisVerticalIcon, SquarePenIcon, Trash2Icon } from '@lucide/svelte';
 	import { formatDistance } from 'date-fns';
 
-	import { enhance } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 
 	import { route } from '$lib/__generated__/routes';
 
@@ -78,6 +78,12 @@
 				class="flex grow flex-col gap-3"
 				method="post"
 				action={route('edit /comments/[comment_id]', { comment_id: id })}
+				use:enhance={() => {
+					return async ({ result }) => {
+						await applyAction(result);
+						editing = false;
+					};
+				}}
 			>
 				<input type="hidden" name="redirect_url" value={redirect_url} />
 				<textarea class="textarea w-full" name="content">{content}</textarea>
