@@ -1,11 +1,12 @@
 import { error } from '@sveltejs/kit';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
 import { db } from '$lib/server/db';
-import { commentTable, pageTable, userTable } from '$lib/server/db/schema';
+import { commentTable, pageTable } from '$lib/server/db/schema';
+import { fetchPageComments } from '$lib/server/fetchers';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -73,21 +74,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 			.returning()
 	)[0];
 
-	const comments = await db
-		.select({
-			id: commentTable.id,
-			content: commentTable.content,
-			createdAt: commentTable.createdAt,
-			author: {
-				id: userTable.id,
-				name: userTable.name,
-				image: userTable.image,
-			},
-		})
-		.from(commentTable)
-		.orderBy(desc(commentTable.createdAt))
-		.where(eq(commentTable.pageId, page.id))
-		.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
+	const comments = await fetchPageComments(page.id);
 
 	const form = await superValidate(valibot(schema));
 

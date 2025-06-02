@@ -26,6 +26,9 @@ const PAGES = {
   "/console/[website_id]/pages": (params: { website_id: (string | number) }) => {
     return `/console/${params['website_id']}/pages`
   },
+  "/console/[website_id]/pages/[page_id]/comments": (params: { website_id: (string | number), page_id: (string | number) }) => {
+    return `/console/${params['website_id']}/pages/${params['page_id']}/comments`
+  },
   "/console/[website_id]/settings": (params: { website_id: (string | number) }) => {
     return `/console/${params['website_id']}/settings`
   },
@@ -174,9 +177,9 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/console/[website_id]/comments': 'website_id', '/console/[website_id]/install': 'website_id', '/console/[website_id]/newsletter': 'website_id', '/console/[website_id]/pages': 'website_id', '/console/[website_id]/settings': 'website_id', '/console/[website_id]/tools': 'website_id', '/console/[website_id]/users': 'website_id', '/console/billing': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id', '/embeds/login': never }
+  PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/console/[website_id]/comments': 'website_id', '/console/[website_id]/install': 'website_id', '/console/[website_id]/newsletter': 'website_id', '/console/[website_id]/pages': 'website_id', '/console/[website_id]/pages/[page_id]/comments': 'website_id' | 'page_id', '/console/[website_id]/settings': 'website_id', '/console/[website_id]/tools': 'website_id', '/console/[website_id]/users': 'website_id', '/console/billing': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id', '/embeds/login': never }
   SERVERS: Record<string, never>
   ACTIONS: { 'default /console': never, 'default /embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug' }
   LINKS: Record<string, never>
-  Params: { 'website_id': never, 'page_slug': never }
+  Params: { 'website_id': never, 'page_id': never, 'page_slug': never }
 }
