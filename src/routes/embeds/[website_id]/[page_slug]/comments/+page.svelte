@@ -30,7 +30,7 @@
 	});
 </script>
 
-<div class="flex flex-col items-center gap-2 p-4">
+<div class="flex flex-col items-center gap-2">
 	<div class="flex w-full items-center justify-between">
 		{#if data.session}
 			<div>
@@ -42,7 +42,7 @@
 				You must <a
 					class="link font-bold"
 					target="_top"
-					href="{route('/embeds/login')}?callback_url={data.callbackURL}"
+					href="{route('/embeds/login')}?callback_url={data.searchParams.url}"
 				>
 					login
 				</a>
@@ -62,10 +62,10 @@
 				content={comment.content}
 				createdAt={comment.createdAt}
 				permissions={comment.permissions}
-				redirect_url={route('/embeds/[website_id]/[page_slug]/comments', {
+				redirect_url="{route('/embeds/[website_id]/[page_slug]/comments', {
 					website_id: data.websiteId,
 					page_slug: data.pageSlug,
-				})}
+				})}?url={data.searchParams.url}&name={data.searchParams.name}"
 			/>
 		{/each}
 	</div>

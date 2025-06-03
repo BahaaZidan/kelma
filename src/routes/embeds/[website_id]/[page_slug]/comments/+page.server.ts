@@ -78,5 +78,5 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 
 	const form = await superValidate(valibot(schema));
 
-	return { form, comments, url: url.toString(), callbackURL: searchParams.url };
+	return { form, comments, searchParams };
 };
