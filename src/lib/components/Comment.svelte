@@ -108,6 +108,7 @@
 					action={route('delete /comments/[comment_id]', { comment_id: id })}
 					use:enhance
 				>
+					<input type="hidden" name="redirect_url" value={redirect_url} />
 					<button class="btn" type="submit">Delete</button>
 				</form>
 			</div>
