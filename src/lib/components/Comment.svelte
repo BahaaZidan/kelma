@@ -41,39 +41,41 @@
 				</span>
 				<span class="whitespace-pre-wrap">{content}</span>
 			</div>
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
-					<EllipsisVerticalIcon size={18} />
+			{#if Object.values(permissions).includes(true)}
+				<div class="dropdown dropdown-end">
+					<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
+						<EllipsisVerticalIcon size={18} />
+					</div>
+					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+					<ul
+						tabindex="0"
+						class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+					>
+						{#if permissions.delete}
+							<li>
+								<button
+									onclick={() => {
+										dialog.showModal();
+									}}
+								>
+									<Trash2Icon /> Delete
+								</button>
+							</li>
+						{/if}
+						{#if permissions.edit}
+							<li>
+								<button
+									onclick={() => {
+										editing = true;
+									}}
+								>
+									<SquarePenIcon /> Edit
+								</button>
+							</li>
+						{/if}
+					</ul>
 				</div>
-				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-				<ul
-					tabindex="0"
-					class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
-				>
-					{#if permissions.delete}
-						<li>
-							<button
-								onclick={() => {
-									dialog.showModal();
-								}}
-							>
-								<Trash2Icon /> Delete
-							</button>
-						</li>
-					{/if}
-					{#if permissions.edit}
-						<li>
-							<button
-								onclick={() => {
-									editing = true;
-								}}
-							>
-								<SquarePenIcon /> Edit
-							</button>
-						</li>
-					{/if}
-				</ul>
-			</div>
+			{/if}
 		{:else}
 			<form
 				class="flex grow flex-col gap-3"
