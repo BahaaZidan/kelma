@@ -7,7 +7,11 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			session: Session | null;
+			session:
+				| (Session & {
+						websitesOwnedByCurrentUser?: number[];
+				  })
+				| null;
 		}
 		// interface PageData {}
 		// interface PageState {}
