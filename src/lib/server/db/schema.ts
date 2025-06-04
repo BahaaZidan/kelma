@@ -71,6 +71,9 @@ export const websiteTable = sqliteTable('website', {
 		.notNull()
 		.$type<string[]>()
 		.default(sql`'[]'`),
+	preModeration: integer('pre_moderation', { mode: 'boolean' })
+		.default(sql`0`)
+		.notNull(),
 });
 
 export const pageTable = sqliteTable(
@@ -83,6 +86,12 @@ export const pageTable = sqliteTable(
 			.references(() => websiteTable.id, { onDelete: 'cascade' }),
 		name: text(),
 		url: text(),
+		preModeration: integer('pre_moderation', { mode: 'boolean' })
+			.default(sql`0`)
+			.notNull(),
+		closed: integer('closed', { mode: 'boolean' })
+			.default(sql`0`)
+			.notNull(),
 	},
 	(self) => [uniqueIndex('slug_websiteId_uniq').on(self.slug, self.websiteId)]
 );
@@ -102,4 +111,7 @@ export const commentTable = sqliteTable('comment', {
 	authorId: text('author_id')
 		.notNull()
 		.references(() => userTable.id, { onDelete: 'cascade' }),
+	published: integer('published', { mode: 'boolean' })
+		.default(sql`1`)
+		.notNull(),
 });

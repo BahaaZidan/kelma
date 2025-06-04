@@ -13,6 +13,8 @@ export const load: PageServerLoad = async ({ params }) => {
 			name: pageTable.name,
 			url: pageTable.url,
 			commentsCount: count(commentTable.id),
+			closed: pageTable.closed,
+			preModeration: pageTable.preModeration,
 		})
 		.from(pageTable)
 		.where(eq(pageTable.websiteId, Number(params.website_id)))

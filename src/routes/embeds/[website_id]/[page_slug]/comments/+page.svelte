@@ -51,7 +51,13 @@
 		{/if}
 	</div>
 	<form method="post" use:superform.enhance class="flex w-full flex-col items-end gap-2">
-		<TextArea {superform} field="comment" label="Comment" disabled={!data.session} class="w-full" />
+		<TextArea
+			{superform}
+			field="comment"
+			label="Comment"
+			disabled={!data.permissions.create}
+			class="w-full"
+		/>
 		<button type="submit" class="btn">Submit</button>
 	</form>
 	<div class="flex w-full flex-col gap-4">

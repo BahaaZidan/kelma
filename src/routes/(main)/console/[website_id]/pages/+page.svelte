@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { EllipsisVerticalIcon, MessageSquareIcon, Trash2Icon } from '@lucide/svelte';
+	import {
+		EllipsisVerticalIcon,
+		MessageSquareIcon,
+		Settings2Icon,
+		Trash2Icon,
+	} from '@lucide/svelte';
 
 	import { route } from '$lib/__generated__/routes';
 
@@ -55,14 +60,15 @@
 						{/if}
 					</td>
 					<td>
-						<label class="label mb-2 w-full justify-between">
-							Closed
-							<input type="checkbox" checked={true} class="toggle" />
-						</label>
-						<label class="label w-full justify-between">
-							Pre-moderation
-							<input type="checkbox" checked={false} class="toggle" />
-						</label>
+						<a
+							class="btn"
+							href={route('/console/[website_id]/pages/[page_id]/edit', {
+								page_id: page.id,
+								website_id: data.websiteId,
+							})}
+						>
+							<Settings2Icon /> Permissions
+						</a>
 					</td>
 				</tr>
 			{/each}

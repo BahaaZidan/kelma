@@ -1,6 +1,6 @@
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
-import { fail, message, superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
@@ -23,9 +23,14 @@ export const actions: Actions = {
 			return message(form, 'Invalid name or domain!');
 		}
 
-		const pageId = (
+		const page = (
 			await db
-				.select()
+				.select({
+					id: pageTable.id,
+					closed: pageTable.closed,
+					preModeration: pageTable.preModeration,
+					websiteId: pageTable.websiteId,
+				})
 				.from(pageTable)
 				.where(
 					and(
@@ -33,13 +38,14 @@ export const actions: Actions = {
 						eq(pageTable.websiteId, Number(params.website_id))
 					)
 				)
-		)[0]?.id;
-		if (!pageId) fail(401);
+		)[0];
+		if (!page) return fail(400);
+		if (page.closed) return fail(401);
 
 		const insertResult = await db.insert(commentTable).values({
 			content: form.data.comment,
 			authorId: locals.session.user.id,
-			pageId,
+			pageId: page.id,
 		});
 		if (insertResult.changes > 0) return message(form, 'Website created successfully!');
 
@@ -74,9 +80,9 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 			.returning()
 	)[0];
 
-	const comments = await fetchPageComments(page.id, locals.session?.user.id);
+	const { comments, permissions } = await fetchPageComments(page.id, locals.session?.user.id);
 
 	const form = await superValidate(valibot(schema));
 
-	return { form, comments, searchParams };
+	return { form, comments, permissions, searchParams };
 };
