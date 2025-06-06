@@ -52,6 +52,7 @@ export const actions: Actions = {
 			content: form.data.comment,
 			authorId: locals.session.user.id,
 			pageId: page.id,
+			websiteId: Number(params.website_id),
 			published:
 				page.website?.ownerId === locals.session.user.id ||
 				(!page.website?.preModeration && !page.preModeration),

@@ -105,13 +105,16 @@ export const commentTable = sqliteTable('comment', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
-	pageId: integer('page_id')
-		.notNull()
-		.references(() => pageTable.id, { onDelete: 'cascade' }),
-	authorId: text('author_id')
-		.notNull()
-		.references(() => userTable.id, { onDelete: 'cascade' }),
 	published: integer('published', { mode: 'boolean' })
 		.default(sql`1`)
 		.notNull(),
+	pageId: integer('page_id')
+		.notNull()
+		.references(() => pageTable.id, { onDelete: 'cascade' }),
+	websiteId: integer('website_id')
+		.notNull()
+		.references(() => websiteTable.id, { onDelete: 'cascade' }),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => userTable.id, { onDelete: 'cascade' }),
 });
