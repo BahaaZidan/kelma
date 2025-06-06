@@ -91,4 +91,43 @@ export const actions: Actions = {
 
 		return fail(401);
 	},
+	approve: async ({ params, locals, request }) => {
+		if (!locals.session) return fail(401);
+
+		const formData = Object.fromEntries((await request.formData()).entries());
+		const form = v.safeParse(deleteSchema, formData);
+		if (!form.success) return fail(400);
+
+		const commentId = Number(params.comment_id);
+
+		const websiteOwnerId = (
+			await db
+				.select({
+					id: commentTable.id,
+					pageId: commentTable.pageId,
+					website: {
+						id: websiteTable.id,
+						ownerId: websiteTable.ownerId,
+					},
+				})
+				.from(commentTable)
+				.where(eq(commentTable.id, commentId))
+				.leftJoin(pageTable, eq(commentTable.pageId, pageTable.id))
+				.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
+				.limit(1)
+		)[0].website?.ownerId;
+
+		if (websiteOwnerId !== locals.session.user.id) return fail(401);
+
+		const commentUpdate = await db
+			.update(commentTable)
+			.set({
+				published: true,
+			})
+			.where(eq(commentTable.id, commentId));
+
+		if (commentUpdate.changes === 0) return fail(400);
+
+		return redirect(303, form.output.redirect_url);
+	},
 };

@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { EllipsisVerticalIcon, SquarePenIcon, Trash2Icon } from '@lucide/svelte';
+	import {
+		EllipsisVerticalIcon,
+		SquareCheckBigIcon,
+		SquarePenIcon,
+		Trash2Icon,
+	} from '@lucide/svelte';
 	import { formatDistance } from 'date-fns';
 
 	import { applyAction, enhance } from '$app/forms';
@@ -18,11 +23,13 @@
 		permissions: {
 			delete: boolean;
 			edit: boolean;
+			approve: boolean;
 		};
 		redirect_url: string;
+		published?: boolean;
 	};
 
-	let { id, content, createdAt, author, permissions, redirect_url }: Props = $props();
+	let { id, content, createdAt, author, permissions, redirect_url, published }: Props = $props();
 	let editing = $state(false);
 
 	let dialog: HTMLDialogElement;
@@ -38,6 +45,9 @@
 					<span class="text-secondary text-sm">
 						{formatDistance(createdAt, new Date(), { addSuffix: true })}
 					</span>
+					{#if !published}
+						<div class="badge badge-info badge-sm rounded-2xl">Awaiting Approval</div>
+					{/if}
 				</span>
 				<span class="whitespace-pre-wrap">{content}</span>
 			</div>
@@ -51,6 +61,21 @@
 						tabindex="0"
 						class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
 					>
+						{#if permissions.approve}
+							<li>
+								<form
+									id="approve_comment_{id}"
+									method="post"
+									action={route('approve /comments/[comment_id]', { comment_id: id })}
+									use:enhance
+								>
+									<input type="hidden" name="redirect_url" value={redirect_url} />
+								</form>
+								<button type="submit" form="approve_comment_{id}">
+									<SquareCheckBigIcon /> Approve
+								</button>
+							</li>
+						{/if}
 						{#if permissions.delete}
 							<li>
 								<button

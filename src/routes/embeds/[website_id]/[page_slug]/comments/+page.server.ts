@@ -5,8 +5,8 @@ import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
 import { db } from '$lib/server/db';
-import { commentTable, pageTable } from '$lib/server/db/schema';
-import { fetchPageComments } from '$lib/server/fetchers';
+import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
+import { fetchPageComments, fetchUnpublishedUserCommentsByPage } from '$lib/server/fetchers';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -20,7 +20,7 @@ export const actions: Actions = {
 
 		const form = await superValidate(request, valibot(schema));
 		if (!form.valid) {
-			return message(form, 'Invalid name or domain!');
+			return message(form, 'Invalid comment!');
 		}
 
 		const page = (
@@ -29,7 +29,11 @@ export const actions: Actions = {
 					id: pageTable.id,
 					closed: pageTable.closed,
 					preModeration: pageTable.preModeration,
-					websiteId: pageTable.websiteId,
+					website: {
+						id: websiteTable.id,
+						ownerId: websiteTable.ownerId,
+						preModeration: websiteTable.preModeration,
+					},
 				})
 				.from(pageTable)
 				.where(
@@ -38,6 +42,8 @@ export const actions: Actions = {
 						eq(pageTable.websiteId, Number(params.website_id))
 					)
 				)
+				.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
+				.limit(1)
 		)[0];
 		if (!page) return fail(400);
 		if (page.closed) return fail(401);
@@ -46,8 +52,11 @@ export const actions: Actions = {
 			content: form.data.comment,
 			authorId: locals.session.user.id,
 			pageId: page.id,
+			published:
+				page.website?.ownerId === locals.session.user.id ||
+				(!page.website?.preModeration && !page.preModeration),
 		});
-		if (insertResult.changes > 0) return message(form, 'Website created successfully!');
+		if (insertResult.changes > 0) return message(form, 'Comment submitted successfully!');
 
 		return fail(500);
 	},
@@ -80,9 +89,13 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 			.returning()
 	)[0];
 
-	const { comments, permissions } = await fetchPageComments(page.id, locals.session?.user.id);
+	const { comments, permissions } = await fetchPageComments(page.id, locals.session?.user.id, true);
+	const unpublishedCommentsByCurrentUser = await fetchUnpublishedUserCommentsByPage(
+		page.id,
+		locals.session?.user
+	);
 
 	const form = await superValidate(valibot(schema));
 
-	return { form, comments, permissions, searchParams };
+	return { form, comments, permissions, searchParams, unpublishedCommentsByCurrentUser };
 };

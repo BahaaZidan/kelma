@@ -15,11 +15,7 @@
 	</a>
 	{#each data.comments as comment (comment.id)}
 		<Comment
-			id={comment.id}
-			author={comment.author}
-			content={comment.content}
-			createdAt={comment.createdAt}
-			permissions={comment.permissions}
+			{...comment}
 			redirect_url={route('/console/[website_id]/pages/[page_id]/comments', {
 				page_id: data.pageId,
 				website_id: data.websiteId,

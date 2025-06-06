@@ -28,6 +28,11 @@
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 	});
+
+	const redirect_url = `${route('/embeds/[website_id]/[page_slug]/comments', {
+		website_id: data.websiteId,
+		page_slug: data.pageSlug,
+	})}?url=${data.searchParams.url}&name=${data.searchParams.name}`;
 </script>
 
 <div class="flex flex-col items-center gap-2">
@@ -61,18 +66,11 @@
 		<button type="submit" class="btn">Submit</button>
 	</form>
 	<div class="flex w-full flex-col gap-4">
+		{#each data.unpublishedCommentsByCurrentUser as comment (comment.id)}
+			<Comment {...comment} {redirect_url} />
+		{/each}
 		{#each data.comments as comment (comment.id)}
-			<Comment
-				id={comment.id}
-				author={comment.author}
-				content={comment.content}
-				createdAt={comment.createdAt}
-				permissions={comment.permissions}
-				redirect_url="{route('/embeds/[website_id]/[page_slug]/comments', {
-					website_id: data.websiteId,
-					page_slug: data.pageSlug,
-				})}?url={data.searchParams.url}&name={data.searchParams.name}"
-			/>
+			<Comment {...comment} {redirect_url} />
 		{/each}
 	</div>
 	<span class="py-6">
