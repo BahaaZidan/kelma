@@ -1,12 +1,11 @@
 import { error, fail } from '@sveltejs/kit';
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq, or } from 'drizzle-orm';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
 import { db } from '$lib/server/db';
-import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
-import { fetchPageComments, fetchUnpublishedUserCommentsByPage } from '$lib/server/fetchers';
+import { commentTable, pageTable, userTable, websiteTable } from '$lib/server/db/schema';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -77,8 +76,17 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 	);
 	if (!searchParamsValidation.success)
 		return error(400, searchParamsValidation.issues.map((i) => i.message).join('\n'));
-
 	const searchParams = searchParamsValidation.output;
+
+	const website = (
+		await db
+			.select({ id: websiteTable.id, ownerId: websiteTable.ownerId })
+			.from(websiteTable)
+			.where(eq(websiteTable.id, websiteId))
+			.limit(1)
+	)[0];
+	if (!website) return error(404);
+
 	const page = (
 		await db
 			.insert(pageTable)
@@ -89,14 +97,59 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 			})
 			.returning()
 	)[0];
+	if (!page) return error(500);
 
-	const { comments, permissions } = await fetchPageComments(page.id, locals.session?.user.id, true);
-	const unpublishedCommentsByCurrentUser = await fetchUnpublishedUserCommentsByPage(
-		page.id,
-		locals.session?.user
-	);
+	const loggedInUserId = locals.session?.user.id;
+
+	const commentsResult = await db
+		.select({
+			id: commentTable.id,
+			content: commentTable.content,
+			createdAt: commentTable.createdAt,
+			published: commentTable.published,
+			author: {
+				id: userTable.id,
+				name: userTable.name,
+				image: userTable.image,
+			},
+		})
+		.from(commentTable)
+		.orderBy(desc(commentTable.createdAt))
+		.where(
+			loggedInUserId
+				? or(
+						and(eq(commentTable.pageId, page.id), eq(commentTable.published, true)),
+						and(
+							eq(commentTable.pageId, page.id),
+							eq(commentTable.published, false),
+							eq(commentTable.authorId, loggedInUserId)
+						)
+					)
+				: and(eq(commentTable.pageId, page.id), eq(commentTable.published, true))
+		)
+		.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
+
+	const comments = commentsResult.map((c) => ({
+		id: c.id,
+		content: c.content,
+		createdAt: c.createdAt,
+		published: c.published,
+		author: c.author,
+		permissions: {
+			delete: c.author?.id === loggedInUserId || website.ownerId === loggedInUserId,
+			edit: c.author?.id === loggedInUserId,
+			approve: !c.published && website.ownerId === loggedInUserId,
+		},
+	}));
 
 	const form = await superValidate(valibot(schema));
 
-	return { form, comments, permissions, searchParams, unpublishedCommentsByCurrentUser };
+	return {
+		form,
+		comments,
+		permissions: {
+			create: !!loggedInUserId && !page.closed,
+		},
+		searchParams,
+	};
 };

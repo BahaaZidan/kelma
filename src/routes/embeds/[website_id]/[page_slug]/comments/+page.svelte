@@ -66,9 +66,6 @@
 		<button type="submit" class="btn">Submit</button>
 	</form>
 	<div class="flex w-full flex-col gap-4">
-		{#each data.unpublishedCommentsByCurrentUser as comment (comment.id)}
-			<Comment {...comment} {redirect_url} />
-		{/each}
 		{#each data.comments as comment (comment.id)}
 			<Comment {...comment} {redirect_url} />
 		{/each}

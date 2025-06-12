@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { and, desc, eq } from 'drizzle-orm';
 
-import type { Session } from './auth';
 import { db } from './db';
 import { commentTable, pageTable, userTable, websiteTable } from './db/schema';
 
@@ -68,42 +67,4 @@ export async function fetchPageComments(
 			create: !!loggedInUserId && !page.closed,
 		},
 	};
-}
-
-export async function fetchUnpublishedUserCommentsByPage(
-	pageId: number,
-	loggedInUser?: Session['user']
-) {
-	if (!loggedInUser) return [];
-	const commentsResult = await db
-		.select({
-			id: commentTable.id,
-			content: commentTable.content,
-			createdAt: commentTable.createdAt,
-			published: commentTable.published,
-		})
-		.from(commentTable)
-		.orderBy(desc(commentTable.createdAt))
-		.where(
-			and(
-				eq(commentTable.pageId, pageId),
-				eq(commentTable.published, false),
-				eq(commentTable.authorId, loggedInUser.id)
-			)
-		);
-
-	const comments = commentsResult.map((c) => ({
-		id: c.id,
-		content: c.content,
-		createdAt: c.createdAt,
-		published: c.published,
-		author: loggedInUser,
-		permissions: {
-			delete: true,
-			edit: true,
-			approve: false,
-		},
-	}));
-
-	return comments;
 }
