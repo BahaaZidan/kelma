@@ -14,7 +14,8 @@
 
 	onMount(async () => {
 		fetchedComments = await fetch(
-			route('GET /api/[website_id]/comments', { website_id: data.websiteId })
+			route('GET /api/[website_id]/comments', { website_id: data.websiteId }) +
+				'?pageSize=5&cursor=23'
 		).then((r) => r.json());
 		loading = false;
 	});
