@@ -55,7 +55,9 @@ const PAGES = {
  * SERVERS
  */
 const SERVERS = {
-  
+  "GET /api/[website_id]/comments": (params: { website_id: (string | number) }) => {
+    return `/api/${params['website_id']}/comments`
+  }
 }
 
 /**
@@ -196,7 +198,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 */
 export type KIT_ROUTES = {
   PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/console/[website_id]/comments': 'website_id', '/console/[website_id]/install': 'website_id', '/console/[website_id]/newsletter': 'website_id', '/console/[website_id]/pages': 'website_id', '/console/[website_id]/pages/[page_id]/comments': 'website_id' | 'page_id', '/console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', '/console/[website_id]/settings': 'website_id', '/console/[website_id]/tools': 'website_id', '/console/[website_id]/users': 'website_id', '/console/billing': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id', '/embeds/login': never }
-  SERVERS: Record<string, never>
+  SERVERS: { 'GET /api/[website_id]/comments': 'website_id' }
   ACTIONS: { 'edit /comments/[comment_id]': 'comment_id', 'delete /comments/[comment_id]': 'comment_id', 'approve /comments/[comment_id]': 'comment_id', 'default /console': never, 'default /console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', 'default /console/[website_id]/settings': 'website_id', 'default /embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug' }
   LINKS: Record<string, never>
   Params: { 'website_id': never, 'page_id': never, 'page_slug': never, 'comment_id': never }

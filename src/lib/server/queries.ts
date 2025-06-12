@@ -19,3 +19,5 @@ export const commentBaseQuery = db
 	.from(commentTable)
 	.orderBy(desc(commentTable.createdAt))
 	.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
+
+export type CommentsBaseQueryResult = Awaited<typeof commentBaseQuery>;
