@@ -3,6 +3,12 @@ import { desc, eq } from 'drizzle-orm';
 import { db } from './db';
 import { commentTable, userTable } from './db/schema';
 
+type CursorPaginated<T, N extends string> = {
+	[K in N]: T;
+} & {
+	hasNextPage: boolean;
+};
+
 export const commentBaseQuery = db
 	.select({
 		id: commentTable.id,
@@ -20,4 +26,5 @@ export const commentBaseQuery = db
 	.orderBy(desc(commentTable.createdAt))
 	.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
 
-export type CommentsBaseQueryResult = Awaited<typeof commentBaseQuery>;
+type CommentsBaseQueryResult = Awaited<typeof commentBaseQuery>;
+export type CursorPaginatedComments = CursorPaginated<CommentsBaseQueryResult, 'comments'>;

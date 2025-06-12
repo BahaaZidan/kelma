@@ -45,11 +45,13 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const cursor = searchParams.cursor;
 	const pageSize = searchParams.pageSize || 10;
 
-	const comments = await commentBaseQuery
+	const commentsWExtraOne = await commentBaseQuery
 		.where(
 			and(eq(commentTable.websiteId, websiteId), cursor ? lt(commentTable.id, cursor) : undefined)
 		)
-		.limit(pageSize);
+		.limit(pageSize + 1);
 
-	return json(comments);
+	const comments = commentsWExtraOne.slice(0, pageSize);
+
+	return json({ comments, hasNextPage: commentsWExtraOne.length > comments.length });
 };
