@@ -49,6 +49,7 @@
 		"vite-plugin-kit-routes": "^0.8.4"
 	},
 	"dependencies": {
+		"@tanstack/svelte-query": "^5.80.7",
 		"better-auth": "^1.2.8",
 		"better-sqlite3": "^11.8.0",
 		"date-fns": "^4.1.0",
