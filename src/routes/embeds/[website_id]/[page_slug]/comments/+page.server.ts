@@ -101,9 +101,10 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 
 	const loggedInUserId = locals.session?.user.id;
 
-	const commentsResult = await db
+	const comments = await db
 		.select({
 			id: commentTable.id,
+			websiteId: commentTable.websiteId,
 			content: commentTable.content,
 			createdAt: commentTable.createdAt,
 			published: commentTable.published,
@@ -128,19 +129,6 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 				: and(eq(commentTable.pageId, page.id), eq(commentTable.published, true))
 		)
 		.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
-
-	const comments = commentsResult.map((c) => ({
-		id: c.id,
-		content: c.content,
-		createdAt: c.createdAt,
-		published: c.published,
-		author: c.author,
-		permissions: {
-			delete: c.author?.id === loggedInUserId || website.ownerId === loggedInUserId,
-			edit: c.author?.id === loggedInUserId,
-			approve: !c.published && website.ownerId === loggedInUserId,
-		},
-	}));
 
 	const form = await superValidate(valibot(schema));
 

@@ -7,7 +7,6 @@ import { commentTable, pageTable, userTable } from '$lib/server/db/schema';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const loggedInUserId = locals.session?.user.id;
 	const pageId = Number(params.page_id);
 	if (!locals.session?.websitesOwnedByCurrentUser?.includes(Number(params.website_id)))
 		return error(400);
@@ -27,9 +26,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!page) return error(404);
 	if (!locals.session?.websitesOwnedByCurrentUser?.includes(page.websiteId)) return error(400);
 
-	const commentsResult = await db
+	const comments = await db
 		.select({
 			id: commentTable.id,
+			websiteId: commentTable.websiteId,
 			content: commentTable.content,
 			createdAt: commentTable.createdAt,
 			published: commentTable.published,
@@ -44,17 +44,5 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(eq(commentTable.pageId, pageId))
 		.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
 
-	const comments = commentsResult.map((c) => ({
-		id: c.id,
-		content: c.content,
-		createdAt: c.createdAt,
-		published: c.published,
-		author: c.author,
-		permissions: {
-			delete: true,
-			edit: c.author?.id === loggedInUserId,
-			approve: !c.published,
-		},
-	}));
 	return { comments };
 };

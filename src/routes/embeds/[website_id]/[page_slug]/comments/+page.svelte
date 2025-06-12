@@ -6,10 +6,17 @@
 	import { signOut } from '$lib/client/auth';
 	import Comment from '$lib/components/Comment.svelte';
 	import TextArea from '$lib/components/TextArea.svelte';
+	import { commentPermissions } from '$lib/permissions';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	let comments = $derived(
+		data.comments.map((comment) => ({
+			...comment,
+			permissions: commentPermissions({ comment, session: data.session }),
+		}))
+	);
 	const superform = superForm(data.form);
 
 	function sendHeight() {
@@ -66,7 +73,7 @@
 		<button type="submit" class="btn">Submit</button>
 	</form>
 	<div class="flex w-full flex-col gap-4">
-		{#each data.comments as comment (comment.id)}
+		{#each comments as comment (comment.id)}
 			<Comment {...comment} {redirect_url} />
 		{/each}
 	</div>
