@@ -1,8 +1,9 @@
 import { error } from '@sveltejs/kit';
-import { desc, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { db } from '$lib/server/db';
-import { commentTable, pageTable, userTable } from '$lib/server/db/schema';
+import { commentTable, pageTable } from '$lib/server/db/schema';
+import { commentBaseQuery } from '$lib/server/queries';
 
 import type { PageServerLoad } from './$types';
 
@@ -26,23 +27,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!page) return error(404);
 	if (!locals.session?.websitesOwnedByCurrentUser?.includes(page.websiteId)) return error(400);
 
-	const comments = await db
-		.select({
-			id: commentTable.id,
-			websiteId: commentTable.websiteId,
-			content: commentTable.content,
-			createdAt: commentTable.createdAt,
-			published: commentTable.published,
-			author: {
-				id: userTable.id,
-				name: userTable.name,
-				image: userTable.image,
-			},
-		})
-		.from(commentTable)
-		.orderBy(desc(commentTable.createdAt))
-		.where(eq(commentTable.pageId, pageId))
-		.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
+	const comments = await commentBaseQuery.where(eq(commentTable.pageId, pageId));
 
 	return { comments };
 };
