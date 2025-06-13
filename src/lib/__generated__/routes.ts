@@ -57,6 +57,15 @@ const PAGES = {
 const SERVERS = {
   "GET /api/[website_id]/comments": (params: { website_id: (string | number) }) => {
     return `/api/${params['website_id']}/comments`
+  },
+  "PUT /api/comments/[comment_id]": (params: { comment_id: (string | number) }) => {
+    return `/api/comments/${params['comment_id']}`
+  },
+  "DELETE /api/comments/[comment_id]": (params: { comment_id: (string | number) }) => {
+    return `/api/comments/${params['comment_id']}`
+  },
+  "PATCH /api/comments/[comment_id]": (params: { comment_id: (string | number) }) => {
+    return `/api/comments/${params['comment_id']}`
   }
 }
 
@@ -64,15 +73,6 @@ const SERVERS = {
  * ACTIONS
  */
 const ACTIONS = {
-  "edit /comments/[comment_id]": (params: { comment_id: (string | number) }) => {
-    return `/comments/${params['comment_id']}?/edit`
-  },
-  "delete /comments/[comment_id]": (params: { comment_id: (string | number) }) => {
-    return `/comments/${params['comment_id']}?/delete`
-  },
-  "approve /comments/[comment_id]": (params: { comment_id: (string | number) }) => {
-    return `/comments/${params['comment_id']}?/approve`
-  },
   "default /console": `/console`,
   "default /console/[website_id]/pages/[page_id]/edit": (params: { website_id: (string | number), page_id: (string | number) }) => {
     return `/console/${params['website_id']}/pages/${params['page_id']}/edit`
@@ -198,8 +198,8 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 */
 export type KIT_ROUTES = {
   PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/console/[website_id]/comments': 'website_id', '/console/[website_id]/install': 'website_id', '/console/[website_id]/newsletter': 'website_id', '/console/[website_id]/pages': 'website_id', '/console/[website_id]/pages/[page_id]/comments': 'website_id' | 'page_id', '/console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', '/console/[website_id]/settings': 'website_id', '/console/[website_id]/tools': 'website_id', '/console/[website_id]/users': 'website_id', '/console/billing': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id', '/embeds/login': never }
-  SERVERS: { 'GET /api/[website_id]/comments': 'website_id' }
-  ACTIONS: { 'edit /comments/[comment_id]': 'comment_id', 'delete /comments/[comment_id]': 'comment_id', 'approve /comments/[comment_id]': 'comment_id', 'default /console': never, 'default /console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', 'default /console/[website_id]/settings': 'website_id', 'default /embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug' }
+  SERVERS: { 'GET /api/[website_id]/comments': 'website_id', 'PUT /api/comments/[comment_id]': 'comment_id', 'DELETE /api/comments/[comment_id]': 'comment_id', 'PATCH /api/comments/[comment_id]': 'comment_id' }
+  ACTIONS: { 'default /console': never, 'default /console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', 'default /console/[website_id]/settings': 'website_id', 'default /embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug' }
   LINKS: Record<string, never>
   Params: { 'website_id': never, 'page_id': never, 'page_slug': never, 'comment_id': never }
 }

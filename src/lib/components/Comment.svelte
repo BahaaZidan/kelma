@@ -5,11 +5,12 @@
 		SquarePenIcon,
 		Trash2Icon,
 	} from '@lucide/svelte';
+	import { createMutation, useQueryClient, type InfiniteData } from '@tanstack/svelte-query';
 	import { formatDistance } from 'date-fns';
 
-	import { applyAction, enhance } from '$app/forms';
-
 	import { route } from '$lib/__generated__/routes';
+	import { revertOptimisticUpdate } from '$lib/client/query';
+	import type { CursorPaginatedComments } from '$lib/server/queries';
 
 	type Props = {
 		id: number;
@@ -25,14 +26,128 @@
 			edit: boolean;
 			approve: boolean;
 		};
-		redirect_url: string;
 		published?: boolean;
 	};
 
-	let { id, content, createdAt, author, permissions, redirect_url, published }: Props = $props();
+	let { id, content, createdAt, author, permissions, published }: Props = $props();
 	let editing = $state(false);
+	let contentVal = $derived(content);
 
 	let dialog: HTMLDialogElement;
+
+	const queryClient = useQueryClient();
+	type CommentsInfiniteData = InfiniteData<CursorPaginatedComments, number>;
+
+	const approveCommentMutation = createMutation({
+		mutationFn: async () => {
+			const res = await fetch(route('PATCH /api/comments/[comment_id]', { comment_id: id }), {
+				method: 'PATCH',
+			});
+			if (!res.ok) throw new Error();
+			return res.status;
+		},
+		onMutate: async () => {
+			await queryClient.cancelQueries({ queryKey: ['comments'], exact: false });
+
+			const previousData = queryClient.getQueriesData<CommentsInfiniteData>({
+				queryKey: ['comments'],
+				exact: false,
+			});
+
+			previousData.forEach(([queryKey, oldData]) => {
+				if (!oldData) return;
+
+				const newData: CommentsInfiniteData = {
+					...oldData,
+					pages: oldData.pages.map((page) => ({
+						...page,
+						comments: page.comments.map((comment) =>
+							comment.id === id ? { ...comment, published: true } : comment
+						),
+					})),
+				};
+
+				queryClient.setQueryData<CommentsInfiniteData>(queryKey, newData);
+			});
+
+			return { previousData };
+		},
+		onError: revertOptimisticUpdate(queryClient),
+	});
+
+	const updateCommentMutation = createMutation({
+		mutationFn: async () => {
+			const res = await fetch(route('PUT /api/comments/[comment_id]', { comment_id: id }), {
+				method: 'PUT',
+				body: JSON.stringify({ content: contentVal }),
+			});
+			if (!res.ok) throw new Error();
+			return res.status;
+		},
+		onMutate: async () => {
+			await queryClient.cancelQueries({ queryKey: ['comments'], exact: false });
+
+			const previousData = queryClient.getQueriesData<CommentsInfiniteData>({
+				queryKey: ['comments'],
+				exact: false,
+			});
+
+			previousData.forEach(([queryKey, oldData]) => {
+				if (!oldData) return;
+
+				const newData: CommentsInfiniteData = {
+					...oldData,
+					pages: oldData.pages.map((page) => ({
+						...page,
+						comments: page.comments.map((comment) =>
+							comment.id === id ? { ...comment, content: contentVal } : comment
+						),
+					})),
+				};
+
+				queryClient.setQueryData<CommentsInfiniteData>(queryKey, newData);
+			});
+
+			editing = false;
+			return { previousData };
+		},
+		onError: revertOptimisticUpdate(queryClient),
+	});
+
+	const deleteCommentMutation = createMutation({
+		mutationFn: async () => {
+			const res = await fetch(route('DELETE /api/comments/[comment_id]', { comment_id: id }), {
+				method: 'DELETE',
+			});
+			if (!res.ok) throw new Error();
+			return res.status;
+		},
+		onMutate: async () => {
+			await queryClient.cancelQueries({ queryKey: ['comments'], exact: false });
+
+			const previousData = queryClient.getQueriesData<CommentsInfiniteData>({
+				queryKey: ['comments'],
+				exact: false,
+			});
+
+			previousData.forEach(([queryKey, oldData]) => {
+				if (!oldData) return;
+
+				const newData: CommentsInfiniteData = {
+					...oldData,
+					pages: oldData.pages.map((page) => ({
+						...page,
+						comments: page.comments.filter((comment) => comment.id !== id),
+					})),
+				};
+
+				queryClient.setQueryData<CommentsInfiniteData>(queryKey, newData);
+			});
+
+			return { previousData };
+		},
+		onError: revertOptimisticUpdate(queryClient),
+	});
 </script>
 
 {#if author}
@@ -63,15 +178,7 @@
 					>
 						{#if permissions.approve}
 							<li>
-								<form
-									id="approve_comment_{id}"
-									method="post"
-									action={route('approve /comments/[comment_id]', { comment_id: id })}
-									use:enhance
-								>
-									<input type="hidden" name="redirect_url" value={redirect_url} />
-								</form>
-								<button type="submit" form="approve_comment_{id}">
+								<button onclick={() => $approveCommentMutation.mutate()}>
 									<SquareCheckBigIcon /> Approve
 								</button>
 							</li>
@@ -102,24 +209,13 @@
 				</div>
 			{/if}
 		{:else}
-			<form
-				class="flex grow flex-col gap-3"
-				method="post"
-				action={route('edit /comments/[comment_id]', { comment_id: id })}
-				use:enhance={() => {
-					return async ({ result }) => {
-						await applyAction(result);
-						editing = false;
-					};
-				}}
-			>
-				<input type="hidden" name="redirect_url" value={redirect_url} />
-				<textarea class="textarea w-full" name="content">{content}</textarea>
+			<div class="flex grow flex-col gap-3">
+				<textarea class="textarea w-full" name="content" bind:value={contentVal}></textarea>
 				<div class="flex justify-end gap-2">
-					<button class="btn" type="button" onclick={() => (editing = false)}>Cancel</button>
-					<button class="btn" type="submit">Submit</button>
+					<button class="btn" onclick={() => (editing = false)}>Cancel</button>
+					<button class="btn" onclick={() => $updateCommentMutation.mutate()}>Submit</button>
 				</div>
-			</form>
+			</div>
 		{/if}
 	</div>
 
@@ -131,14 +227,9 @@
 				<form method="dialog">
 					<button class="btn">Cancel</button>
 				</form>
-				<form
-					method="post"
-					action={route('delete /comments/[comment_id]', { comment_id: id })}
-					use:enhance
-				>
-					<input type="hidden" name="redirect_url" value={redirect_url} />
-					<button class="btn" type="submit">Delete</button>
-				</form>
+				<button class="btn" type="button" onclick={() => $deleteCommentMutation.mutate()}>
+					Delete
+				</button>
 			</div>
 		</div>
 	</dialog>

@@ -16,7 +16,7 @@
 		).then((r) => r.json() as unknown as CursorPaginatedComments);
 
 	const query = createInfiniteQuery({
-		queryKey: ['website_comments', data.websiteId],
+		queryKey: ['comments', 'website_comments', data.websiteId],
 		queryFn: ({ pageParam }) => fetchComments(pageParam),
 		initialPageParam: 0,
 		getNextPageParam: (lastPage) => {
@@ -26,14 +26,12 @@
 			return undefined;
 		},
 		select: (responses) =>
-			responses.pages
-				.map((p) =>
-					p.comments.map((c) => ({
-						...c,
-						permissions: commentPermissions({ comment: c, session: data.session }),
-					}))
-				)
-				.flat(),
+			responses.pages.flatMap((p) =>
+				p.comments.map((c) => ({
+					...c,
+					permissions: commentPermissions({ comment: c, session: data.session }),
+				}))
+			),
 	});
 </script>
 
@@ -46,10 +44,7 @@
 	{/if}
 	{#if $query.data}
 		{#each $query.data as comment (comment.id)}
-			<Comment
-				{...comment}
-				redirect_url={route('/console/[website_id]/comments', { website_id: data.websiteId })}
-			/>
+			<Comment {...comment} />
 		{/each}
 	{/if}
 	<button
