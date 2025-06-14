@@ -5,12 +5,12 @@
 		SquarePenIcon,
 		Trash2Icon,
 	} from '@lucide/svelte';
-	import { createMutation, useQueryClient, type InfiniteData } from '@tanstack/svelte-query';
+	import { createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { formatDistance } from 'date-fns';
 
 	import { route } from '$lib/__generated__/routes';
+	import type { CommentsInfiniteData } from '$lib/client/queries';
 	import { revertOptimisticUpdate } from '$lib/client/query';
-	import type { CursorPaginatedComments } from '$lib/server/queries';
 
 	type Props = {
 		id: number;
@@ -36,7 +36,6 @@
 	let dialog: HTMLDialogElement;
 
 	const queryClient = useQueryClient();
-	type CommentsInfiniteData = InfiniteData<CursorPaginatedComments, number>;
 
 	const approveCommentMutation = createMutation({
 		mutationFn: async () => {

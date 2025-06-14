@@ -1,8 +1,10 @@
-import { createInfiniteQuery } from '@tanstack/svelte-query';
+import { createInfiniteQuery, type InfiniteData } from '@tanstack/svelte-query';
 
 import { commentPermissions } from '$lib/permissions';
 import type { Session } from '$lib/server/auth';
 import type { CursorPaginatedComments } from '$lib/server/queries';
+
+export type CommentsInfiniteData = InfiniteData<CursorPaginatedComments, number>;
 
 export function createCursorPaginatedCommentsQuery(
 	endpoint: string,

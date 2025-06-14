@@ -28,7 +28,7 @@ export const commentBaseQuery = db
 	.orderBy(desc(commentTable.createdAt))
 	.leftJoin(userTable, eq(commentTable.authorId, userTable.id));
 
-type CommentsBaseQueryResult = Awaited<typeof commentBaseQuery>;
+export type CommentsBaseQueryResult = Awaited<typeof commentBaseQuery>;
 export type CursorPaginatedComments = CursorPaginated<CommentsBaseQueryResult, 'comments'>;
 
 const searchParamsSchema = v.object({

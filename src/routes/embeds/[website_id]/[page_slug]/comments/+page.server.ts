@@ -1,66 +1,11 @@
-import { error, fail } from '@sveltejs/kit';
-import { and, eq } from 'drizzle-orm';
-import { message, superValidate } from 'sveltekit-superforms';
-import { valibot } from 'sveltekit-superforms/adapters';
+import { error } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
 import * as v from 'valibot';
 
 import { db } from '$lib/server/db';
-import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
+import { pageTable, websiteTable } from '$lib/server/db/schema';
 
-import type { Actions, PageServerLoad } from './$types';
-
-const schema = v.object({
-	comment: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
-});
-
-export const actions: Actions = {
-	default: async ({ request, params, locals }) => {
-		if (!locals.session) return fail(401);
-
-		const form = await superValidate(request, valibot(schema));
-		if (!form.valid) {
-			return message(form, 'Invalid comment!');
-		}
-
-		const page = (
-			await db
-				.select({
-					id: pageTable.id,
-					closed: pageTable.closed,
-					preModeration: pageTable.preModeration,
-					website: {
-						id: websiteTable.id,
-						ownerId: websiteTable.ownerId,
-						preModeration: websiteTable.preModeration,
-					},
-				})
-				.from(pageTable)
-				.where(
-					and(
-						eq(pageTable.slug, params.page_slug),
-						eq(pageTable.websiteId, Number(params.website_id))
-					)
-				)
-				.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
-				.limit(1)
-		)[0];
-		if (!page) return fail(400);
-		if (page.closed) return fail(401);
-
-		const insertResult = await db.insert(commentTable).values({
-			content: form.data.comment,
-			authorId: locals.session.user.id,
-			pageId: page.id,
-			websiteId: Number(params.website_id),
-			published:
-				page.website?.ownerId === locals.session.user.id ||
-				(!page.website?.preModeration && !page.preModeration),
-		});
-		if (insertResult.changes > 0) return message(form, 'Comment submitted successfully!');
-
-		return fail(500);
-	},
-};
+import type { PageServerLoad } from './$types';
 
 const searchParamsSchema = v.object({
 	name: v.pipe(v.string(), v.trim(), v.nonEmpty()),
@@ -80,7 +25,11 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 
 	const website = (
 		await db
-			.select({ id: websiteTable.id, ownerId: websiteTable.ownerId })
+			.select({
+				id: websiteTable.id,
+				ownerId: websiteTable.ownerId,
+				preModeration: websiteTable.preModeration,
+			})
 			.from(websiteTable)
 			.where(eq(websiteTable.id, websiteId))
 			.limit(1)
@@ -105,6 +54,9 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 		page,
 		permissions: {
 			create: !!loggedInUserId && !page.closed,
+			publish:
+				website.ownerId === locals.session?.user.id ||
+				(!website.preModeration && !page.preModeration),
 		},
 		searchParams,
 	};
