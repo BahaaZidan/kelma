@@ -1,23 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { superForm } from 'sveltekit-superforms';
 
 	import { route } from '$lib/__generated__/routes';
 	import { signOut } from '$lib/client/auth';
-	import Comment from '$lib/components/Comment.svelte';
+	import { createCursorPaginatedCommentsQuery } from '$lib/client/queries';
+	import CommentsList from '$lib/components/CommentsList.svelte';
 	import TextArea from '$lib/components/TextArea.svelte';
-	import { commentPermissions } from '$lib/permissions';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let comments = $derived(
-		data.comments.map((comment) => ({
-			...comment,
-			permissions: commentPermissions({ comment, session: data.session }),
-		}))
+
+	const query = createCursorPaginatedCommentsQuery(
+		route('GET /api/[website_id]/[page_id]/comments', {
+			website_id: data.page.websiteId,
+			page_id: data.page.id,
+		}),
+		['embeded_comments', data.page.id],
+		data.session
 	);
-	const superform = superForm(data.form);
 
 	function sendHeight() {
 		const height = document.body.scrollHeight;
@@ -35,11 +36,6 @@
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 	});
-
-	const redirect_url = `${route('/embeds/[website_id]/[page_slug]/comments', {
-		website_id: data.websiteId,
-		page_slug: data.pageSlug,
-	})}?url=${data.searchParams.url}&name=${data.searchParams.name}`;
 </script>
 
 <div class="flex flex-col items-center gap-2">
@@ -62,7 +58,8 @@
 			</span>
 		{/if}
 	</div>
-	<form method="post" use:superform.enhance class="flex w-full flex-col items-end gap-2">
+	<!-- <form method="post" class="flex w-full flex-col items-end gap-2">
+
 		<TextArea
 			{superform}
 			field="comment"
@@ -71,12 +68,8 @@
 			class="w-full"
 		/>
 		<button type="submit" class="btn">Submit</button>
-	</form>
-	<div class="flex w-full flex-col gap-4">
-		{#each comments as comment (comment.id)}
-			<Comment {...comment} {redirect_url} />
-		{/each}
-	</div>
+	</form> -->
+	<CommentsList {query} />
 	<span class="py-6">
 		Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
 	</span>

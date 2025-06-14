@@ -53,7 +53,7 @@ const searchParamsSchema = v.object({
 	),
 });
 
-export async function fetchCursorPaginatedComments(url: URL, where: SQL) {
+export async function fetchCursorPaginatedComments(url: URL, where?: SQL) {
 	const searchParamsValidation = v.safeParse(
 		searchParamsSchema,
 		Object.fromEntries(url.searchParams.entries())

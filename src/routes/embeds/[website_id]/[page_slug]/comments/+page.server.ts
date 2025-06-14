@@ -1,12 +1,11 @@
 import { error, fail } from '@sveltejs/kit';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { message, superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
 import { db } from '$lib/server/db';
 import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
-import { commentBaseQuery } from '$lib/server/queries';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -102,24 +101,8 @@ export const load: PageServerLoad = async ({ params, url, locals }) => {
 
 	const loggedInUserId = locals.session?.user.id;
 
-	const comments = await commentBaseQuery.where(
-		loggedInUserId
-			? or(
-					and(eq(commentTable.pageId, page.id), eq(commentTable.published, true)),
-					and(
-						eq(commentTable.pageId, page.id),
-						eq(commentTable.published, false),
-						eq(commentTable.authorId, loggedInUserId)
-					)
-				)
-			: and(eq(commentTable.pageId, page.id), eq(commentTable.published, true))
-	);
-
-	const form = await superValidate(valibot(schema));
-
 	return {
-		form,
-		comments,
+		page,
 		permissions: {
 			create: !!loggedInUserId && !page.closed,
 		},
