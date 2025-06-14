@@ -11,17 +11,18 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const isWebsiteOwner = locals.session?.websitesOwnedByCurrentUser?.includes(websiteId);
 	const loggedInUserId = locals.session?.user.id;
 
-	const where = isWebsiteOwner
-		? eq(commentTable.pageId, pageId)
-		: and(
-				eq(commentTable.pageId, pageId),
-				or(
+	const where = and(
+		eq(commentTable.pageId, pageId),
+		eq(commentTable.websiteId, websiteId),
+		!isWebsiteOwner
+			? or(
 					eq(commentTable.published, true),
 					loggedInUserId
 						? and(eq(commentTable.published, false), eq(commentTable.authorId, loggedInUserId))
 						: undefined
 				)
-			);
+			: undefined
+	);
 
 	const response = await fetchCursorPaginatedComments(url, where);
 	return response;
