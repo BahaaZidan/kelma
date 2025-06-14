@@ -2,17 +2,19 @@
 	import { ArrowLeftIcon } from '@lucide/svelte';
 
 	import { route } from '$lib/__generated__/routes';
-	import Comment from '$lib/components/Comment.svelte';
-	import { commentPermissions } from '$lib/permissions';
+	import { createCursorPaginatedCommentsQuery } from '$lib/client/queries';
+	import CommentsList from '$lib/components/CommentsList.svelte';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	let comments = $derived(
-		data.comments.map((comment) => ({
-			...comment,
-			permissions: commentPermissions({ comment, session: data.session }),
-		}))
+	const query = createCursorPaginatedCommentsQuery(
+		route('GET /api/[website_id]/[page_id]/comments', {
+			website_id: data.websiteId,
+			page_id: data.pageId,
+		}),
+		['console_page_comments', data.pageId],
+		data.session
 	);
 </script>
 
@@ -20,13 +22,5 @@
 	<a class="btn" href={route('/console/[website_id]/pages', { website_id: data.websiteId })}>
 		<ArrowLeftIcon /> Back to pages
 	</a>
-	{#each comments as comment (comment.id)}
-		<Comment
-			{...comment}
-			redirect_url={route('/console/[website_id]/pages/[page_id]/comments', {
-				page_id: data.pageId,
-				website_id: data.websiteId,
-			})}
-		/>
-	{/each}
+	<CommentsList {query} />
 </div>
