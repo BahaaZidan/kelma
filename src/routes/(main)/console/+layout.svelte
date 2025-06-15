@@ -10,7 +10,6 @@
 		MessageSquareIcon,
 		SettingsIcon,
 		UsersIcon,
-		WrenchIcon,
 		XIcon,
 	} from '@lucide/svelte';
 
@@ -112,14 +111,6 @@
 					</a>
 				</li>
 				<div class="divider"></div>
-				<li>
-					<a
-						class={{ 'menu-active': isActive('/[website_id]/tools') }}
-						href={route('/console/[website_id]/tools', { website_id: currentWebsite.id })}
-					>
-						<WrenchIcon size={menuIconSize} /> Tools
-					</a>
-				</li>
 				<li>
 					<a
 						class={{ 'menu-active': isActive('/[website_id]/settings') }}
