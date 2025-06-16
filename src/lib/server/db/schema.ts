@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { sql, type InferSelectModel } from 'drizzle-orm';
 import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const userTable = sqliteTable('user', {
@@ -75,6 +75,7 @@ export const websiteTable = sqliteTable('website', {
 		.default(sql`0`)
 		.notNull(),
 });
+export type WebsiteSelectModel = InferSelectModel<typeof websiteTable>;
 
 export const pageTable = sqliteTable(
 	'page',
@@ -95,6 +96,7 @@ export const pageTable = sqliteTable(
 	},
 	(self) => [uniqueIndex('slug_websiteId_uniq').on(self.slug, self.websiteId)]
 );
+export type PageSelectModel = InferSelectModel<typeof pageTable>;
 
 export const commentTable = sqliteTable('comment', {
 	id: integer('id').primaryKey(),
@@ -118,3 +120,4 @@ export const commentTable = sqliteTable('comment', {
 		.notNull()
 		.references(() => userTable.id, { onDelete: 'cascade' }),
 });
+export type CommentSelectModel = InferSelectModel<typeof commentTable>;
