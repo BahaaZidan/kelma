@@ -12,10 +12,8 @@ const schemaFiles = import.meta.glob('$lib/graphql/schema.graphql', {
 });
 const typeDefs = [Object.values(schemaFiles)[0] as string];
 
-const schema = createSchema<RequestEvent>({ typeDefs, resolvers });
-
 export const requestHandler = createYoga<RequestEvent>({
-	schema,
+	schema: createSchema({ typeDefs, resolvers }),
 	graphqlEndpoint: '/api/graphql',
 	fetchAPI: { Response },
 	context: (event) => ({ ...event, loaders: createLoaders() }),
