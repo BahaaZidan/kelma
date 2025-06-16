@@ -15,7 +15,11 @@ import {
 
 if (!DATABASE_URL) throw new Error('DATABASE_URL is not set');
 
-const client = new Database(DATABASE_URL);
+const client = new Database(DATABASE_URL, {
+	// verbose(message, ...additionalArgs) {
+	// 	console.log(message);
+	// },
+});
 
 export const db = drizzle(client, {
 	schema: {

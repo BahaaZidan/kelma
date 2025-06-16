@@ -1,0 +1,75 @@
+type Query {
+	website(id: Int!): Website
+}
+
+type Website implements Node {
+	id: ID!
+	name: String!
+	owner: User!
+	preModeration: Boolean!
+	domains: [String!]!
+	page(slug: String!, name: String!, url: URL!): Page
+}
+
+type Page implements Node {
+	id: ID!
+	slug: String!
+	website: Website!
+	name: String
+	url: URL
+	preModeration: Boolean!
+	closed: Boolean!
+	comments(last: Int, before: Int): CommentsConnection!
+}
+
+type CommentsConnection implements Connection {
+	pageInfo: PageInfo!
+	edges: [CommentEdge!]!
+}
+
+type CommentEdge implements Edge {
+	cursor: Int
+	node: Comment!
+}
+
+type Comment implements Node {
+	id: ID!
+	content: String!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	published: Boolean!
+	page: Page!
+	website: Website!
+	author: User!
+}
+
+type User implements Node {
+	id: ID!
+	name: String!
+	email: String!
+	image: String
+}
+
+type PageInfo {
+	startCursor: Int
+	endCursor: Int
+	hasNextPage: Boolean
+	hasPreviousPage: Boolean
+}
+
+interface Connection {
+	pageInfo: PageInfo!
+	edges: [Edge!]!
+}
+
+interface Node {
+	id: ID!
+}
+
+interface Edge {
+	cursor: Int
+	node: Node!
+}
+
+scalar DateTime
+scalar URL
