@@ -23,11 +23,7 @@ const config: IGraphQLConfig = {
 						scalars: {
 							ID: 'string | number',
 							DateTime: 'Date',
-							URL: {
-								input: 'string',
-								output: 'URL',
-							},
-							Cursor: 'number',
+							URL: 'URL',
 						},
 						mappers: {
 							Website: '$lib/server/db/schema#WebsiteSelectModel',

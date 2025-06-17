@@ -24,20 +24,34 @@ export const resolvers: Resolvers = {
 			return user;
 		},
 		page: async (parent, args) => {
+			const {
+				input: { slug, overrides },
+			} = args;
+
+			if (overrides) {
+				const page = (
+					await db
+						.insert(pageTable)
+						.values({
+							slug,
+							websiteId: parent.id,
+							name: overrides.name,
+							url: overrides.url.toString(),
+						})
+						.onConflictDoUpdate({
+							target: [pageTable.slug, pageTable.websiteId],
+							set: { name: overrides.name, url: overrides.url.toString() },
+						})
+						.returning()
+				)[0];
+				return page;
+			}
 			const page = (
 				await db
-					.insert(pageTable)
-					.values({
-						slug: args.slug,
-						websiteId: parent.id,
-						name: args.name,
-						url: args.url.toString(),
-					})
-					.onConflictDoUpdate({
-						target: [pageTable.slug, pageTable.websiteId],
-						set: { name: args.name, url: args.url.toString() },
-					})
-					.returning()
+					.select()
+					.from(pageTable)
+					.where(and(eq(pageTable.websiteId, parent.id), eq(pageTable.slug, slug)))
+					.limit(1)
 			)[0];
 			return page;
 		},
