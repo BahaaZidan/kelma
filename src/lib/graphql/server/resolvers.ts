@@ -125,6 +125,7 @@ export const resolvers: Resolvers = {
 					.where(
 						and(
 							eq(commentTable.id, input.commentId),
+							eq(commentTable.published, false),
 							inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser)
 						)
 					)
