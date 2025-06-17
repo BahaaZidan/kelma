@@ -19,7 +19,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: Date; output: Date; }
-  URL: { input: string; output: URL; }
+  URL: { input: URL; output: URL; }
 };
 
 export type Comment = Node & {
@@ -86,6 +86,16 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['Int']['output']>;
 };
 
+export type PageInput = {
+  overrides?: InputMaybe<PageOverrides>;
+  slug: Scalars['String']['input'];
+};
+
+export type PageOverrides = {
+  name: Scalars['String']['input'];
+  url: Scalars['URL']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
   website?: Maybe<Website>;
@@ -116,9 +126,7 @@ export type Website = Node & {
 
 
 export type WebsitePageArgs = {
-  name: Scalars['String']['input'];
-  slug: Scalars['String']['input'];
-  url: Scalars['URL']['input'];
+  input: PageInput;
 };
 
 
@@ -210,6 +218,8 @@ export type ResolversTypes = {
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   Page: ResolverTypeWrapper<PageSelectModel>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
+  PageInput: PageInput;
+  PageOverrides: PageOverrides;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
@@ -231,6 +241,8 @@ export type ResolversParentTypes = {
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   Page: PageSelectModel;
   PageInfo: PageInfo;
+  PageInput: PageInput;
+  PageOverrides: PageOverrides;
   Query: {};
   String: Scalars['String']['output'];
   URL: Scalars['URL']['output'];
@@ -324,7 +336,7 @@ export type WebsiteResolvers<ContextType = Context, ParentType extends Resolvers
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  page?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<WebsitePageArgs, 'name' | 'slug' | 'url'>>;
+  page?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<WebsitePageArgs, 'input'>>;
   preModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

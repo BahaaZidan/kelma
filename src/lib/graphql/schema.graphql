@@ -8,7 +8,17 @@ type Website implements Node {
 	owner: User!
 	preModeration: Boolean!
 	domains: [String!]!
-	page(slug: String!, name: String!, url: URL!): Page
+	page(input: PageInput!): Page
+}
+
+input PageInput {
+	slug: String!
+	overrides: PageOverrides
+}
+
+input PageOverrides {
+	name: String!
+	url: URL!
 }
 
 type Page implements Node {
