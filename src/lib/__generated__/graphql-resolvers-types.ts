@@ -51,9 +51,46 @@ export type Connection = {
   pageInfo: PageInfo;
 };
 
+export type CreateCommentInput = {
+  content: Scalars['String']['input'];
+  pageId: Scalars['Int']['input'];
+};
+
+export type DeleteCommentInput = {
+  commentId: Scalars['Int']['input'];
+};
+
 export type Edge = {
   cursor?: Maybe<Scalars['Int']['output']>;
   node: Node;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createComment: Comment;
+  deleteComment: Comment;
+  publishComment: Comment;
+  updateCommentContent: Comment;
+};
+
+
+export type MutationCreateCommentArgs = {
+  input: CreateCommentInput;
+};
+
+
+export type MutationDeleteCommentArgs = {
+  input: DeleteCommentInput;
+};
+
+
+export type MutationPublishCommentArgs = {
+  input: PublishCommentInput;
+};
+
+
+export type MutationUpdateCommentContentArgs = {
+  input: UpdateCommentContentInput;
 };
 
 export type Node = {
@@ -96,6 +133,10 @@ export type PageOverrides = {
   url: Scalars['URL']['input'];
 };
 
+export type PublishCommentInput = {
+  commentId: Scalars['Int']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
   website?: Maybe<Website>;
@@ -104,6 +145,11 @@ export type Query = {
 
 export type QueryWebsiteArgs = {
   id: Scalars['Int']['input'];
+};
+
+export type UpdateCommentContentInput = {
+  commentId: Scalars['Int']['input'];
+  content: Scalars['String']['input'];
 };
 
 export type User = Node & {
@@ -211,18 +257,23 @@ export type ResolversTypes = {
   CommentEdge: ResolverTypeWrapper<Omit<CommentEdge, 'node'> & { node: ResolversTypes['Comment'] }>;
   CommentsConnection: ResolverTypeWrapper<Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversTypes['CommentEdge']> }>;
   Connection: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Connection']>;
+  CreateCommentInput: CreateCommentInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  DeleteCommentInput: DeleteCommentInput;
   Edge: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Edge']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   Page: ResolverTypeWrapper<PageSelectModel>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PageInput: PageInput;
   PageOverrides: PageOverrides;
+  PublishCommentInput: PublishCommentInput;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
+  UpdateCommentContentInput: UpdateCommentContentInput;
   User: ResolverTypeWrapper<User>;
   Website: ResolverTypeWrapper<WebsiteSelectModel>;
 };
@@ -234,18 +285,23 @@ export type ResolversParentTypes = {
   CommentEdge: Omit<CommentEdge, 'node'> & { node: ResolversParentTypes['Comment'] };
   CommentsConnection: Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversParentTypes['CommentEdge']> };
   Connection: ResolversInterfaceTypes<ResolversParentTypes>['Connection'];
+  CreateCommentInput: CreateCommentInput;
   DateTime: Scalars['DateTime']['output'];
+  DeleteCommentInput: DeleteCommentInput;
   Edge: ResolversInterfaceTypes<ResolversParentTypes>['Edge'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   Page: PageSelectModel;
   PageInfo: PageInfo;
   PageInput: PageInput;
   PageOverrides: PageOverrides;
+  PublishCommentInput: PublishCommentInput;
   Query: {};
   String: Scalars['String']['output'];
   URL: Scalars['URL']['output'];
+  UpdateCommentContentInput: UpdateCommentContentInput;
   User: User;
   Website: WebsiteSelectModel;
 };
@@ -288,6 +344,13 @@ export type EdgeResolvers<ContextType = Context, ParentType extends ResolversPar
   __resolveType: TypeResolveFn<'CommentEdge', ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Node'], ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
+  deleteComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'input'>>;
+  publishComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationPublishCommentArgs, 'input'>>;
+  updateCommentContent?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
 };
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
@@ -348,6 +411,7 @@ export type Resolvers<ContextType = Context> = {
   Connection?: ConnectionResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Edge?: EdgeResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Page?: PageResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;

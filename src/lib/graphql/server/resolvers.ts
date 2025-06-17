@@ -1,19 +1,138 @@
-import { and, desc, eq, lt, or } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, or } from 'drizzle-orm';
+import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver } from 'graphql-scalars';
+import * as v from 'valibot';
 
 import type { Resolvers } from '$lib/__generated__/graphql-resolvers-types';
 import { db } from '$lib/server/db';
 import { commentTable, pageTable, userTable, websiteTable } from '$lib/server/db/schema';
 
+const schema = v.object({
+	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
+});
+
 export const resolvers: Resolvers = {
-	DateTime: DateTimeResolver,
-	URL: URLResolver,
 	Query: {
 		website: async (_parent, args) => {
 			const website = (
 				await db.select().from(websiteTable).where(eq(websiteTable.id, args.id)).limit(1)
 			)[0];
 			return website;
+		},
+	},
+	Mutation: {
+		createComment: async (_, { input }, { locals }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+			const inputValidation = v.safeParse(schema, input);
+			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
+
+			const page = (
+				await db
+					.select({
+						id: pageTable.id,
+						closed: pageTable.closed,
+						preModeration: pageTable.preModeration,
+						website: {
+							id: websiteTable.id,
+							ownerId: websiteTable.ownerId,
+							preModeration: websiteTable.preModeration,
+						},
+					})
+					.from(pageTable)
+					.where(eq(pageTable.id, input.pageId))
+					.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
+					.limit(1)
+			)[0];
+			if (!page) throw new GraphQLError('NOT_FOUND');
+			if (page.closed) throw new GraphQLError('UNAUTHORIZED');
+
+			const website = page.website!;
+			const insertResult = (
+				await db
+					.insert(commentTable)
+					.values({
+						content: inputValidation.output.content,
+						authorId: locals.session.user.id,
+						pageId: page.id,
+						websiteId: website.id,
+						published:
+							website.ownerId === locals.session.user.id ||
+							(!website.preModeration && !page.preModeration),
+					})
+					.returning()
+			)[0];
+			if (!insertResult) throw new GraphQLError('INTERNAL_SERVER_ERROR');
+
+			return insertResult;
+		},
+		deleteComment: async (_, { input }, { locals }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+
+			const deletedComment = (
+				await db
+					.delete(commentTable)
+					.where(
+						and(
+							eq(commentTable.id, input.commentId),
+							or(
+								eq(commentTable.authorId, locals.session.user.id),
+								inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser || [])
+							)
+						)
+					)
+					.returning()
+			)[0];
+
+			if (!deletedComment) throw new GraphQLError('UNAUTHORIZED');
+
+			return deletedComment;
+		},
+		updateCommentContent: async (_, { input }, { locals }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+			const inputValidation = v.safeParse(schema, input);
+			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
+
+			const updatedComment = (
+				await db
+					.update(commentTable)
+					.set({
+						content: inputValidation.output.content,
+						updatedAt: new Date(),
+					})
+					.where(
+						and(
+							eq(commentTable.id, input.commentId),
+							eq(commentTable.authorId, locals.session.user.id)
+						)
+					)
+					.returning()
+			)[0];
+
+			if (!updatedComment) throw new GraphQLError('UNAUTHORIZED');
+
+			return updatedComment;
+		},
+		publishComment: async (_, { input }, { locals }) => {
+			if (!locals.session?.websitesOwnedByCurrentUser?.length)
+				throw new GraphQLError('UNAUTHORIZED');
+
+			const updatedComment = (
+				await db
+					.update(commentTable)
+					.set({
+						published: true,
+					})
+					.where(
+						and(
+							eq(commentTable.id, input.commentId),
+							inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser)
+						)
+					)
+					.returning()
+			)[0];
+			if (!updatedComment) throw new GraphQLError('UNAUTHORIZED');
+
+			return updatedComment;
 		},
 	},
 	Website: {
@@ -123,4 +242,6 @@ export const resolvers: Resolvers = {
 			return website;
 		},
 	},
+	DateTime: DateTimeResolver,
+	URL: URLResolver,
 };

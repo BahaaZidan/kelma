@@ -2,6 +2,31 @@ type Query {
 	website(id: Int!): Website
 }
 
+type Mutation {
+	createComment(input: CreateCommentInput!): Comment!
+	deleteComment(input: DeleteCommentInput!): Comment!
+	updateCommentContent(input: UpdateCommentContentInput!): Comment!
+	publishComment(input: PublishCommentInput!): Comment!
+}
+
+input CreateCommentInput {
+	pageId: Int!
+	content: String!
+}
+
+input DeleteCommentInput {
+	commentId: Int!
+}
+
+input UpdateCommentContentInput {
+	commentId: Int!
+	content: String!
+}
+
+input PublishCommentInput {
+	commentId: Int!
+}
+
 type Website implements Node {
 	id: ID!
 	name: String!
