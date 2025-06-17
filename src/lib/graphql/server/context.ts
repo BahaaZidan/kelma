@@ -4,7 +4,7 @@ import { inArray } from 'drizzle-orm';
 import type { YogaInitialContext } from 'graphql-yoga';
 
 import { db } from '$lib/server/db';
-import { userTable } from '$lib/server/db/schema';
+import { pageTable, userTable, websiteTable } from '$lib/server/db/schema';
 
 export function createLoaders() {
 	return {
@@ -12,6 +12,19 @@ export function createLoaders() {
 			const usersIds = [...keys];
 			const users = await db.select().from(userTable).where(inArray(userTable.id, usersIds));
 			return users;
+		}),
+		pages: new DataLoader(async (keys: readonly number[]) => {
+			const pageIds = [...keys];
+			const pages = await db.select().from(pageTable).where(inArray(pageTable.id, pageIds));
+			return pages;
+		}),
+		websites: new DataLoader(async (keys: readonly number[]) => {
+			const websiteIds = [...keys];
+			const websites = await db
+				.select()
+				.from(websiteTable)
+				.where(inArray(websiteTable.id, websiteIds));
+			return websites;
 		}),
 	};
 }

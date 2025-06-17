@@ -44,10 +44,9 @@ export const resolvers: Resolvers = {
 	},
 	Page: {
 		comments: async (parent, args, context) => {
-			const websiteId = parent.websiteId;
-			const pageId = parent.id;
-			const isWebsiteOwner =
-				context.locals.session?.websitesOwnedByCurrentUser?.includes(websiteId);
+			const isWebsiteOwner = context.locals.session?.websitesOwnedByCurrentUser?.includes(
+				parent.websiteId
+			);
 			const loggedInUserId = context.locals.session?.user.id;
 
 			const cursor = args.before;
@@ -60,8 +59,8 @@ export const resolvers: Resolvers = {
 				.where(
 					and(
 						and(
-							eq(commentTable.pageId, pageId),
-							eq(commentTable.websiteId, websiteId),
+							eq(commentTable.pageId, parent.id),
+							eq(commentTable.websiteId, parent.websiteId),
 							!isWebsiteOwner
 								? or(
 										eq(commentTable.published, true),
@@ -85,14 +84,29 @@ export const resolvers: Resolvers = {
 				edges: comments.map((c) => ({ node: c, cursor: c.id })),
 				pageInfo: {
 					hasPreviousPage: commentsWExtraOne.length > comments.length,
+					startCursor: comments[comments.length - 1].id,
 				},
 			};
+		},
+		website: async (parent) => {
+			const website = (
+				await db.select().from(websiteTable).where(eq(websiteTable.id, parent.websiteId)).limit(1)
+			)[0];
+			return website;
 		},
 	},
 	Comment: {
 		author: async (parent, _args, context) => {
 			const user = await context.loaders.users.load(parent.authorId);
 			return user;
+		},
+		page: async (parent, _args, context) => {
+			const page = await context.loaders.pages.load(parent.pageId);
+			return page;
+		},
+		website: async (parent, _args, context) => {
+			const website = await context.loaders.websites.load(parent.websiteId);
+			return website;
 		},
 	},
 };
