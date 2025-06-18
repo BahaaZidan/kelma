@@ -183,8 +183,8 @@ export const resolvers: Resolvers = {
 			);
 			const loggedInUserId = context.locals.session?.user.id;
 
-			const cursor = args.before;
-			const pageSize = args.last || 10;
+			const cursor = args.after;
+			const pageSize = args.first || 10;
 
 			const commentsWExtraOne = await db
 				.select()
@@ -217,8 +217,8 @@ export const resolvers: Resolvers = {
 			return {
 				edges: comments.map((c) => ({ node: c, cursor: c.id })),
 				pageInfo: {
-					hasPreviousPage: commentsWExtraOne.length > comments.length,
-					startCursor: comments[comments.length - 1].id,
+					hasNextPage: commentsWExtraOne.length > comments.length,
+					endCursor: comments[comments.length - 1].id,
 				},
 			};
 		},
