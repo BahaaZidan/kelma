@@ -49,24 +49,6 @@ const PAGES = {
  * SERVERS
  */
 const SERVERS = {
-  "GET /api/[website_id]/[page_id]/comments": (params: { website_id: (string | number), page_id: (string | number) }) => {
-    return `/api/${params['website_id']}/${params['page_id']}/comments`
-  },
-  "POST /api/[website_id]/[page_id]/comments": (params: { website_id: (string | number), page_id: (string | number) }) => {
-    return `/api/${params['website_id']}/${params['page_id']}/comments`
-  },
-  "GET /api/[website_id]/comments": (params: { website_id: (string | number) }) => {
-    return `/api/${params['website_id']}/comments`
-  },
-  "PUT /api/comments/[comment_id]": (params: { comment_id: (string | number) }) => {
-    return `/api/comments/${params['comment_id']}`
-  },
-  "DELETE /api/comments/[comment_id]": (params: { comment_id: (string | number) }) => {
-    return `/api/comments/${params['comment_id']}`
-  },
-  "PATCH /api/comments/[comment_id]": (params: { comment_id: (string | number) }) => {
-    return `/api/comments/${params['comment_id']}`
-  },
   "GET /api/graphql": `/api/graphql`,
   "POST /api/graphql": `/api/graphql`,
   "OPTIONS /api/graphql": `/api/graphql`
@@ -198,8 +180,8 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 */
 export type KIT_ROUTES = {
   PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/console/[website_id]/comments': 'website_id', '/console/[website_id]/install': 'website_id', '/console/[website_id]/newsletter': 'website_id', '/console/[website_id]/pages': 'website_id', '/console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', '/console/[website_id]/settings': 'website_id', '/console/[website_id]/users': 'website_id', '/console/billing': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id', '/embeds/login': never }
-  SERVERS: { 'GET /api/[website_id]/[page_id]/comments': 'website_id' | 'page_id', 'POST /api/[website_id]/[page_id]/comments': 'website_id' | 'page_id', 'GET /api/[website_id]/comments': 'website_id', 'PUT /api/comments/[comment_id]': 'comment_id', 'DELETE /api/comments/[comment_id]': 'comment_id', 'PATCH /api/comments/[comment_id]': 'comment_id', 'GET /api/graphql': never, 'POST /api/graphql': never, 'OPTIONS /api/graphql': never }
+  SERVERS: { 'GET /api/graphql': never, 'POST /api/graphql': never, 'OPTIONS /api/graphql': never }
   ACTIONS: { 'default /console': never, 'default /console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', 'default /console/[website_id]/settings': 'website_id' }
   LINKS: Record<string, never>
-  Params: { 'website_id': never, 'page_id': never, 'page_slug': never, 'comment_id': never }
+  Params: { 'website_id': never, 'page_id': never, 'page_slug': never }
 }
