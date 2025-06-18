@@ -7,7 +7,6 @@
 		FileTextIcon,
 		HouseIcon,
 		MailIcon,
-		MessageSquareIcon,
 		SettingsIcon,
 		UsersIcon,
 		XIcon,
@@ -76,14 +75,6 @@
 						href={route('/console/[website_id]', { website_id: currentWebsite.id })}
 					>
 						<ChartColumnIncreasingIcon size={menuIconSize} /> Overview
-					</a>
-				</li>
-				<li>
-					<a
-						class={{ 'menu-active': isActive('/[website_id]/comments') }}
-						href={route('/console/[website_id]/comments', { website_id: currentWebsite.id })}
-					>
-						<MessageSquareIcon size={menuIconSize} /> Comments
 					</a>
 				</li>
 				<li>
