@@ -1,28 +1,67 @@
 <script lang="ts">
-	import { createMutation, useQueryClient } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
+
+	import { graphql } from '$houdini';
 
 	import { route } from '$lib/__generated__/routes';
 	import { signOut } from '$lib/client/auth';
-	import {
-		createCursorPaginatedCommentsQuery,
-		type CommentsInfiniteData,
-	} from '$lib/client/queries';
-	import { revertOptimisticUpdate } from '$lib/client/query';
-	import CommentsList from '$lib/components/CommentsList.svelte';
-	import type { CommentsBaseQueryResult } from '$lib/server/queries';
+	import Comment from '$lib/components/Comment.svelte';
+	import { fromGlobalId } from '$lib/global-id-utils';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	const query = createCursorPaginatedCommentsQuery(
-		route('GET /api/[website_id]/[page_id]/comments', {
-			website_id: data.page.websiteId,
-			page_id: data.page.id,
-		}),
-		['embeded_comments', data.page.id],
-		data.session
+	let query = graphql(`
+		query BigWebsiteQuery($websiteId: Int!, $pageInput: PageInput!) {
+			website(id: $websiteId) {
+				id
+				name
+				owner {
+					id
+				}
+				preModeration
+				page(input: $pageInput) {
+					id
+					preModeration
+					closed
+					url
+					comments(first: 10) @paginate(name: "Embed_Comments") {
+						edges {
+							node {
+								id
+								content
+								createdAt
+								published
+								author {
+									id
+									name
+									image
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	`);
+	onMount(async () => {
+		await query.fetch({ variables: data.queryVariables });
+	});
+
+	let website = $derived($query.data?.website);
+
+	let permissions = $derived({
+		create: !!data.session?.user && !website?.page?.closed,
+		publish:
+			website?.owner.id === data.session?.user.id ||
+			(!website?.preModeration && !website?.page?.preModeration),
+	});
+
+	let loggedInUserId = $derived(data.session?.user.id);
+	let websitesOwnedByLoggedInUser = $derived(data.session?.websitesOwnedByCurrentUser || []);
+	let isWebsiteOwner = $derived(
+		website?.id ? websitesOwnedByLoggedInUser.includes(Number(fromGlobalId(website.id).id)) : false
 	);
 
 	function sendHeight() {
@@ -44,68 +83,16 @@
 
 	let commentValue = $state('');
 
-	const queryClient = useQueryClient();
-	const createCommentMutation = createMutation({
-		mutationFn: async () => {
-			const res = await fetch(
-				route('POST /api/[website_id]/[page_id]/comments', {
-					website_id: data.page.websiteId,
-					page_id: data.page.id,
-				}),
-				{
-					method: 'POST',
-					body: JSON.stringify({ comment: commentValue }),
-				}
-			);
-			if (!res.ok) throw new Error();
-
-			return (await res.json())?.comment as CommentsBaseQueryResult[number];
-		},
-		onMutate: async () => {
-			const queryKey = ['comments', 'embeded_comments', data.page.id];
-			await queryClient.cancelQueries({ queryKey });
-
-			const previousData = queryClient.getQueriesData<CommentsInfiniteData>({
-				queryKey,
-			});
-
-			const tempId = new Date().getTime();
-
-			previousData.forEach(([queryKey, oldData]) => {
-				if (!oldData) return;
-				const newData: CommentsInfiniteData = {
-					...oldData,
-					pages: oldData.pages.map((page, i) => {
-						const optimisticComment: CommentsBaseQueryResult[number] = {
-							id: tempId,
-							content: commentValue,
-							createdAt: new Date(),
-							websiteId: data.page.websiteId,
-							published: data.permissions.publish,
-							author: {
-								id: data.session!.user.id,
-								image: data.session!.user.image as string,
-								name: data.session!.user.name,
-							},
-						};
-						return {
-							...page,
-							comments: i === 0 ? [optimisticComment, ...page.comments] : page.comments,
-						};
-					}),
-				};
-				queryClient.setQueryData<CommentsInfiniteData>(queryKey, newData);
-			});
-
-			return { previousData, tempId };
-		},
-		onError: revertOptimisticUpdate(queryClient),
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: ['comments', 'embeded_comments', data.page.id],
-			});
-		},
-	});
+	const CreateComment = graphql(`
+		mutation CreateComment($input: CreateCommentInput!) {
+			createComment(input: $input) {
+				id
+				content
+				createdAt
+				...Embed_Comments_insert @prepend
+			}
+		}
+	`);
 </script>
 
 <div class="flex flex-col items-center gap-2">
@@ -120,7 +107,7 @@
 				You must <a
 					class="link font-bold"
 					target="_top"
-					href="{route('/embeds/login')}?callback_url={data.searchParams.url}"
+					href="{route('/embeds/login')}?callback_url={website?.page?.url}"
 				>
 					login
 				</a>
@@ -134,22 +121,49 @@
 				placeholder="Comment"
 				class="textarea w-full"
 				bind:value={commentValue}
-				disabled={!data.permissions.create}
+				disabled={!permissions.create}
 			></textarea>
 			<span>Comment</span>
 		</label>
 		<button
 			class="btn"
-			onclick={() => {
-				$createCommentMutation.mutateAsync().then(() => {
-					commentValue = '';
+			onclick={async () => {
+				if (!website) return;
+				await CreateComment.mutate({
+					input: { pageId: website.page.id, content: commentValue },
 				});
+				commentValue = '';
 			}}
 		>
 			Submit
 		</button>
 	</div>
-	<CommentsList {query} />
+	{#if website}
+		<div class="flex w-full flex-col gap-4 px-2">
+			{#each website.page.comments.edges as { node } (node.id)}
+				<Comment
+					{...node}
+					permissions={{
+						delete: fromGlobalId(node.author.id).id === loggedInUserId || isWebsiteOwner,
+						edit: fromGlobalId(node.author.id).id === loggedInUserId,
+						approve: !node.published && isWebsiteOwner,
+					}}
+				/>
+			{/each}
+
+			<button
+				class="btn"
+				onclick={() => query.loadNextPage()}
+				disabled={!$query.pageInfo.hasNextPage || $query.fetching}
+			>
+				{#if $query.fetching}
+					Loading more...
+				{:else if $query.pageInfo.hasNextPage}
+					Load More
+				{:else}Nothing more to load{/if}
+			</button>
+		</div>
+	{/if}
 	<span class="py-6">
 		Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
 	</span>
