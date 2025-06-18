@@ -259,10 +259,10 @@ export const resolvers: Resolvers = {
 			const comments = commentsWExtraOne.slice(0, pageSize);
 
 			return {
-				edges: comments.map((c) => ({ node: c, cursor: c.id })),
+				edges: comments.map((c) => ({ node: c, cursor: toGlobalId('Comment', c.id) })),
 				pageInfo: {
 					hasNextPage: commentsWExtraOne.length > comments.length,
-					endCursor: comments[comments.length - 1].id,
+					endCursor: toGlobalId('Comment', comments[comments.length - 1].id),
 				},
 			};
 		},
