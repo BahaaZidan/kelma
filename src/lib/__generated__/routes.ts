@@ -14,9 +14,6 @@ const PAGES = {
   "/console/[website_id]": (params: { website_id: (string | number) }) => {
     return `/console/${params['website_id']}`
   },
-  "/console/[website_id]/comments": (params: { website_id: (string | number) }) => {
-    return `/console/${params['website_id']}/comments`
-  },
   "/console/[website_id]/install": (params: { website_id: (string | number) }) => {
     return `/console/${params['website_id']}/install`
   },
@@ -179,7 +176,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/console/[website_id]/comments': 'website_id', '/console/[website_id]/install': 'website_id', '/console/[website_id]/newsletter': 'website_id', '/console/[website_id]/pages': 'website_id', '/console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', '/console/[website_id]/settings': 'website_id', '/console/[website_id]/users': 'website_id', '/console/billing': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id', '/embeds/login': never }
+  PAGES: { '/': never, '/console': never, '/console/[website_id]': 'website_id', '/console/[website_id]/install': 'website_id', '/console/[website_id]/newsletter': 'website_id', '/console/[website_id]/pages': 'website_id', '/console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', '/console/[website_id]/settings': 'website_id', '/console/[website_id]/users': 'website_id', '/console/billing': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/[website_id]/newsletter': 'website_id', '/embeds/login': never }
   SERVERS: { 'GET /api/graphql': never, 'POST /api/graphql': never, 'OPTIONS /api/graphql': never }
   ACTIONS: { 'default /console': never, 'default /console/[website_id]/pages/[page_id]/edit': 'website_id' | 'page_id', 'default /console/[website_id]/settings': 'website_id' }
   LINKS: Record<string, never>

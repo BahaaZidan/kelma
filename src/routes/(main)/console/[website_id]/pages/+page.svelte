@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		EllipsisVerticalIcon,
-		MessageSquareIcon,
-		Settings2Icon,
-		Trash2Icon,
-	} from '@lucide/svelte';
+	import { EllipsisVerticalIcon, Settings2Icon, Trash2Icon } from '@lucide/svelte';
 
 	import { route } from '$lib/__generated__/routes';
 
@@ -23,7 +18,6 @@
 				<th>Id</th>
 				<th>Name</th>
 				<th>Link</th>
-				<th>Comments</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -43,22 +37,6 @@
 					<td>{page.slug}</td>
 					<td>{page.name}</td>
 					<td><a href={page.url} class="link">{page.url}</a></td>
-					<td>
-						{#if page.commentsCount}
-							<a
-								class="btn"
-								href={route('/console/[website_id]/pages/[page_id]/comments', {
-									page_id: page.id,
-									website_id: data.websiteId,
-								})}
-							>
-								<MessageSquareIcon />
-								{page.commentsCount}
-							</a>
-						{:else}
-							<button class="btn" disabled><MessageSquareIcon /> 0</button>
-						{/if}
-					</td>
 					<td>
 						<a
 							class="btn"
