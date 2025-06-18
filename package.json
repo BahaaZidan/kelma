@@ -28,7 +28,7 @@
 		"@ianvs/prettier-plugin-sort-imports": "^4.4.1",
 		"@lucide/svelte": "^0.511.0",
 		"@sveltejs/adapter-node": "^5.2.12",
-		"@sveltejs/kit": "^2.16.0",
+		"@sveltejs/kit": "<=2.21.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
@@ -41,6 +41,8 @@
 		"eslint-plugin-svelte": "^3.0.0",
 		"globals": "^16.0.0",
 		"graphql-config": "^5.1.5",
+		"houdini": "^1.5.7",
+		"houdini-svelte": "^2.1.17",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
 		"prettier-plugin-tailwindcss": "^0.6.11",
@@ -65,7 +67,9 @@
 		"drizzle-orm": "^0.40.0",
 		"graphql": "^16.11.0",
 		"graphql-scalars": "^1.24.2",
-		"graphql-yoga": "^5.13.5"
+		"graphql-yoga": "^5.13.5",
+		"js-base64": "^3.7.7",
+		"svelte2tsx": "^0.7.39"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
