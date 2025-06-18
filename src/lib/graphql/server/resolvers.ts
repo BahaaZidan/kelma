@@ -251,7 +251,7 @@ export const resolvers: Resolvers = {
 									)
 								: undefined
 						),
-						cursor ? lt(commentTable.id, cursor) : undefined
+						cursor ? lt(commentTable.id, Number(fromGlobalId(cursor).id)) : undefined
 					)
 				)
 				.limit(pageSize + 1);
