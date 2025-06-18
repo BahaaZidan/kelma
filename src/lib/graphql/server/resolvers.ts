@@ -7,12 +7,43 @@ import type { Resolvers } from '$lib/__generated__/graphql-resolvers-types';
 import { db } from '$lib/server/db';
 import { commentTable, pageTable, userTable, websiteTable } from '$lib/server/db/schema';
 
+import { fromGlobalId, toGlobalId } from './utils';
+
 const schema = v.object({
 	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
 });
 
 export const resolvers: Resolvers = {
 	Query: {
+		node: async (_parent, { id }) => {
+			const { type, id: dbId } = fromGlobalId(id);
+			switch (type) {
+				case 'User': {
+					const user = await db.query.user.findFirst({ where: (t, { eq }) => eq(t.id, dbId) });
+					return user ? { ...user, __typename: 'User' } : null;
+				}
+				case 'Website': {
+					const website = await db.query.website.findFirst({
+						where: (t, { eq }) => eq(t.id, Number(dbId)),
+					});
+					return website ? { ...website, __typename: 'Website' } : null;
+				}
+				case 'Page': {
+					const page = await db.query.page.findFirst({
+						where: (t, { eq }) => eq(t.id, Number(dbId)),
+					});
+					return page ? { ...page, __typename: 'Page' } : null;
+				}
+				case 'Comment': {
+					const comment = await db.query.comment.findFirst({
+						where: (t, { eq }) => eq(t.id, Number(dbId)),
+					});
+					return comment ? { ...comment, __typename: 'Comment' } : null;
+				}
+				default:
+					return null;
+			}
+		},
 		website: async (_parent, args) => {
 			const website = (
 				await db.select().from(websiteTable).where(eq(websiteTable.id, args.id)).limit(1)
@@ -136,7 +167,17 @@ export const resolvers: Resolvers = {
 			return updatedComment;
 		},
 	},
+	Node: {
+		__resolveType(obj) {
+			// @ts-expect-error TODO
+			return obj.__typename;
+		},
+	},
+	User: {
+		id: (parent) => toGlobalId('User', parent.id),
+	},
 	Website: {
+		id: (parent) => toGlobalId('Website', parent.id),
 		owner: async (parent) => {
 			const user = (
 				await db.select().from(userTable).where(eq(userTable.id, parent.ownerId)).limit(1)
@@ -177,6 +218,7 @@ export const resolvers: Resolvers = {
 		},
 	},
 	Page: {
+		id: (parent) => toGlobalId('Page', parent.id),
 		comments: async (parent, args, context) => {
 			const isWebsiteOwner = context.locals.session?.websitesOwnedByCurrentUser?.includes(
 				parent.websiteId
@@ -230,6 +272,7 @@ export const resolvers: Resolvers = {
 		},
 	},
 	Comment: {
+		id: (parent) => toGlobalId('Comment', parent.id),
 		author: async (parent, _args, context) => {
 			const user = await context.loaders.users.load(parent.authorId);
 			return user;
