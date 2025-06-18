@@ -4,10 +4,9 @@ import { DateTimeResolver, URLResolver } from 'graphql-scalars';
 import * as v from 'valibot';
 
 import type { Resolvers } from '$lib/__generated__/graphql-resolvers-types';
+import { fromGlobalId, toGlobalId } from '$lib/global-id-utils';
 import { db } from '$lib/server/db';
 import { commentTable, pageTable, userTable, websiteTable } from '$lib/server/db/schema';
-
-import { fromGlobalId, toGlobalId } from './utils';
 
 const schema = v.object({
 	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
@@ -57,6 +56,8 @@ export const resolvers: Resolvers = {
 			const inputValidation = v.safeParse(schema, input);
 			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
 
+			const pageId = Number(fromGlobalId(input.pageId).id);
+
 			const page = (
 				await db
 					.select({
@@ -70,7 +71,7 @@ export const resolvers: Resolvers = {
 						},
 					})
 					.from(pageTable)
-					.where(eq(pageTable.id, input.pageId))
+					.where(eq(pageTable.id, pageId))
 					.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
 					.limit(1)
 			)[0];
@@ -99,12 +100,14 @@ export const resolvers: Resolvers = {
 		deleteComment: async (_, { input }, { locals }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 
+			const commentId = Number(fromGlobalId(input.commentId).id);
+
 			const deletedComment = (
 				await db
 					.delete(commentTable)
 					.where(
 						and(
-							eq(commentTable.id, input.commentId),
+							eq(commentTable.id, commentId),
 							or(
 								eq(commentTable.authorId, locals.session.user.id),
 								inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser || [])
@@ -122,6 +125,7 @@ export const resolvers: Resolvers = {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 			const inputValidation = v.safeParse(schema, input);
 			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
+			const commentId = Number(fromGlobalId(input.commentId).id);
 
 			const updatedComment = (
 				await db
@@ -131,10 +135,7 @@ export const resolvers: Resolvers = {
 						updatedAt: new Date(),
 					})
 					.where(
-						and(
-							eq(commentTable.id, input.commentId),
-							eq(commentTable.authorId, locals.session.user.id)
-						)
+						and(eq(commentTable.id, commentId), eq(commentTable.authorId, locals.session.user.id))
 					)
 					.returning()
 			)[0];
@@ -146,6 +147,7 @@ export const resolvers: Resolvers = {
 		publishComment: async (_, { input }, { locals }) => {
 			if (!locals.session?.websitesOwnedByCurrentUser?.length)
 				throw new GraphQLError('UNAUTHORIZED');
+			const commentId = Number(fromGlobalId(input.commentId).id);
 
 			const updatedComment = (
 				await db
@@ -155,7 +157,7 @@ export const resolvers: Resolvers = {
 					})
 					.where(
 						and(
-							eq(commentTable.id, input.commentId),
+							eq(commentTable.id, commentId),
 							eq(commentTable.published, false),
 							inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser)
 						)

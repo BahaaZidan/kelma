@@ -11,21 +11,21 @@ type Mutation {
 }
 
 input CreateCommentInput {
-	pageId: Int!
+	pageId: ID!
 	content: String!
 }
 
 input DeleteCommentInput {
-	commentId: Int!
+	commentId: ID!
 }
 
 input UpdateCommentContentInput {
-	commentId: Int!
+	commentId: ID!
 	content: String!
 }
 
 input PublishCommentInput {
-	commentId: Int!
+	commentId: ID!
 }
 
 type Website implements Node {
