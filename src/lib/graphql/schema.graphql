@@ -55,7 +55,7 @@ type Page implements Node {
 	url: URL
 	preModeration: Boolean!
 	closed: Boolean!
-	comments(first: Int, after: Int): CommentsConnection!
+	comments(first: Int, after: String): CommentsConnection!
 }
 
 type CommentsConnection implements Connection {
