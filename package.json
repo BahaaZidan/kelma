@@ -14,14 +14,15 @@
 		"lint": "prettier --check . && eslint .",
 		"db:push": "drizzle-kit push",
 		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio"
+		"db:studio": "drizzle-kit studio",
+		"graphql:gen": "graphql-codegen",
+		"predev": "pnpm graphql:gen"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
 		"@graphql-codegen/add": "^5.0.3",
 		"@graphql-codegen/cli": "^5.0.7",
-		"@graphql-codegen/plugin-helpers": "^5.1.1",
 		"@graphql-codegen/typescript": "^4.1.6",
 		"@graphql-codegen/typescript-resolvers": "^4.5.1",
 		"@ianvs/prettier-plugin-sort-imports": "^4.4.1",
@@ -52,7 +53,8 @@
 		"typescript-eslint": "^8.20.0",
 		"valibot": "^1.1.0",
 		"vite": "^6.2.6",
-		"vite-plugin-kit-routes": "^0.8.4"
+		"vite-plugin-kit-routes": "^0.8.4",
+		"vite-plugin-watch-and-run": "^1.7.5"
 	},
 	"dependencies": {
 		"@tanstack/svelte-query": "^5.80.7",
