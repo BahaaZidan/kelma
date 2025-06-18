@@ -64,7 +64,7 @@ type CommentsConnection implements Connection {
 }
 
 type CommentEdge implements Edge {
-	cursor: Int
+	cursor: String
 	node: Comment!
 }
 
@@ -87,8 +87,8 @@ type User implements Node {
 }
 
 type PageInfo {
-	startCursor: Int
-	endCursor: Int
+	startCursor: String
+	endCursor: String
 	hasNextPage: Boolean
 	hasPreviousPage: Boolean
 }
@@ -103,7 +103,7 @@ interface Node {
 }
 
 interface Edge {
-	cursor: Int
+	cursor: String
 	node: Node!
 }
 
