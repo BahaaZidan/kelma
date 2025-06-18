@@ -2,7 +2,8 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 import type { IGraphQLConfig } from 'graphql-config';
 
 const config: IGraphQLConfig = {
-	schema: 'src/lib/graphql/schema.graphql',
+	schema: ['src/lib/graphql/schema.graphql', '.houdini/graphql/schema.graphql'],
+	documents: ['**/*.graphql', '**/*.gql', '**/*.svelte', './.houdini/graphql/documents.gql'],
 	extensions: {
 		codegen: {
 			generates: {
@@ -17,11 +18,10 @@ const config: IGraphQLConfig = {
 						'typescript-resolvers',
 					],
 					config: {
-						// defaultMapper: 'Partial<{T}>',
 						useTypeImports: true,
 						contextType: '$lib/graphql/server/context#Context',
 						scalars: {
-							ID: 'string | number',
+							ID: 'string',
 							DateTime: 'Date',
 							URL: 'URL',
 						},
