@@ -3,7 +3,7 @@ import type { IGraphQLConfig } from 'graphql-config';
 
 const config: IGraphQLConfig = {
 	schema: ['src/lib/graphql/schema.graphql', '.houdini/graphql/schema.graphql'],
-	documents: ['**/*.graphql', '**/*.gql', '**/*.svelte', './.houdini/graphql/documents.gql'],
+	documents: ['**/*.gql', '**/*.svelte', './.houdini/graphql/documents.gql'],
 	extensions: {
 		codegen: {
 			generates: {

@@ -9,10 +9,10 @@ const config = {
 	},
 	scalars: {
 		DateTime: {
-			type: 'Date',
+			type: 'string',
 		},
 		URL: {
-			type: 'URL',
+			type: 'string',
 		},
 	},
 };
