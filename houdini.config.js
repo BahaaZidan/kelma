@@ -7,6 +7,14 @@ const config = {
 	plugins: {
 		'houdini-svelte': {},
 	},
+	scalars: {
+		DateTime: {
+			type: 'Date',
+		},
+		URL: {
+			type: 'URL',
+		},
+	},
 };
 
 export default config;

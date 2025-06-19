@@ -335,6 +335,10 @@ export type ResolversParentTypes = {
   Website: WebsiteSelectModel;
 };
 
+export type Comment_DeleteDirectiveArgs = { };
+
+export type Comment_DeleteDirectiveResolver<Result, Parent, ContextType = Context, Args = Comment_DeleteDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
 export type AllListsDirectiveArgs = { };
 
 export type AllListsDirectiveResolver<Result, Parent, ContextType = Context, Args = AllListsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
@@ -549,6 +553,7 @@ export type Resolvers<ContextType = Context> = {
 };
 
 export type DirectiveResolvers<ContextType = Context> = {
+  Comment_delete?: Comment_DeleteDirectiveResolver<any, any, ContextType>;
   allLists?: AllListsDirectiveResolver<any, any, ContextType>;
   append?: AppendDirectiveResolver<any, any, ContextType>;
   arguments?: ArgumentsDirectiveResolver<any, any, ContextType>;
