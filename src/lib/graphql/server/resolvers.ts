@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lt, or } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, not, or } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver } from 'graphql-scalars';
 import * as v from 'valibot';
@@ -172,6 +172,46 @@ export const resolvers: Resolvers = {
 			if (!updatedComment) throw new GraphQLError('UNAUTHORIZED');
 
 			return updatedComment;
+		},
+		togglePageClosed: async (_, args, { locals }) => {
+			if (!locals.session?.websitesOwnedByCurrentUser?.length)
+				throw new GraphQLError('UNAUTHORIZED');
+
+			const pageDBId = Number(fromGlobalId(args.id).id);
+			const updatedPage = (
+				await db
+					.update(pageTable)
+					.set({ closed: not(pageTable.closed) })
+					.where(
+						and(
+							eq(pageTable.id, pageDBId),
+							inArray(pageTable.websiteId, locals.session.websitesOwnedByCurrentUser)
+						)
+					)
+					.returning()
+			)[0];
+
+			return updatedPage;
+		},
+		togglePagePreModeration: async (_, args, { locals }) => {
+			if (!locals.session?.websitesOwnedByCurrentUser?.length)
+				throw new GraphQLError('UNAUTHORIZED');
+
+			const pageDBId = Number(fromGlobalId(args.id).id);
+			const updatedPage = (
+				await db
+					.update(pageTable)
+					.set({ preModeration: not(pageTable.preModeration) })
+					.where(
+						and(
+							eq(pageTable.id, pageDBId),
+							inArray(pageTable.websiteId, locals.session.websitesOwnedByCurrentUser)
+						)
+					)
+					.returning()
+			)[0];
+
+			return updatedPage;
 		},
 	},
 	Node: {

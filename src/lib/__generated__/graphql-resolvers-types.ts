@@ -82,9 +82,11 @@ export type Edge = {
 export type Mutation = {
   __typename?: 'Mutation';
   createComment: Comment;
-  deleteComment: Comment;
-  publishComment: Comment;
-  updateCommentContent: Comment;
+  deleteComment?: Maybe<Comment>;
+  publishComment?: Maybe<Comment>;
+  togglePageClosed?: Maybe<Page>;
+  togglePagePreModeration?: Maybe<Page>;
+  updateCommentContent?: Maybe<Comment>;
 };
 
 
@@ -100,6 +102,16 @@ export type MutationDeleteCommentArgs = {
 
 export type MutationPublishCommentArgs = {
   input: PublishCommentInput;
+};
+
+
+export type MutationTogglePageClosedArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationTogglePagePreModerationArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -478,9 +490,11 @@ export type EdgeResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
-  deleteComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'input'>>;
-  publishComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationPublishCommentArgs, 'input'>>;
-  updateCommentContent?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
+  deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'input'>>;
+  publishComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationPublishCommentArgs, 'input'>>;
+  togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
+  togglePagePreModeration?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePagePreModerationArgs, 'id'>>;
+  updateCommentContent?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
 };
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {

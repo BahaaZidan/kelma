@@ -5,9 +5,11 @@ type Query {
 
 type Mutation {
 	createComment(input: CreateCommentInput!): Comment!
-	deleteComment(input: DeleteCommentInput!): Comment!
-	updateCommentContent(input: UpdateCommentContentInput!): Comment!
-	publishComment(input: PublishCommentInput!): Comment!
+	deleteComment(input: DeleteCommentInput!): Comment
+	updateCommentContent(input: UpdateCommentContentInput!): Comment
+	publishComment(input: PublishCommentInput!): Comment
+	togglePagePreModeration(id: ID!): Page
+	togglePageClosed(id: ID!): Page
 }
 
 input CreateCommentInput {
