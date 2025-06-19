@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { SettingsIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	import { graphql } from '$houdini';
@@ -122,8 +123,9 @@
 				</div>
 				{#if website && isWebsiteOwner}
 					<details class="dropdown">
-						<summary class="btn m-1">Page Settings</summary>
+						<summary class="btn btn-sm btn-warning m-1"><SettingsIcon size={18} /></summary>
 						<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+							<div class="mb-2 pl-2 font-bold">Page Settings</div>
 							<li>
 								<label class="label">
 									<input
