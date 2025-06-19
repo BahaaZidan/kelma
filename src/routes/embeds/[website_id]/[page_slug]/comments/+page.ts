@@ -1,11 +1,13 @@
 import { error } from '@sveltejs/kit';
 import * as v from 'valibot';
 
+import { toGlobalId } from '$lib/global-id-utils';
+
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, url }) => {
 	const { page_slug: slug, website_id } = params;
-	const websiteId = Number(website_id);
+	const websiteId = toGlobalId('Website', website_id);
 	const searchParamsValidation = v.safeParse(
 		searchParamsSchema,
 		Object.fromEntries(url.searchParams.entries())

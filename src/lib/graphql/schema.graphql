@@ -1,6 +1,6 @@
 type Query {
-	website(id: Int!): Website
 	node(id: ID!): Node
+	website(id: ID!): Website
 }
 
 type Mutation {

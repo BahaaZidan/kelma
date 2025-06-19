@@ -44,8 +44,13 @@ export const resolvers: Resolvers = {
 			}
 		},
 		website: async (_parent, args) => {
+			const { id } = fromGlobalId(args.id);
 			const website = (
-				await db.select().from(websiteTable).where(eq(websiteTable.id, args.id)).limit(1)
+				await db
+					.select()
+					.from(websiteTable)
+					.where(eq(websiteTable.id, Number(id)))
+					.limit(1)
 			)[0];
 			return website;
 		},

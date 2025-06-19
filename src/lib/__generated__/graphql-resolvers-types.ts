@@ -170,7 +170,7 @@ export type QueryNodeArgs = {
 
 
 export type QueryWebsiteArgs = {
-  id: Scalars['Int']['input'];
+  id: Scalars['ID']['input'];
 };
 
 export type UpdateCommentContentInput = {

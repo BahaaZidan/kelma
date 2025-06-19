@@ -13,7 +13,7 @@
 	let { data }: PageProps = $props();
 
 	let query = graphql(`
-		query BigWebsiteQuery($websiteId: Int!, $pageInput: PageInput!) {
+		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
 			website(id: $websiteId) {
 				id
 				name
