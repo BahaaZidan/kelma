@@ -93,13 +93,68 @@
 			}
 		}
 	`);
+
+	const TogglePageClosed = graphql(`
+		mutation TogglePageClosed($id: ID!) {
+			togglePageClosed(id: $id) {
+				id
+				closed
+			}
+		}
+	`);
+
+	const TogglePagePreModeration = graphql(`
+		mutation TogglePagePreModeration($id: ID!) {
+			togglePagePreModeration(id: $id) {
+				id
+				preModeration
+			}
+		}
+	`);
 </script>
 
 <div class="flex flex-col items-center gap-2">
 	<div class="flex w-full items-center justify-between">
 		{#if data.session}
-			<div>
-				Logged in as <b>{data.session.user.name}</b>
+			<div class="flex items-center gap-1">
+				<div>
+					Logged in as <b>{data.session.user.name}</b>
+				</div>
+				{#if website && isWebsiteOwner}
+					<details class="dropdown">
+						<summary class="btn m-1">Page Settings</summary>
+						<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+							<li>
+								<label class="label">
+									<input
+										type="checkbox"
+										checked={website.page.closed}
+										class="toggle"
+										disabled={$TogglePageClosed.fetching}
+										onchange={() => {
+											TogglePageClosed.mutate({ id: website.page.id });
+										}}
+									/>
+									Closed
+								</label>
+							</li>
+							<li>
+								<label class="label">
+									<input
+										type="checkbox"
+										checked={website.page.preModeration}
+										class="toggle"
+										disabled={$TogglePagePreModeration.fetching}
+										onchange={() => {
+											TogglePagePreModeration.mutate({ id: website.page.id });
+										}}
+									/>
+									Pre Moderation
+								</label>
+							</li>
+						</ul>
+					</details>
+				{/if}
 			</div>
 			<button class="btn btn-ghost" onclick={signOut}>Logout</button>
 		{:else}
