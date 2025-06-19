@@ -30,13 +30,10 @@
 	let editing = $state(false);
 	let contentVal = $derived(content);
 
-	let dialog: HTMLDialogElement;
-
 	const DeleteComment = graphql(`
 		mutation DeleteComment($input: DeleteCommentInput!) {
 			deleteComment(input: $input) {
-				id
-				...Embed_Comments_remove
+				id @Comment_delete
 			}
 		}
 	`);
@@ -101,7 +98,8 @@
 						<li>
 							<button
 								onclick={() => {
-									dialog.showModal();
+									let confirmed = confirm('Are you sure you want to delete this comment ?');
+									if (confirmed) DeleteComment.mutate({ input: { commentId: id } });
 								}}
 							>
 								<Trash2Icon /> Delete
@@ -140,22 +138,3 @@
 		</div>
 	{/if}
 </div>
-
-<dialog bind:this={dialog} class="modal">
-	<div class="modal-box max-w-xs">
-		<h3 class="text-lg font-bold">Delete comment</h3>
-		<p class="py-4">Are you sure you want to delete this comment ?</p>
-		<div class="flex justify-end gap-2">
-			<form method="dialog">
-				<button class="btn">Cancel</button>
-			</form>
-			<button
-				class="btn"
-				type="button"
-				onclick={() => DeleteComment.mutate({ input: { commentId: id } })}
-			>
-				Delete
-			</button>
-		</div>
-	</div>
-</dialog>
