@@ -17,4 +17,7 @@ export const requestHandler = createYoga<RequestEvent>({
 	graphqlEndpoint: '/api/graphql',
 	fetchAPI: { Response },
 	context: (event) => ({ ...event, loaders: createLoaders() }),
+	graphiql: {
+		title: 'gebna.tools API',
+	},
 });
