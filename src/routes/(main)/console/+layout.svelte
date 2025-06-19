@@ -4,7 +4,6 @@
 		ChartColumnIncreasingIcon,
 		ChevronsUpDownIcon,
 		CodeIcon,
-		FileTextIcon,
 		HouseIcon,
 		MailIcon,
 		SettingsIcon,
@@ -75,14 +74,6 @@
 						href={route('/console/[website_id]', { website_id: currentWebsite.id })}
 					>
 						<ChartColumnIncreasingIcon size={menuIconSize} /> Overview
-					</a>
-				</li>
-				<li>
-					<a
-						class={{ 'menu-active': isActive('/[website_id]/pages') }}
-						href={route('/console/[website_id]/pages', { website_id: currentWebsite.id })}
-					>
-						<FileTextIcon size={menuIconSize} /> Pages
 					</a>
 				</li>
 				<li>
