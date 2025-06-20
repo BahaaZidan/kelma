@@ -66,18 +66,22 @@ export const load: PageServerLoad = async () => {
 			.returning()
 	)[0];
 
-	for (let index = 0; index < 25; index++) {
-		const date = new Date();
-		date.setDate(date.getDate() - index);
+	const days = 26; // from 25 days ago to today = 26 days total
+	const start = new Date();
+	start.setDate(start.getDate() - 25); // 25 days ago
+
+	for (let i = 0; i < days; i++) {
+		const date = new Date(start); // clone the start date
+		date.setDate(start.getDate() + i); // add i days
 
 		await db
 			.insert(commentTable)
 			.values({
-				id: index,
+				id: i,
 				authorId: user.id,
 				pageId: page.id,
 				websiteId: website.id,
-				content: `Comment number: ${25 - index}`,
+				content: `Commented on: ${date}`,
 				createdAt: date,
 				updatedAt: date,
 			})
