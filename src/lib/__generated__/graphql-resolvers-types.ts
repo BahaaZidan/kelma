@@ -210,7 +210,7 @@ export type Website = Node & {
 
 
 export type WebsitePageArgs = {
-  input: PageInput;
+  slug: Scalars['String']['input'];
 };
 
 
@@ -544,7 +544,7 @@ export type WebsiteResolvers<ContextType = Context, ParentType extends Resolvers
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  page?: Resolver<ResolversTypes['Page'], ParentType, ContextType, RequireFields<WebsitePageArgs, 'input'>>;
+  page?: Resolver<ResolversTypes['Page'], ParentType, ContextType, RequireFields<WebsitePageArgs, 'slug'>>;
   preModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
