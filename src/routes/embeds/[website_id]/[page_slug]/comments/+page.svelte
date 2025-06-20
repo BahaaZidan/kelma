@@ -5,13 +5,20 @@
 	import { graphql } from '$houdini';
 
 	import { route } from '$lib/__generated__/routes';
-	import { signOut } from '$lib/client/auth';
+	import { authClient, signOut } from '$lib/client/auth';
 	import Comment from '$lib/components/Comment.svelte';
 	import { fromGlobalId } from '$lib/global-id-utils';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+
+	onMount(async () => {
+		await authClient.signIn.email({
+			email: 'admin@admin.com',
+			password: 'adminnnn',
+		});
+	});
 
 	let query = graphql(`
 		query BigWebsiteQuery($websiteId: ID!, $slug: String!) {

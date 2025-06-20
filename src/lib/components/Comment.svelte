@@ -63,7 +63,11 @@
 </script>
 
 <div class="flex items-start gap-4">
-	<img src={author.image} alt="{author.name} profile picture" class="mt-1 size-10 rounded-full" />
+	<img
+		src={author.image || 'https://avatars.githubusercontent.com/u/22656046?v=4'}
+		alt="{author.name} profile picture"
+		class="mt-1 size-10 rounded-full"
+	/>
 	{#if !editing}
 		<div class="flex grow flex-col">
 			<span>

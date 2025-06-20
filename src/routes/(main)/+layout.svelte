@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { siGithub } from 'simple-icons';
 
-	import { route } from '$lib/__generated__/routes';
 	import { authClient, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
 
@@ -38,7 +37,6 @@
 	<div class="navbar-end">
 		{#if data.session}
 			<button onclick={signOut} class="btn">Signout</button>
-			<a href={route('/console')} class="btn">Console</a>
 		{:else}
 			<button onclick={githubSignIn} class="btn">Login <BrandIcon icon={siGithub} /></button>
 		{/if}
