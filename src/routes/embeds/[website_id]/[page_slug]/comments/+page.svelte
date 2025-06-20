@@ -14,10 +14,12 @@
 	let { data }: PageProps = $props();
 
 	onMount(async () => {
-		await authClient.signIn.email({
-			email: 'admin@admin.com',
-			password: 'adminnnn',
-		});
+		if (!data.session) {
+			await authClient.signIn.email({
+				email: 'admin@admin.com',
+				password: 'adminnnn',
+			});
+		}
 	});
 
 	let query = graphql(`
