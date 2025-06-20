@@ -67,6 +67,9 @@ export const load: PageServerLoad = async () => {
 	)[0];
 
 	for (let index = 0; index < 25; index++) {
+		const date = new Date();
+		date.setDate(date.getDate() - index);
+
 		await db
 			.insert(commentTable)
 			.values({
@@ -74,7 +77,9 @@ export const load: PageServerLoad = async () => {
 				authorId: user.id,
 				pageId: page.id,
 				websiteId: website.id,
-				content: `Comment number: ${index}`,
+				content: `Comment number: ${25 - index}`,
+				createdAt: date,
+				updatedAt: date,
 			})
 			.onConflictDoNothing();
 	}
