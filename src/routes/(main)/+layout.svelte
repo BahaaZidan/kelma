@@ -4,7 +4,9 @@
 	import { authClient, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
 
-	let { children, data } = $props();
+	import type { LayoutProps } from './$types';
+
+	let { children, data }: LayoutProps = $props();
 
 	async function githubSignIn() {
 		await authClient.signIn.social({ provider: 'github' });
