@@ -191,7 +191,7 @@
 		</div>
 		<div class="flex w-full flex-col gap-4 px-2">
 			{#each website.page.comments.edges as { node } (node.id)}
-				<Comment comment={node} />
+				<Comment data={node} />
 			{/each}
 
 			<button

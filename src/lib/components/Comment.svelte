@@ -10,14 +10,14 @@
 	import { fragment, graphql, type CommentComponent } from '$houdini';
 
 	type Props = {
-		comment: CommentComponent;
+		data: CommentComponent;
 	};
 
-	let { comment }: Props = $props();
+	let { data }: Props = $props();
 
-	let data = $derived(
+	let comment = $derived(
 		fragment(
-			comment,
+			data,
 			graphql(`
 				fragment CommentComponent on Comment {
 					id
@@ -38,7 +38,7 @@
 			`)
 		)
 	);
-	let { id, content, createdAt, author, permissions, published } = $derived($data);
+	let { id, content, createdAt, author, permissions, published } = $derived($comment);
 
 	let editing = $state(false);
 	let contentVal = $derived(content);
