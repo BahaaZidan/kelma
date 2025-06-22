@@ -321,6 +321,17 @@ export const resolvers: Resolvers = {
 			const website = await context.loaders.websites.load(parent.websiteId);
 			return website;
 		},
+		permissions: async (parent, _args, { locals }) => {
+			const loggedInUserId = locals.session?.user.id;
+			const websitesOwnedByLoggedInUser = locals.session?.websitesOwnedByCurrentUser;
+			const isWebsiteOwner = websitesOwnedByLoggedInUser?.includes(parent.websiteId) ?? false;
+
+			return {
+				delete: parent.authorId === loggedInUserId || isWebsiteOwner,
+				edit: parent.authorId === loggedInUserId,
+				approve: !parent.published && isWebsiteOwner,
+			};
+		},
 	},
 	DateTime: DateTimeResolver,
 	URL: URLResolver,

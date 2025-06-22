@@ -78,6 +78,13 @@ type Comment implements Node {
 	page: Page!
 	website: Website!
 	author: User!
+	permissions: CommentViewerPermissions!
+}
+
+type CommentViewerPermissions {
+	delete: Boolean!
+	edit: Boolean!
+	approve: Boolean!
 }
 
 type User implements Node {
