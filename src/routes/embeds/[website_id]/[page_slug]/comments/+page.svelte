@@ -116,7 +116,7 @@
 	`);
 </script>
 
-{#if website}
+{#if website?.page}
 	<div class="flex flex-col items-center gap-2">
 		<div class="flex w-full items-center justify-between">
 			{#if data.session}
@@ -137,7 +137,7 @@
 											class="toggle"
 											disabled={$TogglePageClosed.fetching}
 											onchange={() => {
-												TogglePageClosed.mutate({ id: website.page.id });
+												if (website.page) TogglePageClosed.mutate({ id: website.page.id });
 											}}
 										/>
 										Closed
@@ -151,7 +151,7 @@
 											class="toggle"
 											disabled={$TogglePagePreModeration.fetching}
 											onchange={() => {
-												TogglePagePreModeration.mutate({ id: website.page.id });
+												if (website.page) TogglePagePreModeration.mutate({ id: website.page.id });
 											}}
 										/>
 										Pre Moderation
@@ -188,7 +188,7 @@
 			<button
 				class="btn"
 				onclick={async () => {
-					if (!website) return;
+					if (!website.page) return;
 					await CreateComment.mutate({
 						input: { pageId: website.page.id, content: commentValue },
 					});

@@ -198,7 +198,7 @@ export type Website = Node & {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner: User;
-  page: Page;
+  page?: Maybe<Page>;
   preModeration: Scalars['Boolean']['output'];
 };
 
@@ -537,7 +537,7 @@ export type WebsiteResolvers<ContextType = Context, ParentType extends Resolvers
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  page?: Resolver<ResolversTypes['Page'], ParentType, ContextType, RequireFields<WebsitePageArgs, 'input'>>;
+  page?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<WebsitePageArgs, 'input'>>;
   preModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
