@@ -57,6 +57,13 @@ type Page implements Node {
 	preModeration: Boolean!
 	closed: Boolean!
 	comments(first: Int, after: String): CommentsConnection!
+	permissions: PageViewerPermissions!
+}
+
+type PageViewerPermissions {
+	createComment: Boolean!
+	toggleClosed: Boolean!
+	togglePreModeration: Boolean!
 }
 
 type CommentsConnection implements Connection {

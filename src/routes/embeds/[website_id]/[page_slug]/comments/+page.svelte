@@ -7,7 +7,6 @@
 	import { route } from '$lib/__generated__/routes';
 	import { signOut } from '$lib/client/auth';
 	import Comment from '$lib/components/Comment.svelte';
-	import { fromGlobalId } from '$lib/global-id-utils';
 
 	import type { PageProps } from './$types';
 
@@ -36,6 +35,11 @@
 								}
 							}
 						}
+						permissions {
+							createComment
+							toggleClosed
+							togglePreModeration
+						}
 					}
 				}
 			}
@@ -48,18 +52,6 @@
 	});
 
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
-
-	let permissions = $derived({
-		create: !!data.session?.user && !website?.page?.closed,
-		publish:
-			website?.owner.id === data.session?.user.id ||
-			(!website?.preModeration && !website?.page?.preModeration),
-	});
-
-	let websitesOwnedByLoggedInUser = $derived(data.session?.websitesOwnedByCurrentUser || []);
-	let isWebsiteOwner = $derived(
-		website?.id ? websitesOwnedByLoggedInUser.includes(Number(fromGlobalId(website.id).id)) : false
-	);
 
 	function sendHeight() {
 		const height = document.body.scrollHeight;
@@ -115,7 +107,7 @@
 					<div>
 						Logged in as <b>{data.session.user.name}</b>
 					</div>
-					{#if isWebsiteOwner}
+					{#if website.page.permissions.toggleClosed && website.page.permissions.togglePreModeration}
 						<details class="dropdown">
 							<summary class="btn btn-sm btn-warning m-1"><SettingsIcon size={18} /></summary>
 							<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
@@ -172,7 +164,7 @@
 					placeholder="Comment"
 					class="textarea w-full"
 					bind:value={commentValue}
-					disabled={!permissions.create}
+					disabled={!website.page.permissions.createComment}
 				></textarea>
 				<span>Comment</span>
 			</label>

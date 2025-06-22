@@ -137,6 +137,7 @@ export type Page = Node & {
   comments: CommentsConnection;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
+  permissions: PageViewerPermissions;
   preModeration: Scalars['Boolean']['output'];
   slug: Scalars['String']['output'];
   url?: Maybe<Scalars['URL']['output']>;
@@ -165,6 +166,13 @@ export type PageInput = {
 export type PageOverrides = {
   name: Scalars['String']['input'];
   url: Scalars['URL']['input'];
+};
+
+export type PageViewerPermissions = {
+  __typename?: 'PageViewerPermissions';
+  createComment: Scalars['Boolean']['output'];
+  toggleClosed: Scalars['Boolean']['output'];
+  togglePreModeration: Scalars['Boolean']['output'];
 };
 
 /** The Component scalar is only defined if the user has any component fields */
@@ -312,6 +320,7 @@ export type ResolversTypes = {
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PageInput: PageInput;
   PageOverrides: PageOverrides;
+  PageViewerPermissions: ResolverTypeWrapper<PageViewerPermissions>;
   PaginateMode: PaginateMode;
   PublishCommentInput: PublishCommentInput;
   Query: ResolverTypeWrapper<{}>;
@@ -342,6 +351,7 @@ export type ResolversParentTypes = {
   PageInfo: PageInfo;
   PageInput: PageInput;
   PageOverrides: PageOverrides;
+  PageViewerPermissions: PageViewerPermissions;
   PublishCommentInput: PublishCommentInput;
   Query: {};
   String: Scalars['String']['output'];
@@ -519,6 +529,7 @@ export type PageResolvers<ContextType = Context, ParentType extends ResolversPar
   comments?: Resolver<ResolversTypes['CommentsConnection'], ParentType, ContextType, Partial<PageCommentsArgs>>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  permissions?: Resolver<ResolversTypes['PageViewerPermissions'], ParentType, ContextType>;
   preModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
@@ -531,6 +542,13 @@ export type PageInfoResolvers<ContextType = Context, ParentType extends Resolver
   hasNextPage?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   hasPreviousPage?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   startCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PageViewerPermissionsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PageViewerPermissions'] = ResolversParentTypes['PageViewerPermissions']> = {
+  createComment?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  toggleClosed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  togglePreModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -572,6 +590,7 @@ export type Resolvers<ContextType = Context> = {
   Node?: NodeResolvers<ContextType>;
   Page?: PageResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
+  PageViewerPermissions?: PageViewerPermissionsResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   URL?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;

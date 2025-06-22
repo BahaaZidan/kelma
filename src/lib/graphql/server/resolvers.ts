@@ -1,10 +1,10 @@
 import { and, desc, eq, inArray, lt, not, or } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver } from 'graphql-scalars';
+import { Base64 } from 'js-base64';
 import * as v from 'valibot';
 
 import type { Resolvers } from '$lib/__generated__/graphql-resolvers-types';
-import { fromGlobalId, toGlobalId } from '$lib/global-id-utils';
 import { db } from '$lib/server/db';
 import { commentTable, pageTable, userTable, websiteTable } from '$lib/server/db/schema';
 
@@ -306,6 +306,17 @@ export const resolvers: Resolvers = {
 			)[0];
 			return website;
 		},
+		permissions: async (parent, _args, { locals }) => {
+			const isWebsiteOwner = (locals.session?.websitesOwnedByCurrentUser || []).includes(
+				parent.websiteId
+			);
+
+			return {
+				createComment: !parent.closed && !!locals.session?.user,
+				toggleClosed: isWebsiteOwner,
+				togglePreModeration: isWebsiteOwner,
+			};
+		},
 	},
 	Comment: {
 		id: (parent) => toGlobalId('Comment', parent.id),
@@ -336,3 +347,12 @@ export const resolvers: Resolvers = {
 	DateTime: DateTimeResolver,
 	URL: URLResolver,
 };
+
+function toGlobalId(type: string, id: string | number): string {
+	return Base64.encode(`${type}:${id}`);
+}
+
+function fromGlobalId(globalId: string): { type: string; id: string } {
+	const [type, id] = Base64.decode(globalId).split(':');
+	return { type, id };
+}
