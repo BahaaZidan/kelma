@@ -36,7 +36,7 @@ type Website implements Node {
 	owner: User!
 	preModeration: Boolean!
 	domains: [String!]!
-	page(slug: String!): Page!
+	page(input: PageInput!): Page!
 }
 
 input PageInput {
