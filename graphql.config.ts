@@ -8,6 +8,8 @@ const config: IGraphQLConfig = {
 		codegen: {
 			generates: {
 				'./src/lib/__generated__/graphql-resolvers-types.ts': {
+					schema: ['src/lib/graphql/schema.graphql'],
+					documents: ['src/lib/graphql/schema.graphql'],
 					plugins: [
 						{
 							add: {
