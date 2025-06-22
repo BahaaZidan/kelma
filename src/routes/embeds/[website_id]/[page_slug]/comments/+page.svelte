@@ -5,7 +5,7 @@
 	import { graphql } from '$houdini';
 
 	import { route } from '$lib/__generated__/routes';
-	import { authClient, signOut } from '$lib/client/auth';
+	import { signOut } from '$lib/client/auth';
 	import Comment from '$lib/components/Comment.svelte';
 	import { fromGlobalId } from '$lib/global-id-utils';
 
@@ -13,17 +13,8 @@
 
 	let { data }: PageProps = $props();
 
-	onMount(async () => {
-		if (!data.session) {
-			await authClient.signIn.email({
-				email: 'admin@admin.com',
-				password: 'adminnnn',
-			});
-		}
-	});
-
 	let query = graphql(`
-		query BigWebsiteQuery($websiteId: ID!, $slug: String!) {
+		query BigWebsiteQuery($websiteId: ID!, $input: PageInput!) {
 			website(id: $websiteId) {
 				id
 				name
@@ -31,7 +22,7 @@
 					id
 				}
 				preModeration
-				page(slug: $slug) {
+				page(input: $input) {
 					id
 					preModeration
 					closed
@@ -58,10 +49,7 @@
 	`);
 	onMount(async () => {
 		await query.fetch({
-			variables: {
-				websiteId: data.queryVariables.websiteId,
-				slug: data.queryVariables.pageInput.slug,
-			},
+			variables: { websiteId: data.queryVariables.websiteId, input: data.queryVariables.pageInput },
 		});
 	});
 

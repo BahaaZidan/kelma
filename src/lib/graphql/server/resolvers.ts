@@ -231,7 +231,29 @@ export const resolvers: Resolvers = {
 			)[0];
 			return user;
 		},
-		page: async (parent, { slug }) => {
+		page: async (parent, args) => {
+			const {
+				input: { slug, overrides },
+			} = args;
+
+			if (overrides) {
+				const page = (
+					await db
+						.insert(pageTable)
+						.values({
+							slug,
+							websiteId: parent.id,
+							name: overrides.name,
+							url: overrides.url.toString(),
+						})
+						.onConflictDoUpdate({
+							target: [pageTable.slug, pageTable.websiteId],
+							set: { name: overrides.name, url: overrides.url.toString() },
+						})
+						.returning()
+				)[0];
+				return page;
+			}
 			const page = (
 				await db
 					.select()
