@@ -15,30 +15,32 @@
 
 	let query = graphql(`
 		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
-			website(id: $websiteId) {
-				id
-				name
-				owner {
+			node(id: $websiteId) {
+				... on Website {
 					id
-				}
-				preModeration
-				page(input: $pageInput) {
-					id
+					name
+					owner {
+						id
+					}
 					preModeration
-					closed
-					url
-					comments(first: 10) @paginate(name: "Embed_Comments") {
-						edges {
-							node {
-								id
-								content
-								createdAt
-								updatedAt
-								published
-								author {
+					page(input: $pageInput) {
+						id
+						preModeration
+						closed
+						url
+						comments(first: 10) @paginate(name: "Embed_Comments") {
+							edges {
+								node {
 									id
-									name
-									image
+									content
+									createdAt
+									updatedAt
+									published
+									author {
+										id
+										name
+										image
+									}
 								}
 							}
 						}
@@ -53,7 +55,7 @@
 		});
 	});
 
-	let website = $derived($query.data?.website);
+	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
 
 	let permissions = $derived({
 		create: !!data.session?.user && !website?.page?.closed,
@@ -90,9 +92,6 @@
 	const CreateComment = graphql(`
 		mutation CreateComment($input: CreateCommentInput!) {
 			createComment(input: $input) {
-				id
-				content
-				createdAt
 				...Embed_Comments_insert @prepend
 			}
 		}

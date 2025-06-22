@@ -43,17 +43,6 @@ export const resolvers: Resolvers = {
 					return null;
 			}
 		},
-		website: async (_parent, args) => {
-			const { id } = fromGlobalId(args.id);
-			const website = (
-				await db
-					.select()
-					.from(websiteTable)
-					.where(eq(websiteTable.id, Number(id)))
-					.limit(1)
-			)[0];
-			return website;
-		},
 	},
 	Mutation: {
 		createComment: async (_, { input }, { locals }) => {

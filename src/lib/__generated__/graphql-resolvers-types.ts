@@ -172,16 +172,10 @@ export type PublishCommentInput = {
 export type Query = {
   __typename?: 'Query';
   node?: Maybe<Node>;
-  website?: Maybe<Website>;
 };
 
 
 export type QueryNodeArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryWebsiteArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -524,7 +518,6 @@ export type PageInfoResolvers<ContextType = Context, ParentType extends Resolver
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  website?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<QueryWebsiteArgs, 'id'>>;
 };
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
