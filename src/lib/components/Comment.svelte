@@ -7,26 +7,39 @@
 	} from '@lucide/svelte';
 	import { formatDistance } from 'date-fns';
 
-	import { graphql } from '$houdini';
+	import { fragment, graphql, type CommentComponent } from '$houdini';
 
 	type Props = {
-		id: string;
-		content: string;
-		createdAt: string;
-		author: {
-			id: string;
-			name: string;
-			image?: string | null;
-		};
-		permissions: {
-			delete: boolean;
-			edit: boolean;
-			approve: boolean;
-		};
-		published?: boolean;
+		comment: CommentComponent;
 	};
 
-	let { id, content, createdAt, author, permissions, published }: Props = $props();
+	let { comment }: Props = $props();
+
+	let data = $derived(
+		fragment(
+			comment,
+			graphql(`
+				fragment CommentComponent on Comment {
+					id
+					content
+					createdAt
+					published
+					author {
+						id
+						name
+						image
+					}
+					permissions {
+						delete
+						edit
+						approve
+					}
+				}
+			`)
+		)
+	);
+	let { id, content, createdAt, author, permissions, published } = $derived($data);
+
 	let editing = $state(false);
 	let contentVal = $derived(content);
 

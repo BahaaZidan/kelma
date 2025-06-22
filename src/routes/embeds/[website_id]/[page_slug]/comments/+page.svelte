@@ -32,15 +32,7 @@
 							edges {
 								node {
 									id
-									content
-									createdAt
-									updatedAt
-									published
-									author {
-										id
-										name
-										image
-									}
+									...CommentComponent
 								}
 							}
 						}
@@ -64,7 +56,6 @@
 			(!website?.preModeration && !website?.page?.preModeration),
 	});
 
-	let loggedInUserId = $derived(data.session?.user.id);
 	let websitesOwnedByLoggedInUser = $derived(data.session?.websitesOwnedByCurrentUser || []);
 	let isWebsiteOwner = $derived(
 		website?.id ? websitesOwnedByLoggedInUser.includes(Number(fromGlobalId(website.id).id)) : false
@@ -200,14 +191,7 @@
 		</div>
 		<div class="flex w-full flex-col gap-4 px-2">
 			{#each website.page.comments.edges as { node } (node.id)}
-				<Comment
-					{...node}
-					permissions={{
-						delete: fromGlobalId(node.author.id).id === loggedInUserId || isWebsiteOwner,
-						edit: fromGlobalId(node.author.id).id === loggedInUserId,
-						approve: !node.published && isWebsiteOwner,
-					}}
-				/>
+				<Comment comment={node} />
 			{/each}
 
 			<button
