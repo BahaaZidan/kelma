@@ -37,6 +37,7 @@ export type Comment = Node & {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   page: Page;
+  permissions: CommentViewerPermissions;
   published: Scalars['Boolean']['output'];
   updatedAt: Scalars['DateTime']['output'];
   website: Website;
@@ -46,6 +47,13 @@ export type CommentEdge = Edge & {
   __typename?: 'CommentEdge';
   cursor?: Maybe<Scalars['String']['output']>;
   node: Comment;
+};
+
+export type CommentViewerPermissions = {
+  __typename?: 'CommentViewerPermissions';
+  approve: Scalars['Boolean']['output'];
+  delete: Scalars['Boolean']['output'];
+  edit: Scalars['Boolean']['output'];
 };
 
 export type CommentsConnection = Connection & {
@@ -288,6 +296,7 @@ export type ResolversTypes = {
   CachePolicy: CachePolicy;
   Comment: ResolverTypeWrapper<CommentSelectModel>;
   CommentEdge: ResolverTypeWrapper<Omit<CommentEdge, 'node'> & { node: ResolversTypes['Comment'] }>;
+  CommentViewerPermissions: ResolverTypeWrapper<CommentViewerPermissions>;
   CommentsConnection: ResolverTypeWrapper<Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversTypes['CommentEdge']> }>;
   Connection: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Connection']>;
   CreateCommentInput: CreateCommentInput;
@@ -318,6 +327,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   Comment: CommentSelectModel;
   CommentEdge: Omit<CommentEdge, 'node'> & { node: ResolversParentTypes['Comment'] };
+  CommentViewerPermissions: CommentViewerPermissions;
   CommentsConnection: Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversParentTypes['CommentEdge']> };
   Connection: ResolversInterfaceTypes<ResolversParentTypes>['Connection'];
   CreateCommentInput: CreateCommentInput;
@@ -448,6 +458,7 @@ export type CommentResolvers<ContextType = Context, ParentType extends Resolvers
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Page'], ParentType, ContextType>;
+  permissions?: Resolver<ResolversTypes['CommentViewerPermissions'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   website?: Resolver<ResolversTypes['Website'], ParentType, ContextType>;
@@ -457,6 +468,13 @@ export type CommentResolvers<ContextType = Context, ParentType extends Resolvers
 export type CommentEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CommentEdge'] = ResolversParentTypes['CommentEdge']> = {
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Comment'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CommentViewerPermissionsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CommentViewerPermissions'] = ResolversParentTypes['CommentViewerPermissions']> = {
+  approve?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  delete?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  edit?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -545,6 +563,7 @@ export type WebsiteResolvers<ContextType = Context, ParentType extends Resolvers
 export type Resolvers<ContextType = Context> = {
   Comment?: CommentResolvers<ContextType>;
   CommentEdge?: CommentEdgeResolvers<ContextType>;
+  CommentViewerPermissions?: CommentViewerPermissionsResolvers<ContextType>;
   CommentsConnection?: CommentsConnectionResolvers<ContextType>;
   Connection?: ConnectionResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
