@@ -14,7 +14,7 @@
 	let { data }: PageProps = $props();
 
 	let query = graphql(`
-		query BigWebsiteQuery($websiteId: ID!, $input: PageInput!) {
+		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
 			website(id: $websiteId) {
 				id
 				name
@@ -22,7 +22,7 @@
 					id
 				}
 				preModeration
-				page(input: $input) {
+				page(input: $pageInput) {
 					id
 					preModeration
 					closed
@@ -49,7 +49,7 @@
 	`);
 	onMount(async () => {
 		await query.fetch({
-			variables: { websiteId: data.queryVariables.websiteId, input: data.queryVariables.pageInput },
+			variables: data.queryVariables,
 		});
 	});
 
