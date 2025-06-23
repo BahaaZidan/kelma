@@ -214,19 +214,14 @@ export const resolvers: Resolvers = {
 	},
 	User: {
 		id: (parent) => toGlobalId('User', parent.id),
-		websites: async (parent) => {
-			const websites = await db
-				.select()
-				.from(websiteTable)
-				.where(eq(websiteTable.ownerId, parent.id));
-			return websites;
+		websites: (parent) => {
+			return db.select().from(websiteTable).where(eq(websiteTable.ownerId, parent.id));
 		},
 	},
 	Website: {
 		id: (parent) => toGlobalId('Website', parent.id),
-		owner: async (parent, _args, { loaders }) => {
-			const user = await loaders.users.load(parent.ownerId);
-			return user;
+		owner: (parent, _args, { loaders }) => {
+			return loaders.users.load(parent.ownerId);
 		},
 		page: async (parent, args) => {
 			const {
@@ -308,11 +303,8 @@ export const resolvers: Resolvers = {
 				},
 			};
 		},
-		website: async (parent) => {
-			const website = (
-				await db.select().from(websiteTable).where(eq(websiteTable.id, parent.websiteId)).limit(1)
-			)[0];
-			return website;
+		website: (parent, _args, { loaders }) => {
+			return loaders.websites.load(parent.websiteId);
 		},
 		permissions: async (parent, _args, { locals }) => {
 			const isWebsiteOwner = (locals.session?.websitesOwnedByCurrentUser || []).includes(
@@ -328,19 +320,16 @@ export const resolvers: Resolvers = {
 	},
 	Comment: {
 		id: (parent) => toGlobalId('Comment', parent.id),
-		author: async (parent, _args, context) => {
-			const user = await context.loaders.users.load(parent.authorId);
-			return user;
+		author: (parent, _args, context) => {
+			return context.loaders.users.load(parent.authorId);
 		},
-		page: async (parent, _args, context) => {
-			const page = await context.loaders.pages.load(parent.pageId);
-			return page;
+		page: (parent, _args, context) => {
+			return context.loaders.pages.load(parent.pageId);
 		},
-		website: async (parent, _args, context) => {
-			const website = await context.loaders.websites.load(parent.websiteId);
-			return website;
+		website: (parent, _args, context) => {
+			return context.loaders.websites.load(parent.websiteId);
 		},
-		permissions: async (parent, _args, { locals }) => {
+		permissions: (parent, _args, { locals }) => {
 			const loggedInUserId = locals.session?.user.id;
 			const websitesOwnedByLoggedInUser = locals.session?.websitesOwnedByCurrentUser;
 			const isWebsiteOwner = websitesOwnedByLoggedInUser?.includes(parent.websiteId) ?? false;
