@@ -205,6 +205,31 @@ export const resolvers: Resolvers = {
 
 			return updatedPage;
 		},
+		createWebsite: async (_, { input }, { locals }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+			const createdWebsite = (
+				await db
+					.insert(websiteTable)
+					.values({ ownerId: locals.session.user.id, name: input.name, domains: input.domains })
+					.returning()
+			)[0];
+			return createdWebsite;
+		},
+		updateWebsite: async (_, { input }, { locals }) => {
+			const dbId = Number(fromGlobalId(input.id).id);
+			if (!locals.session || !locals.session.websitesOwnedByCurrentUser?.includes(dbId))
+				throw new GraphQLError('UNAUTHORIZED');
+
+			const setMap = Object.fromEntries(
+				// TODO: filter out empty arrays as well ?
+				Object.entries(input).filter(([key, value]) => key !== 'id' && !!value)
+			);
+			const updatedWebsite = (
+				await db.update(websiteTable).set(setMap).where(eq(websiteTable.id, dbId)).returning()
+			)[0];
+
+			return updatedWebsite;
+		},
 	},
 	Node: {
 		__resolveType(obj) {
