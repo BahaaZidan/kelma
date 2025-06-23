@@ -1,5 +1,6 @@
 type Query {
 	node(id: ID!): Node
+	viewer: User
 }
 
 type Mutation {
@@ -9,6 +10,19 @@ type Mutation {
 	publishComment(input: PublishCommentInput!): Comment
 	togglePagePreModeration(id: ID!): Page
 	togglePageClosed(id: ID!): Page
+	createWebsite(input: CreateWebsiteInput!): Website!
+	updateWebsite(input: UpdateWebsiteInput!): Website
+}
+
+input UpdateWebsiteInput {
+	id: ID!
+	name: String
+	domains: [String!]
+}
+
+input CreateWebsiteInput {
+	name: String!
+	domains: [String!]!
 }
 
 input CreateCommentInput {
@@ -99,6 +113,7 @@ type User implements Node {
 	name: String!
 	email: String!
 	image: String
+	websites: [Website!]!
 }
 
 type PageInfo {

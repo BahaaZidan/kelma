@@ -4,6 +4,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
 
 import { db } from './db';
+import type { UserSelectModel } from './db/schema';
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -19,4 +20,6 @@ export const auth = betterAuth({
 	trustedOrigins: ['*'],
 });
 
-export type Session = typeof auth.$Infer.Session & { websitesOwnedByCurrentUser?: number[] };
+export type Session = Pick<typeof auth.$Infer.Session, 'session'> & { user: UserSelectModel } & {
+	websitesOwnedByCurrentUser?: number[];
+};

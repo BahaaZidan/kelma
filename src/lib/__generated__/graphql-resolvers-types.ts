@@ -1,9 +1,9 @@
 /* eslint-disable */
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import type { WebsiteSelectModel, PageSelectModel, CommentSelectModel } from '$lib/server/db/schema';
+import type { WebsiteSelectModel, PageSelectModel, CommentSelectModel, UserSelectModel } from '$lib/server/db/schema';
 import type { Context } from '$lib/graphql/server/context';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+export type Maybe<T> = T | null | undefined;
+export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -72,6 +72,11 @@ export type CreateCommentInput = {
   pageId: Scalars['ID']['input'];
 };
 
+export type CreateWebsiteInput = {
+  domains: Array<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
 export enum DedupeMatchMode {
   None = 'None',
   Operation = 'Operation',
@@ -90,16 +95,23 @@ export type Edge = {
 export type Mutation = {
   __typename?: 'Mutation';
   createComment: Comment;
+  createWebsite: Website;
   deleteComment?: Maybe<Comment>;
   publishComment?: Maybe<Comment>;
   togglePageClosed?: Maybe<Page>;
   togglePagePreModeration?: Maybe<Page>;
   updateCommentContent?: Maybe<Comment>;
+  updateWebsite?: Maybe<Website>;
 };
 
 
 export type MutationCreateCommentArgs = {
   input: CreateCommentInput;
+};
+
+
+export type MutationCreateWebsiteArgs = {
+  input: CreateWebsiteInput;
 };
 
 
@@ -125,6 +137,11 @@ export type MutationTogglePagePreModerationArgs = {
 
 export type MutationUpdateCommentContentArgs = {
   input: UpdateCommentContentInput;
+};
+
+
+export type MutationUpdateWebsiteArgs = {
+  input: UpdateWebsiteInput;
 };
 
 export type Node = {
@@ -188,6 +205,7 @@ export type PublishCommentInput = {
 export type Query = {
   __typename?: 'Query';
   node?: Maybe<Node>;
+  viewer?: Maybe<User>;
 };
 
 
@@ -200,12 +218,19 @@ export type UpdateCommentContentInput = {
   content: Scalars['String']['input'];
 };
 
+export type UpdateWebsiteInput = {
+  domains?: InputMaybe<Array<Scalars['String']['input']>>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = Node & {
   __typename?: 'User';
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  websites: Array<Website>;
 };
 
 export type Website = Node & {
@@ -295,7 +320,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
   Connection: ( Omit<CommentsConnection, 'edges'> & { edges: Array<_RefType['CommentEdge']> } );
   Edge: ( Omit<CommentEdge, 'node'> & { node: _RefType['Comment'] } );
-  Node: ( CommentSelectModel ) | ( PageSelectModel ) | ( User ) | ( WebsiteSelectModel );
+  Node: ( CommentSelectModel ) | ( PageSelectModel ) | ( UserSelectModel ) | ( WebsiteSelectModel );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -308,6 +333,7 @@ export type ResolversTypes = {
   CommentsConnection: ResolverTypeWrapper<Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversTypes['CommentEdge']> }>;
   Connection: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Connection']>;
   CreateCommentInput: CreateCommentInput;
+  CreateWebsiteInput: CreateWebsiteInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DedupeMatchMode: DedupeMatchMode;
   DeleteCommentInput: DeleteCommentInput;
@@ -327,7 +353,8 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
   UpdateCommentContentInput: UpdateCommentContentInput;
-  User: ResolverTypeWrapper<User>;
+  UpdateWebsiteInput: UpdateWebsiteInput;
+  User: ResolverTypeWrapper<UserSelectModel>;
   Website: ResolverTypeWrapper<WebsiteSelectModel>;
 };
 
@@ -340,6 +367,7 @@ export type ResolversParentTypes = {
   CommentsConnection: Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversParentTypes['CommentEdge']> };
   Connection: ResolversInterfaceTypes<ResolversParentTypes>['Connection'];
   CreateCommentInput: CreateCommentInput;
+  CreateWebsiteInput: CreateWebsiteInput;
   DateTime: Scalars['DateTime']['output'];
   DeleteCommentInput: DeleteCommentInput;
   Edge: ResolversInterfaceTypes<ResolversParentTypes>['Edge'];
@@ -357,7 +385,8 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   URL: Scalars['URL']['output'];
   UpdateCommentContentInput: UpdateCommentContentInput;
-  User: User;
+  UpdateWebsiteInput: UpdateWebsiteInput;
+  User: UserSelectModel;
   Website: WebsiteSelectModel;
 };
 
@@ -512,11 +541,13 @@ export type EdgeResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
+  createWebsite?: Resolver<ResolversTypes['Website'], ParentType, ContextType, RequireFields<MutationCreateWebsiteArgs, 'input'>>;
   deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'input'>>;
   publishComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationPublishCommentArgs, 'input'>>;
   togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
   togglePagePreModeration?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePagePreModerationArgs, 'id'>>;
   updateCommentContent?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
+  updateWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationUpdateWebsiteArgs, 'input'>>;
 };
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
@@ -554,6 +585,7 @@ export type PageViewerPermissionsResolvers<ContextType = Context, ParentType ext
 
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+  viewer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
@@ -565,6 +597,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  websites?: Resolver<Array<ResolversTypes['Website']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

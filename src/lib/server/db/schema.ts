@@ -16,6 +16,7 @@ export const userTable = sqliteTable('user', {
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
 });
+export type UserSelectModel = InferSelectModel<typeof userTable>;
 
 export const sessionTable = sqliteTable('session', {
 	id: text('id').primaryKey(),

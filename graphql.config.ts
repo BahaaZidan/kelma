@@ -20,6 +20,7 @@ const config: IGraphQLConfig = {
 						'typescript-resolvers',
 					],
 					config: {
+						maybeValue: 'T | null | undefined',
 						useTypeImports: true,
 						contextType: '$lib/graphql/server/context#Context',
 						scalars: {
@@ -31,6 +32,7 @@ const config: IGraphQLConfig = {
 							Website: '$lib/server/db/schema#WebsiteSelectModel',
 							Page: '$lib/server/db/schema#PageSelectModel',
 							Comment: '$lib/server/db/schema#CommentSelectModel',
+							User: '$lib/server/db/schema#UserSelectModel',
 						},
 					},
 				},

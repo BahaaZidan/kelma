@@ -6,7 +6,7 @@ import * as v from 'valibot';
 
 import type { Resolvers } from '$lib/__generated__/graphql-resolvers-types';
 import { db } from '$lib/server/db';
-import { commentTable, pageTable, userTable, websiteTable } from '$lib/server/db/schema';
+import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
 
 const schema = v.object({
 	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
@@ -42,6 +42,9 @@ export const resolvers: Resolvers = {
 				default:
 					return null;
 			}
+		},
+		viewer: async (_parent, _args, { locals }) => {
+			return locals.session?.user;
 		},
 	},
 	Mutation: {
@@ -211,13 +214,18 @@ export const resolvers: Resolvers = {
 	},
 	User: {
 		id: (parent) => toGlobalId('User', parent.id),
+		websites: async (parent) => {
+			const websites = await db
+				.select()
+				.from(websiteTable)
+				.where(eq(websiteTable.ownerId, parent.id));
+			return websites;
+		},
 	},
 	Website: {
 		id: (parent) => toGlobalId('Website', parent.id),
-		owner: async (parent) => {
-			const user = (
-				await db.select().from(userTable).where(eq(userTable.id, parent.ownerId)).limit(1)
-			)[0];
+		owner: async (parent, _args, { loaders }) => {
+			const user = await loaders.users.load(parent.ownerId);
 			return user;
 		},
 		page: async (parent, args) => {
