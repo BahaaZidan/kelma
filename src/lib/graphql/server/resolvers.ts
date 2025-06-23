@@ -221,8 +221,9 @@ export const resolvers: Resolvers = {
 				throw new GraphQLError('UNAUTHORIZED');
 
 			const setMap = Object.fromEntries(
-				// TODO: filter out empty arrays as well ?
-				Object.entries(input).filter(([key, value]) => key !== 'id' && !!value)
+				Object.entries(input)
+					.filter(([key, value]) => key !== 'id' && !!value)
+					.filter(([, value]) => (Array.isArray(value) ? !!value.length : true))
 			);
 			const updatedWebsite = (
 				await db.update(websiteTable).set(setMap).where(eq(websiteTable.id, dbId)).returning()
