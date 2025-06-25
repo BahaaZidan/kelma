@@ -10,6 +10,7 @@
  */
 const PAGES = {
   "/": `/`,
+  "/console": `/console`,
   "/embeds/[website_id]/[page_slug]/comments": (params: { website_id: (string | number), page_slug: (string | number) }) => {
     return `/embeds/${params['website_id']}/${params['page_slug']}/comments`
   },
@@ -144,7 +145,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/login': never }
+  PAGES: { '/': never, '/console': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/login': never }
   SERVERS: { 'GET /api/graphql': never, 'POST /api/graphql': never, 'OPTIONS /api/graphql': never }
   ACTIONS: Record<string, never>
   LINKS: Record<string, never>
