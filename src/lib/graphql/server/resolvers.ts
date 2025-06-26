@@ -318,14 +318,15 @@ export const resolvers: Resolvers = {
 					)
 				)
 				.limit(pageSize + 1);
-
 			const comments = commentsWExtraOne.slice(0, pageSize);
 
 			return {
 				edges: comments.map((c) => ({ node: c, cursor: toGlobalId('Comment', c.id) })),
 				pageInfo: {
 					hasNextPage: commentsWExtraOne.length > comments.length,
-					endCursor: toGlobalId('Comment', comments[comments.length - 1].id),
+					endCursor: comments.length
+						? toGlobalId('Comment', comments[comments.length - 1].id)
+						: null,
 				},
 			};
 		},
