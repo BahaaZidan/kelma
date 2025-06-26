@@ -1,12 +1,15 @@
 <script lang="ts">
+	import { LayoutDashboardIcon, LogOutIcon } from '@lucide/svelte';
 	import { siGithub } from 'simple-icons';
 
+	import { route } from '$lib/__generated__/routes';
 	import { authClient, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/components/BrandIcon.svelte';
 
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
+	let user = $derived(data.session?.user);
 
 	async function githubSignIn() {
 		await authClient.signIn.social({ provider: 'github' });
@@ -38,8 +41,22 @@
 		</div>
 		<div class="navbar-center hidden lg:flex"></div>
 		<div class="navbar-end">
-			{#if data.session}
-				<button onclick={signOut} class="btn">Signout</button>
+			{#if user}
+				<div class="dropdown dropdown-end">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+						<div class="w-10 rounded-full">
+							<img alt="{user.name} Avatar" src={user.image} />
+						</div>
+					</div>
+					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+					<ul
+						tabindex="0"
+						class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+					>
+						<li><a href={route('/console')}><LayoutDashboardIcon /> Console</a></li>
+						<li><button onclick={signOut}><LogOutIcon /> Logout</button></li>
+					</ul>
+				</div>
 			{:else}
 				<button onclick={githubSignIn} class="btn">Login <BrandIcon icon={siGithub} /></button>
 			{/if}
