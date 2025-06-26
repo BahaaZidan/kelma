@@ -20,6 +20,7 @@ const config: IGraphQLConfig = {
 						'typescript-resolvers',
 					],
 					config: {
+						enumsAsTypes: true,
 						maybeValue: 'T | null | undefined',
 						useTypeImports: true,
 						contextType: '$lib/graphql/server/context#Context',

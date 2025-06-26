@@ -51,6 +51,26 @@ type Website implements Node {
 	preModeration: Boolean!
 	domains: [String!]!
 	page(input: PageInput!): Page
+	embedSettings: WebsiteEmbedSettings!
+}
+
+enum WebsiteEmbedTheme {
+	dark
+	light
+}
+enum WebsiteEmbedDirection {
+	rtl
+	ltr
+}
+enum WebsiteEmbedLanguage {
+	ar
+	en
+}
+
+type WebsiteEmbedSettings {
+	theme: WebsiteEmbedTheme!
+	dir: WebsiteEmbedDirection!
+	lang: WebsiteEmbedLanguage!
 }
 
 input PageInput {

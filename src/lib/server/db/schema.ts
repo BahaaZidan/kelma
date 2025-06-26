@@ -81,41 +81,11 @@ export const websiteTable = sqliteTable('website', {
 			dir: 'rtl' | 'ltr';
 			// TODO: support an ISO standard or smth
 			lang: 'ar' | 'en';
-			labels: {
-				commentTextarea: string;
-				submit: string;
-				loggedInAs: string;
-				pageSettings: string;
-				closed: string;
-				preModeration: string;
-				login: string;
-				logout: string;
-				loadMore: string;
-				nothingMoreToLoad: string;
-				edit: string;
-				delete: string;
-				approve: string;
-			};
 		}>()
 		.default({
 			theme: 'dark',
 			dir: 'ltr',
 			lang: 'en',
-			labels: {
-				commentTextarea: 'Comment',
-				submit: 'Submit',
-				loggedInAs: 'Logged in as',
-				pageSettings: 'Page Settings',
-				closed: 'Closed',
-				preModeration: 'Pre Moderation',
-				login: 'Login',
-				logout: 'Logout',
-				loadMore: 'Load more',
-				nothingMoreToLoad: 'Nothing more to load',
-				edit: 'Edit',
-				delete: 'Delete',
-				approve: 'Approve',
-			},
 		}),
 });
 export type WebsiteSelectModel = InferSelectModel<typeof websiteTable>;
