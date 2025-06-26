@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { PlusIcon } from '@lucide/svelte';
+	import { CopyIcon, PlusIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';
 
 	import { graphql } from '$houdini';
 
+	import { Toasts } from '$lib/client/toasts.svelte';
 	import TextArrayInput from '$lib/components/TextArrayInput.svelte';
 	import TextInput from '$lib/components/TextInput.svelte';
 
@@ -40,10 +41,10 @@
 		validators: valibot(baseInfoSchema),
 		async onUpdate({ form }) {
 			if (form.valid) {
-				const lolo = await CreateWebsite.mutate({
+				const result = await CreateWebsite.mutate({
 					input: { name: form.data.name, domains: form.data.domains },
 				});
-				selectedWebsiteId = lolo.data?.createWebsite.id;
+				selectedWebsiteId = result.data?.createWebsite.id;
 				createWebsiteDialog.close();
 			}
 		},
@@ -72,7 +73,21 @@
 				onclick={() => (selectedWebsiteId = website.id)}
 			/>
 			<div class="tab-content bg-base-100 border-base-300 p-6">
-				<BaseInfoForm data={website} />
+				<div class="flex flex-col gap-3">
+					<div>
+						Website ID: <button
+							class="btn btn-xs btn-info"
+							onclick={() => {
+								navigator.clipboard.writeText(website.id);
+								Toasts.add({ type: 'info', message: 'Website ID copied!' });
+							}}
+						>
+							<CopyIcon size={18} />
+							{website.id}
+						</button>
+					</div>
+					<BaseInfoForm data={website} />
+				</div>
 			</div>
 		{/each}
 		<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>

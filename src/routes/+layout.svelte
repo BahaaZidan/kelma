@@ -11,7 +11,11 @@
 		<div
 			class={[
 				'alert',
-				{ 'alert-success': toast.type === 'success', 'alert-error': toast.type === 'error' },
+				{
+					'alert-success': toast.type === 'success',
+					'alert-error': toast.type === 'error',
+					'alert-info': toast.type === 'info',
+				},
 			]}
 		>
 			<span>{toast.message}</span>
