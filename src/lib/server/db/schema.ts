@@ -75,18 +75,6 @@ export const websiteTable = sqliteTable('website', {
 	preModeration: integer('pre_moderation', { mode: 'boolean' })
 		.default(sql`0`)
 		.notNull(),
-	embedSettings: text('embed_settings', { mode: 'json' })
-		.$type<{
-			theme: 'dark' | 'light';
-			dir: 'rtl' | 'ltr';
-			// TODO: support an ISO standard or smth
-			lang: 'ar' | 'en';
-		}>()
-		.default({
-			theme: 'dark',
-			dir: 'ltr',
-			lang: 'en',
-		}),
 });
 export type WebsiteSelectModel = InferSelectModel<typeof websiteTable>;
 

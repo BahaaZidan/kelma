@@ -234,7 +234,6 @@ export type User = Node & {
 export type Website = Node & {
   __typename?: 'Website';
   domains: Array<Scalars['String']['output']>;
-  embedSettings: WebsiteEmbedSettings;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   owner: User;
@@ -246,25 +245,6 @@ export type Website = Node & {
 export type WebsitePageArgs = {
   input: PageInput;
 };
-
-export type WebsiteEmbedDirection =
-  | 'ltr'
-  | 'rtl';
-
-export type WebsiteEmbedLanguage =
-  | 'ar'
-  | 'en';
-
-export type WebsiteEmbedSettings = {
-  __typename?: 'WebsiteEmbedSettings';
-  dir: WebsiteEmbedDirection;
-  lang: WebsiteEmbedLanguage;
-  theme: WebsiteEmbedTheme;
-};
-
-export type WebsiteEmbedTheme =
-  | 'dark'
-  | 'light';
 
 
 
@@ -374,10 +354,6 @@ export type ResolversTypes = {
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: ResolverTypeWrapper<UserSelectModel>;
   Website: ResolverTypeWrapper<WebsiteSelectModel>;
-  WebsiteEmbedDirection: WebsiteEmbedDirection;
-  WebsiteEmbedLanguage: WebsiteEmbedLanguage;
-  WebsiteEmbedSettings: ResolverTypeWrapper<WebsiteEmbedSettings>;
-  WebsiteEmbedTheme: WebsiteEmbedTheme;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -410,7 +386,6 @@ export type ResolversParentTypes = {
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: UserSelectModel;
   Website: WebsiteSelectModel;
-  WebsiteEmbedSettings: WebsiteEmbedSettings;
 };
 
 export type Comment_DeleteDirectiveArgs = { };
@@ -630,19 +605,11 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type WebsiteResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Website'] = ResolversParentTypes['Website']> = {
   domains?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  embedSettings?: Resolver<ResolversTypes['WebsiteEmbedSettings'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   page?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<WebsitePageArgs, 'input'>>;
   preModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type WebsiteEmbedSettingsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['WebsiteEmbedSettings'] = ResolversParentTypes['WebsiteEmbedSettings']> = {
-  dir?: Resolver<ResolversTypes['WebsiteEmbedDirection'], ParentType, ContextType>;
-  lang?: Resolver<ResolversTypes['WebsiteEmbedLanguage'], ParentType, ContextType>;
-  theme?: Resolver<ResolversTypes['WebsiteEmbedTheme'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -663,7 +630,6 @@ export type Resolvers<ContextType = Context> = {
   URL?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Website?: WebsiteResolvers<ContextType>;
-  WebsiteEmbedSettings?: WebsiteEmbedSettingsResolvers<ContextType>;
 };
 
 export type DirectiveResolvers<ContextType = Context> = {
