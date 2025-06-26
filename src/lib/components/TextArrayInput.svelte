@@ -3,6 +3,7 @@
 
 	import AddInputButton from './AddInputButton.svelte';
 	import FieldSet from './FieldSet.svelte';
+	import InputFieldError from './InputFieldError.svelte';
 	import TextInput from './TextInput.svelte';
 
 	interface Props {
@@ -14,7 +15,7 @@
 
 	let { superform, field, label, addInputText }: Props = $props();
 
-	const { values } = arrayProxy(superform, field);
+	const { values, errors } = arrayProxy(superform, field);
 </script>
 
 <FieldSet>
@@ -32,5 +33,6 @@
 			initialValue={() => '' as never}
 			text={addInputText ?? 'Add'}
 		/>
+		<InputFieldError errors={$errors} />
 	</div>
 </FieldSet>
