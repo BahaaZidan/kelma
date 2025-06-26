@@ -9,6 +9,7 @@
 	import { Toasts } from '$lib/client/toasts.svelte';
 	import TextArrayInput from '$lib/components/TextArrayInput.svelte';
 	import TextInput from '$lib/components/TextInput.svelte';
+	import TitledSection from '$lib/components/TitledSection.svelte';
 
 	import BaseInfoForm from './BaseInfoForm.svelte';
 	import { baseInfoSchema } from './schemas';
@@ -87,7 +88,7 @@
 					onclick={() => (selectedWebsiteId = website.id)}
 				/>
 				<div class="tab-content bg-base-100 border-base-300 p-6">
-					<div class="flex flex-col gap-3">
+					<TitledSection title="Basic Settings">
 						<div>
 							Website ID: <button
 								class="btn btn-xs btn-info"
@@ -101,7 +102,7 @@
 							</button>
 						</div>
 						<BaseInfoForm data={website} />
-					</div>
+					</TitledSection>
 				</div>
 			{/each}
 			<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
