@@ -4,6 +4,7 @@
 
 	import { fragment, graphql, type BaseInfoFormComponent } from '$houdini';
 
+	import Checkbox from '$lib/components/Checkbox.svelte';
 	import TextArrayInput from '$lib/components/TextArrayInput.svelte';
 	import TextInput from '$lib/components/TextInput.svelte';
 
@@ -35,7 +36,12 @@
 		async onUpdate({ form }) {
 			if (form.valid) {
 				await UpdateWebsiteBasicInfo.mutate({
-					input: { id: $website.id, name: form.data.name, domains: form.data.domains },
+					input: {
+						id: $website.id,
+						name: form.data.name,
+						domains: form.data.domains,
+						preModeration: form.data.preModeration,
+					},
 				});
 			}
 		},
@@ -57,6 +63,7 @@
 
 <form method="post" use:enhance class="flex flex-col gap-3">
 	<TextInput {superform} field="name" label="Name" />
+	<Checkbox {superform} field="preModeration" label="Pre-moderation" />
 	<TextArrayInput {superform} field="domains" label="Domains" />
 	<button class="btn" type="submit" disabled={$UpdateWebsiteBasicInfo.fetching}>Submit</button>
 </form>

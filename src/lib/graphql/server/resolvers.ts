@@ -220,11 +220,11 @@ export const resolvers: Resolvers = {
 			if (!locals.session || !locals.session.websitesOwnedByCurrentUser?.includes(dbId))
 				throw new GraphQLError('UNAUTHORIZED');
 
-			const setMap = Object.fromEntries(
-				Object.entries(input)
-					.filter(([key, value]) => key !== 'id' && !!value)
-					.filter(([, value]) => (Array.isArray(value) ? !!value.length : true))
-			);
+			const setMap = {
+				...(input.name ? { name: input.name } : {}),
+				...(input.domains?.length ? { domains: input.domains } : {}),
+				...(typeof input.preModeration === 'boolean' ? { preModeration: input.preModeration } : {}),
+			};
 			const updatedWebsite = (
 				await db.update(websiteTable).set(setMap).where(eq(websiteTable.id, dbId)).returning()
 			)[0];

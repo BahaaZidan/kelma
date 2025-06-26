@@ -222,6 +222,7 @@ export type UpdateWebsiteInput = {
   domains?: InputMaybe<Array<Scalars['String']['input']>>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
+  preModeration?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type User = Node & {
@@ -393,6 +394,10 @@ export type ResolversParentTypes = {
 export type Comment_DeleteDirectiveArgs = { };
 
 export type Comment_DeleteDirectiveResolver<Result, Parent, ContextType = Context, Args = Comment_DeleteDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type Website_DeleteDirectiveArgs = { };
+
+export type Website_DeleteDirectiveResolver<Result, Parent, ContextType = Context, Args = Website_DeleteDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type AllListsDirectiveArgs = { };
 
@@ -632,6 +637,7 @@ export type Resolvers<ContextType = Context> = {
 
 export type DirectiveResolvers<ContextType = Context> = {
   Comment_delete?: Comment_DeleteDirectiveResolver<any, any, ContextType>;
+  Website_delete?: Website_DeleteDirectiveResolver<any, any, ContextType>;
   allLists?: AllListsDirectiveResolver<any, any, ContextType>;
   append?: AppendDirectiveResolver<any, any, ContextType>;
   arguments?: ArgumentsDirectiveResolver<any, any, ContextType>;

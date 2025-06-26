@@ -18,6 +18,7 @@ input UpdateWebsiteInput {
 	id: ID!
 	name: String
 	domains: [String!]
+	preModeration: Boolean
 }
 
 input CreateWebsiteInput {
