@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CopyIcon, PlusIcon } from '@lucide/svelte';
+	import { CircleAlertIcon, CopyIcon, PlusIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';
@@ -62,36 +62,51 @@
 </script>
 
 {#if viewer}
-	<div class="tabs tabs-lift p-4">
-		{#each viewer.websites as website (website.id)}
-			<input
-				type="radio"
-				name={website.id}
-				class="tab"
-				aria-label={website.name}
-				checked={website.id === selectedWebsiteId}
-				onclick={() => (selectedWebsiteId = website.id)}
-			/>
-			<div class="tab-content bg-base-100 border-base-300 p-6">
-				<div class="flex flex-col gap-3">
-					<div>
-						Website ID: <button
-							class="btn btn-xs btn-info"
-							onclick={() => {
-								navigator.clipboard.writeText(website.id);
-								Toasts.add({ type: 'info', message: 'Website ID copied!' });
-							}}
-						>
-							<CopyIcon size={18} />
-							{website.id}
-						</button>
+	{#if !viewer.websites.length}
+		<div role="alert" class="alert alert-info">
+			<CircleAlertIcon />
+			<span>
+				You need to <button
+					class="btn btn-link p-0 align-baseline"
+					onclick={() => createWebsiteDialog.showModal()}
+				>
+					create a website
+				</button>
+				to use console.
+			</span>
+		</div>
+	{:else}
+		<div class="tabs tabs-lift p-4">
+			{#each viewer.websites as website (website.id)}
+				<input
+					type="radio"
+					name={website.id}
+					class="tab"
+					aria-label={website.name}
+					checked={website.id === selectedWebsiteId}
+					onclick={() => (selectedWebsiteId = website.id)}
+				/>
+				<div class="tab-content bg-base-100 border-base-300 p-6">
+					<div class="flex flex-col gap-3">
+						<div>
+							Website ID: <button
+								class="btn btn-xs btn-info"
+								onclick={() => {
+									navigator.clipboard.writeText(website.id);
+									Toasts.add({ type: 'info', message: 'Website ID copied!' });
+								}}
+							>
+								<CopyIcon size={18} />
+								{website.id}
+							</button>
+						</div>
+						<BaseInfoForm data={website} />
 					</div>
-					<BaseInfoForm data={website} />
 				</div>
-			</div>
-		{/each}
-		<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
-	</div>
+			{/each}
+			<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
+		</div>
+	{/if}
 {/if}
 
 <dialog bind:this={createWebsiteDialog} class="modal">
