@@ -163,16 +163,13 @@
 			{/if}
 		</div>
 		<div class="flex w-full flex-col items-end gap-2">
-			<label class="floating-label w-full">
-				<textarea
-					bind:this={commentTextarea}
-					bind:value={commentValue}
-					placeholder={m.comment()}
-					class="textarea w-full"
-					disabled={!website.page.permissions.createComment}
-				></textarea>
-				<span>{m.comment()}</span>
-			</label>
+			<textarea
+				bind:this={commentTextarea}
+				bind:value={commentValue}
+				placeholder={m.comment()}
+				class="textarea w-full"
+				disabled={!website.page.permissions.createComment}
+			></textarea>
 			<button
 				class="btn"
 				disabled={!commentValue.length}
