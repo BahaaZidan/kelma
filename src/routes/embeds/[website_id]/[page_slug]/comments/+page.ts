@@ -1,4 +1,5 @@
 import { error } from '@sveltejs/kit';
+import themeObject from 'daisyui/theme/object';
 import * as v from 'valibot';
 
 import type { PageLoad } from './$types';
@@ -23,10 +24,19 @@ export const load: PageLoad = async ({ params, url }) => {
 				},
 			},
 		},
+		theme: searchParams.theme,
+		lang: searchParams.lang,
+		dir: searchParams.dir,
 	};
 };
+
+const supportedLanguages = ['ar', 'en'] as const;
+const supportedThemes = Object.keys(themeObject);
 
 const searchParamsSchema = v.object({
 	name: v.pipe(v.string(), v.trim(), v.nonEmpty()),
 	url: v.pipe(v.string(), v.trim(), v.url()),
+	theme: v.optional(v.picklist(supportedThemes), 'business'),
+	lang: v.optional(v.picklist(supportedLanguages), 'en'),
+	dir: v.optional(v.picklist(['rtl', 'ltr']), 'ltr'),
 });

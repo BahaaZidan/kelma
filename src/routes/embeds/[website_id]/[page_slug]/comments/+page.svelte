@@ -100,7 +100,7 @@
 </script>
 
 {#if website?.page}
-	<div class="flex flex-col items-center gap-2">
+	<div data-theme={data.theme} class="flex flex-col items-center gap-2">
 		<div class="flex w-full items-center justify-between">
 			{#if data.session}
 				<div class="flex items-center gap-1">
