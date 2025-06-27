@@ -8,6 +8,8 @@
 	import { route } from '$lib/__generated__/routes';
 	import { signOut } from '$lib/client/auth';
 	import Comment from '$lib/components/Comment.svelte';
+	import { m } from '$lib/paraglide/messages.js';
+	import { setLocale } from '$lib/paraglide/runtime';
 
 	import type { PageProps } from './$types';
 
@@ -58,7 +60,6 @@
 			}
 		}
 	`);
-
 	const TogglePageClosed = graphql(`
 		mutation TogglePageClosed($id: ID!) {
 			togglePageClosed(id: $id) {
@@ -67,7 +68,6 @@
 			}
 		}
 	`);
-
 	const TogglePagePreModeration = graphql(`
 		mutation TogglePagePreModeration($id: ID!) {
 			togglePagePreModeration(id: $id) {
@@ -88,7 +88,6 @@
 			'*'
 		);
 	}
-
 	onMount(() => {
 		window.addEventListener('load', sendHeight);
 		const observer = new MutationObserver(sendHeight);
@@ -101,6 +100,11 @@
 		element: () => commentTextarea,
 		input: () => commentValue,
 	});
+
+	$effect(() => {
+		setLocale(data.lang);
+		document.dir = data.dir;
+	});
 </script>
 
 {#if website?.page}
@@ -109,13 +113,14 @@
 			{#if data.session}
 				<div class="flex items-center gap-1">
 					<div>
-						Logged in as <b>{data.session.user.name}</b>
+						{m.logged_in_as()}
+						<b>{data.session.user.name}</b>
 					</div>
 					{#if website.page.permissions.toggleClosed && website.page.permissions.togglePreModeration}
 						<details class="dropdown">
 							<summary class="btn btn-sm btn-warning m-1"><SettingsIcon size={18} /></summary>
 							<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-								<div class="mb-2 pl-2 font-bold">Page Settings</div>
+								<div class="mb-2 pl-2 font-bold">{m.page_settings()}</div>
 								<li>
 									<label class="label">
 										<input
@@ -127,7 +132,7 @@
 												if (website.page) TogglePageClosed.mutate({ id: website.page.id });
 											}}
 										/>
-										Closed
+										{m.closed()}
 									</label>
 								</li>
 								<li>
@@ -141,24 +146,25 @@
 												if (website.page) TogglePagePreModeration.mutate({ id: website.page.id });
 											}}
 										/>
-										Pre Moderation
+										{m.pre_moderation()}
 									</label>
 								</li>
 							</ul>
 						</details>
 					{/if}
 				</div>
-				<button class="btn btn-ghost" onclick={signOut}>Logout</button>
+				<button class="btn btn-ghost" onclick={signOut}>{m.logout()}</button>
 			{:else}
 				<span>
-					You must <a
+					{m.you_must()}
+					<a
 						class="link font-bold"
 						target="_top"
 						href="{route('/embeds/login')}?callback_url={website.page.url}"
 					>
-						login
+						{m.login()}
 					</a>
-					to comment
+					{m.to_comment()}
 				</span>
 			{/if}
 		</div>
@@ -167,14 +173,15 @@
 				<textarea
 					bind:this={commentTextarea}
 					bind:value={commentValue}
-					placeholder="Comment"
+					placeholder={m.comment()}
 					class="textarea w-full"
 					disabled={!website.page.permissions.createComment}
 				></textarea>
-				<span>Comment</span>
+				<span>{m.comment()}</span>
 			</label>
 			<button
 				class="btn"
+				disabled={!commentValue.length}
 				onclick={async () => {
 					if (!website.page) return;
 					await CreateComment.mutate({
@@ -183,7 +190,7 @@
 					commentValue = '';
 				}}
 			>
-				Submit
+				{m.submit()}
 			</button>
 		</div>
 		<div class="flex w-full flex-col gap-4 px-2">
@@ -197,14 +204,15 @@
 				disabled={!$query.pageInfo.hasNextPage || $query.fetching}
 			>
 				{#if $query.fetching}
-					Loading more...
+					{m.loading_more()}
 				{:else if $query.pageInfo.hasNextPage}
-					Load More
-				{:else}Nothing more to load{/if}
+					{m.load_more()}
+				{:else}{m.nothing_more_to_load()}{/if}
 			</button>
 		</div>
 		<span class="py-6">
-			Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
+			{m.powered_by()}
+			<a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
 		</span>
 	</div>
 {/if}
