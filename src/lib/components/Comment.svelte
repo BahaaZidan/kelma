@@ -6,8 +6,11 @@
 		Trash2Icon,
 	} from '@lucide/svelte';
 	import { formatDistance } from 'date-fns';
+	import { arEG, enUS } from 'date-fns/locale';
 
 	import { fragment, graphql, type CommentComponent } from '$houdini';
+
+	import { getLocale } from '$lib/paraglide/runtime';
 
 	type Props = {
 		data: CommentComponent;
@@ -50,7 +53,6 @@
 			}
 		}
 	`);
-
 	const UpdateCommentContent = graphql(`
 		mutation UpdateCommentContent($input: UpdateCommentContentInput!) {
 			updateCommentContent(input: $input) {
@@ -61,7 +63,6 @@
 			}
 		}
 	`);
-
 	const PublishComment = graphql(`
 		mutation PublishComment($input: PublishCommentInput!) {
 			publishComment(input: $input) {
@@ -73,6 +74,11 @@
 			}
 		}
 	`);
+
+	const localeMap = {
+		en: enUS,
+		ar: arEG,
+	} as const;
 </script>
 
 <div class="flex items-start gap-4">
@@ -86,7 +92,10 @@
 			<span>
 				<b>{author.name}</b>
 				<span class="text-secondary text-sm">
-					{formatDistance(createdAt, new Date(), { addSuffix: true })}
+					{formatDistance(createdAt, new Date(), {
+						addSuffix: true,
+						locale: localeMap[getLocale()],
+					})}
 				</span>
 				{#if !published}
 					<div class="badge badge-info badge-sm rounded-2xl">Awaiting Approval</div>
