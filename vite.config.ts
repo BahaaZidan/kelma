@@ -1,4 +1,5 @@
 import path from 'path';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import houdini from 'houdini/vite';
@@ -11,7 +12,13 @@ export default defineConfig({
 		houdini(),
 		tailwindcss(),
 		sveltekit(),
-		kitRoutes({ generated_file_path: 'src/lib/__generated__/routes.ts' }),
+		paraglideVitePlugin({
+			project: './project.inlang',
+			outdir: './src/lib/paraglide',
+		}),
+		kitRoutes({
+			generated_file_path: 'src/lib/__generated__/routes.ts',
+		}),
 		watchAndRun([
 			{
 				name: 'graphql:gen',

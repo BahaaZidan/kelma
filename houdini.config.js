@@ -15,6 +15,7 @@ const config = {
 			type: 'string',
 		},
 	},
+	exclude: ['src/lib/paraglide/**/*'],
 };
 
 export default config;

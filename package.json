@@ -61,6 +61,7 @@
 		"vite-plugin-watch-and-run": "^1.7.5"
 	},
 	"dependencies": {
+		"@inlang/paraglide-js": "^2.0.0",
 		"better-auth": "^1.2.8",
 		"better-sqlite3": "^11.8.0",
 		"dataloader": "^2.2.3",
