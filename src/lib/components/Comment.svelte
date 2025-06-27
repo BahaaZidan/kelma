@@ -10,6 +10,7 @@
 
 	import { fragment, graphql, type CommentComponent } from '$houdini';
 
+	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
 
 	type Props = {
@@ -84,7 +85,7 @@
 <div class="flex items-start gap-4">
 	<img
 		src={author.image || 'https://avatars.githubusercontent.com/u/22656046?v=4'}
-		alt="{author.name} profile picture"
+		alt="{author.name} {m.profile_picture()}"
 		class="mt-1 size-10 rounded-full"
 	/>
 	{#if !editing}
@@ -98,7 +99,7 @@
 					})}
 				</span>
 				{#if !published}
-					<div class="badge badge-info badge-sm rounded-2xl">Awaiting Approval</div>
+					<div class="badge badge-info badge-sm rounded-2xl">{m.awaiting_approval()}</div>
 				{/if}
 			</span>
 			<span class="whitespace-pre-wrap">{content}</span>
@@ -116,7 +117,8 @@
 					{#if permissions.approve}
 						<li>
 							<button onclick={() => PublishComment.mutate({ input: { commentId: id } })}>
-								<SquareCheckBigIcon /> Approve
+								<SquareCheckBigIcon />
+								{m.approve()}
 							</button>
 						</li>
 					{/if}
@@ -128,7 +130,8 @@
 									if (confirmed) DeleteComment.mutate({ input: { commentId: id } });
 								}}
 							>
-								<Trash2Icon /> Delete
+								<Trash2Icon />
+								{m.delete()}
 							</button>
 						</li>
 					{/if}
@@ -139,7 +142,8 @@
 									editing = true;
 								}}
 							>
-								<SquarePenIcon /> Edit
+								<SquarePenIcon />
+								{m.edit()}
 							</button>
 						</li>
 					{/if}
@@ -150,7 +154,7 @@
 		<div class="flex grow flex-col gap-3">
 			<textarea class="textarea w-full" name="content" bind:value={contentVal}></textarea>
 			<div class="flex justify-end gap-2">
-				<button class="btn" onclick={() => (editing = false)}>Cancel</button>
+				<button class="btn" onclick={() => (editing = false)}>{m.cancel()}</button>
 				<button
 					class="btn"
 					onclick={async () => {
@@ -158,7 +162,7 @@
 						editing = false;
 					}}
 				>
-					Submit
+					{m.submit()}
 				</button>
 			</div>
 		</div>
