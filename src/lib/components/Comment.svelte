@@ -6,7 +6,7 @@
 		Trash2Icon,
 	} from '@lucide/svelte';
 	import { formatDistance } from 'date-fns';
-	import { arEG, enUS } from 'date-fns/locale';
+	import { ar, enUS } from 'date-fns/locale';
 
 	import { fragment, graphql, type CommentComponent } from '$houdini';
 
@@ -78,7 +78,7 @@
 
 	const localeMap = {
 		en: enUS,
-		ar: arEG,
+		ar,
 	} as const;
 </script>
 
