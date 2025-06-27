@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { SettingsIcon } from '@lucide/svelte';
+	import { TextareaAutosize } from 'runed';
 	import { onMount } from 'svelte';
 
 	import { graphql } from '$houdini';
@@ -50,28 +51,6 @@
 			variables: data.queryVariables,
 		});
 	});
-
-	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
-
-	function sendHeight() {
-		const height = document.body.scrollHeight;
-		window.parent.postMessage(
-			{
-				type: 'resize',
-				height: height,
-			},
-			'*'
-		);
-	}
-
-	onMount(() => {
-		window.addEventListener('load', sendHeight);
-		const observer = new MutationObserver(sendHeight);
-		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-	});
-
-	let commentValue = $state('');
-
 	const CreateComment = graphql(`
 		mutation CreateComment($input: CreateCommentInput!) {
 			createComment(input: $input) {
@@ -97,6 +76,31 @@
 			}
 		}
 	`);
+	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
+
+	function sendHeight() {
+		const height = document.body.scrollHeight;
+		window.parent.postMessage(
+			{
+				type: 'resize',
+				height: height,
+			},
+			'*'
+		);
+	}
+
+	onMount(() => {
+		window.addEventListener('load', sendHeight);
+		const observer = new MutationObserver(sendHeight);
+		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+	});
+
+	let commentTextarea = $state<HTMLTextAreaElement>(null!);
+	let commentValue = $state('');
+	new TextareaAutosize({
+		element: () => commentTextarea,
+		input: () => commentValue,
+	});
 </script>
 
 {#if website?.page}
@@ -161,9 +165,10 @@
 		<div class="flex w-full flex-col items-end gap-2">
 			<label class="floating-label w-full">
 				<textarea
+					bind:this={commentTextarea}
+					bind:value={commentValue}
 					placeholder="Comment"
 					class="textarea w-full"
-					bind:value={commentValue}
 					disabled={!website.page.permissions.createComment}
 				></textarea>
 				<span>Comment</span>
