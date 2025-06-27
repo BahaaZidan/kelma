@@ -26,7 +26,7 @@ export const load: PageLoad = async ({ params, url }) => {
 		},
 		theme: searchParams.theme,
 		lang: searchParams.lang,
-		dir: searchParams.dir,
+		dir: inferDir(searchParams.lang),
 	};
 };
 
@@ -38,5 +38,9 @@ const searchParamsSchema = v.object({
 	url: v.pipe(v.string(), v.trim(), v.url()),
 	theme: v.optional(v.picklist(supportedThemes), 'business'),
 	lang: v.optional(v.picklist(supportedLanguages), 'en'),
-	dir: v.optional(v.picklist(['rtl', 'ltr']), 'ltr'),
 });
+
+function inferDir(lang: (typeof supportedLanguages)[number]): 'rtl' | 'ltr' {
+	if (lang === 'ar') return 'rtl';
+	return 'ltr';
+}
