@@ -15,6 +15,7 @@ export default defineConfig({
 		paraglideVitePlugin({
 			project: './project.inlang',
 			outdir: './src/lib/paraglide',
+			strategy: ['url'],
 		}),
 		kitRoutes({
 			generated_file_path: 'src/lib/__generated__/routes.ts',

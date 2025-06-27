@@ -9,7 +9,6 @@
 	import { signOut } from '$lib/client/auth';
 	import Comment from '$lib/components/Comment.svelte';
 	import { m } from '$lib/paraglide/messages.js';
-	import { setLocale } from '$lib/paraglide/runtime';
 
 	import type { PageProps } from './$types';
 
@@ -99,11 +98,6 @@
 	new TextareaAutosize({
 		element: () => commentTextarea,
 		input: () => commentValue,
-	});
-
-	$effect(() => {
-		setLocale(data.lang);
-		document.dir = data.dir;
 	});
 </script>
 

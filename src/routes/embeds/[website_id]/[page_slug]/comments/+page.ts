@@ -25,22 +25,13 @@ export const load: PageLoad = async ({ params, url }) => {
 			},
 		},
 		theme: searchParams.theme,
-		lang: searchParams.lang,
-		dir: inferDir(searchParams.lang),
 	};
 };
 
-const supportedLanguages = ['ar', 'en'] as const;
 const supportedThemes = Object.keys(themeObject);
 
 const searchParamsSchema = v.object({
 	name: v.pipe(v.string(), v.trim(), v.nonEmpty()),
 	url: v.pipe(v.string(), v.trim(), v.url()),
 	theme: v.optional(v.picklist(supportedThemes), 'business'),
-	lang: v.optional(v.picklist(supportedLanguages), 'en'),
 });
-
-function inferDir(lang: (typeof supportedLanguages)[number]): 'rtl' | 'ltr' {
-	if (lang === 'ar') return 'rtl';
-	return 'ltr';
-}
