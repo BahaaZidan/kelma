@@ -28,6 +28,13 @@ export default defineConfig({
 				delay: 10,
 				logs: ['streamError'],
 			},
+			{
+				name: 'cf:gen',
+				watch: [path.resolve('wrangler.jsonc')],
+				run: 'pnpm cf:gen',
+				delay: 10,
+				logs: ['streamError'],
+			},
 		]),
 	],
 });
