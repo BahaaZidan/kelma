@@ -4,13 +4,13 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 import { inferDir } from '$lib/i18n';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import { auth } from '$lib/server/auth';
+import { auth, type Session } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const session = await auth.api.getSession({ headers: event.request.headers });
 
-	event.locals.session = session;
+	event.locals.session = session as Session;
 
 	if (event.locals.session && session) {
 		const websitesOwnedByCurrentUser = (
