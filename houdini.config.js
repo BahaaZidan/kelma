@@ -15,7 +15,8 @@ const config = {
 			type: 'string',
 		},
 	},
-	exclude: ['src/lib/paraglide/**/*'],
+	// TODO: consider using "include" instead.
+	exclude: ['src/lib/paraglide/**/*', 'src/worker-configuration.d.ts'],
 };
 
 export default config;
