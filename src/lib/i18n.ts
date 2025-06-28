@@ -1,6 +1,6 @@
-export const supportedLanguages = ['ar', 'en'] as const;
+import { type Locale } from '$lib/paraglide/runtime';
 
-export function inferDir(lang: (typeof supportedLanguages)[number]): 'rtl' | 'ltr' {
+export function inferDir(lang: Locale): 'rtl' | 'ltr' {
 	if (lang === 'ar') return 'rtl';
 	return 'ltr';
 }
