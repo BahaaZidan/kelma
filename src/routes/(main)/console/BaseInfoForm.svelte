@@ -33,6 +33,7 @@
 	const superform = superForm(defaults($website, valibot(baseInfoSchema)), {
 		SPA: true,
 		validators: valibot(baseInfoSchema),
+		id: $website.id,
 		async onUpdate({ form }) {
 			if (form.valid) {
 				await UpdateWebsiteBasicInfo.mutate({
