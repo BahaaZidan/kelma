@@ -5,7 +5,6 @@ import { Base64 } from 'js-base64';
 import * as v from 'valibot';
 
 import type { Resolvers } from '$lib/__generated__/graphql-resolvers-types';
-import { db } from '$lib/server/db';
 import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
 
 const schema = v.object({
@@ -14,7 +13,7 @@ const schema = v.object({
 
 export const resolvers: Resolvers = {
 	Query: {
-		node: async (_parent, { id }) => {
+		node: async (_parent, { id }, { db }) => {
 			const { type, id: dbId } = fromGlobalId(id);
 			switch (type) {
 				case 'User': {
@@ -48,7 +47,7 @@ export const resolvers: Resolvers = {
 		},
 	},
 	Mutation: {
-		createComment: async (_, { input }, { locals }) => {
+		createComment: async (_, { input }, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 			const inputValidation = v.safeParse(schema, input);
 			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
@@ -94,7 +93,7 @@ export const resolvers: Resolvers = {
 
 			return insertResult;
 		},
-		deleteComment: async (_, { input }, { locals }) => {
+		deleteComment: async (_, { input }, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 
 			const commentId = Number(fromGlobalId(input.commentId).id);
@@ -118,7 +117,7 @@ export const resolvers: Resolvers = {
 
 			return deletedComment;
 		},
-		updateCommentContent: async (_, { input }, { locals }) => {
+		updateCommentContent: async (_, { input }, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 			const inputValidation = v.safeParse(schema, input);
 			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
@@ -141,7 +140,7 @@ export const resolvers: Resolvers = {
 
 			return updatedComment;
 		},
-		publishComment: async (_, { input }, { locals }) => {
+		publishComment: async (_, { input }, { locals, db }) => {
 			if (!locals.session?.websitesOwnedByCurrentUser?.length)
 				throw new GraphQLError('UNAUTHORIZED');
 			const commentId = Number(fromGlobalId(input.commentId).id);
@@ -165,7 +164,7 @@ export const resolvers: Resolvers = {
 
 			return updatedComment;
 		},
-		togglePageClosed: async (_, args, { locals }) => {
+		togglePageClosed: async (_, args, { locals, db }) => {
 			if (!locals.session?.websitesOwnedByCurrentUser?.length)
 				throw new GraphQLError('UNAUTHORIZED');
 
@@ -185,7 +184,7 @@ export const resolvers: Resolvers = {
 
 			return updatedPage;
 		},
-		togglePagePreModeration: async (_, args, { locals }) => {
+		togglePagePreModeration: async (_, args, { locals, db }) => {
 			if (!locals.session?.websitesOwnedByCurrentUser?.length)
 				throw new GraphQLError('UNAUTHORIZED');
 
@@ -205,7 +204,7 @@ export const resolvers: Resolvers = {
 
 			return updatedPage;
 		},
-		createWebsite: async (_, { input }, { locals }) => {
+		createWebsite: async (_, { input }, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 			const createdWebsite = (
 				await db
@@ -215,7 +214,7 @@ export const resolvers: Resolvers = {
 			)[0];
 			return createdWebsite;
 		},
-		updateWebsite: async (_, { input }, { locals }) => {
+		updateWebsite: async (_, { input }, { locals, db }) => {
 			const dbId = Number(fromGlobalId(input.id).id);
 			if (!locals.session || !locals.session.websitesOwnedByCurrentUser?.includes(dbId))
 				throw new GraphQLError('UNAUTHORIZED');
@@ -240,7 +239,7 @@ export const resolvers: Resolvers = {
 	},
 	User: {
 		id: (parent) => toGlobalId('User', parent.id),
-		websites: (parent) => {
+		websites: (parent, _args, { db }) => {
 			return db.select().from(websiteTable).where(eq(websiteTable.ownerId, parent.id));
 		},
 	},
@@ -249,7 +248,7 @@ export const resolvers: Resolvers = {
 		owner: (parent, _args, { loaders }) => {
 			return loaders.users.load(parent.ownerId);
 		},
-		page: async (parent, args) => {
+		page: async (parent, args, { db }) => {
 			const {
 				input: { slug, overrides },
 			} = args;
@@ -284,11 +283,9 @@ export const resolvers: Resolvers = {
 	},
 	Page: {
 		id: (parent) => toGlobalId('Page', parent.id),
-		comments: async (parent, args, context) => {
-			const isWebsiteOwner = context.locals.session?.websitesOwnedByCurrentUser?.includes(
-				parent.websiteId
-			);
-			const loggedInUserId = context.locals.session?.user.id;
+		comments: async (parent, args, { locals, db }) => {
+			const isWebsiteOwner = locals.session?.websitesOwnedByCurrentUser?.includes(parent.websiteId);
+			const loggedInUserId = locals.session?.user.id;
 
 			const cursor = args.after;
 			const pageSize = args.first || 10;

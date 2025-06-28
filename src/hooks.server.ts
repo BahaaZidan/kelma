@@ -4,12 +4,13 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 import { inferDir } from '$lib/i18n';
 import { paraglideMiddleware } from '$lib/paraglide/server';
-import { auth, type Session } from '$lib/server/auth';
-import { db } from '$lib/server/db';
+import { getAuth, type Session } from '$lib/server/auth';
+import { getDB } from '$lib/server/db';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
+	const db = getDB(event.platform?.env.DB);
+	const auth = getAuth(db);
 	const session = await auth.api.getSession({ headers: event.request.headers });
-
 	event.locals.session = session as Session;
 
 	if (event.locals.session && session) {

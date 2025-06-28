@@ -2,6 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { createSchema, createYoga } from 'graphql-yoga';
 
 import { createLoaders } from '$lib/graphql/server/context';
+import { getDB } from '$lib/server/db';
 
 import { resolvers } from './resolvers';
 
@@ -16,7 +17,11 @@ export const requestHandler = createYoga<RequestEvent>({
 	schema: createSchema({ typeDefs, resolvers }),
 	graphqlEndpoint: '/api/graphql',
 	fetchAPI: { Response },
-	context: (event) => ({ ...event, loaders: createLoaders() }),
+	context: (event) => {
+		const db = getDB(event.platform?.env.DB);
+
+		return { ...event, db, loaders: createLoaders(db) };
+	},
 	graphiql: {
 		title: 'gebna.tools API',
 	},

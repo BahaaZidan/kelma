@@ -1,7 +1,4 @@
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-
-import { DATABASE_URL } from '$env/static/private';
+import { drizzle } from 'drizzle-orm/d1';
 
 import {
 	accountTable,
@@ -13,24 +10,22 @@ import {
 	websiteTable,
 } from './schema';
 
-if (!DATABASE_URL) throw new Error('DATABASE_URL is not set');
+const schema = {
+	// DON'T CHANGE - START (better-auth expects these names)
+	user: userTable,
+	session: sessionTable,
+	account: accountTable,
+	verification: verificationTable,
+	// DON'T CHANGE - END
+	website: websiteTable,
+	page: pageTable,
+	comment: commentTable,
+};
 
-const client = new Database(DATABASE_URL, {
-	// verbose(message, ...additionalArgs) {
-	// 	console.log(message);
-	// },
-});
-
-export const db = drizzle(client, {
-	schema: {
-		// DON'T CHANGE - START (better-auth expects these names)
-		user: userTable,
-		session: sessionTable,
-		account: accountTable,
-		verification: verificationTable,
-		// DON'T CHANGE - END
-		website: websiteTable,
-		page: pageTable,
-		comment: commentTable,
-	},
-});
+export type DB = ReturnType<typeof drizzle<typeof schema>>;
+export const getDB = (db?: D1Database): DB => {
+	if (!db) throw new Error('DATABASE NOT FOUND!');
+	return drizzle<typeof schema>(db, {
+		schema,
+	});
+};

@@ -80,6 +80,5 @@ CREATE TABLE `website` (
 	`name` text NOT NULL,
 	`domains` text DEFAULT '[]' NOT NULL,
 	`pre_moderation` integer DEFAULT 0 NOT NULL,
-	`embed_settings` text DEFAULT '{"theme":"dark","dir":"ltr","lang":"en","labels":{"commentTextarea":"Comment","submit":"Submit","loggedInAs":"Logged in as","pageSettings":"Page Settings","closed":"Closed","preModeration":"Pre Moderation","login":"Login","logout":"Logout","loadMore":"Load more","nothingMoreToLoad":"Nothing more to load","edit":"Edit","delete":"Delete","approve":"Approve"}}',
 	FOREIGN KEY (`owner_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );

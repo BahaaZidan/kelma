@@ -5,7 +5,12 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			platformProxy: {
+				configPath: 'wrangler.jsonc',
+				persist: true,
+			},
+		}),
 
 		alias: {
 			$houdini: '.houdini/',

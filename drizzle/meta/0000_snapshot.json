@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ca5e3771-66d9-4f91-ad5e-e30361b664ff",
+  "id": "e0bb317d-4427-4326-bb8e-42ecad18301f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -556,14 +556,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "0"
-        },
-        "embed_settings": {
-          "name": "embed_settings",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "'{\"theme\":\"dark\",\"dir\":\"ltr\",\"lang\":\"en\",\"labels\":{\"commentTextarea\":\"Comment\",\"submit\":\"Submit\",\"loggedInAs\":\"Logged in as\",\"pageSettings\":\"Page Settings\",\"closed\":\"Closed\",\"preModeration\":\"Pre Moderation\",\"login\":\"Login\",\"logout\":\"Logout\",\"loadMore\":\"Load more\",\"nothingMoreToLoad\":\"Nothing more to load\",\"edit\":\"Edit\",\"delete\":\"Delete\",\"approve\":\"Approve\"}}'"
         }
       },
       "indexes": {},

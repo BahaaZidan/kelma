@@ -3,10 +3,10 @@ import DataLoader from 'dataloader';
 import { inArray } from 'drizzle-orm';
 import type { YogaInitialContext } from 'graphql-yoga';
 
-import { db } from '$lib/server/db';
+import type { DB } from '$lib/server/db';
 import { pageTable, userTable, websiteTable } from '$lib/server/db/schema';
 
-export function createLoaders() {
+export function createLoaders(db: DB) {
 	return {
 		users: new DataLoader(async (keys: readonly string[]) => {
 			const usersIds = [...keys];
@@ -30,4 +30,4 @@ export function createLoaders() {
 }
 
 export type Context = YogaInitialContext &
-	RequestEvent & { loaders: ReturnType<typeof createLoaders> };
+	RequestEvent & { loaders: ReturnType<typeof createLoaders>; db: DB };
