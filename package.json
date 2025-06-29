@@ -30,7 +30,7 @@
 		"@graphql-codegen/typescript": "^4.1.6",
 		"@graphql-codegen/typescript-resolvers": "^4.5.1",
 		"@ianvs/prettier-plugin-sort-imports": "^4.4.1",
-		"@lucide/svelte": "^0.511.0",
+		"@lucide/svelte": "^0.525.0",
 		"@sveltejs/adapter-cloudflare": "^7.0.4",
 		"@sveltejs/kit": "<=2.21.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
