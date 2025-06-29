@@ -16,9 +16,9 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"graphql:gen": "graphql-codegen",
+		"graphql:resolvers:gen": "graphql-codegen --config ./graphql.config.server.ts",
 		"cf:gen": "wrangler types ./src/worker-configuration.d.ts",
-		"gen": "pnpm graphql:gen && pnpm cf:gen",
+		"gen": "pnpm graphql:resolvers:gen && pnpm cf:gen",
 		"predev": "pnpm gen",
 		"prebuild": "pnpm gen"
 	},

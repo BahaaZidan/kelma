@@ -22,13 +22,6 @@ export type Scalars = {
   URL: { input: URL; output: URL; }
 };
 
-export type CachePolicy =
-  | 'CacheAndNetwork'
-  | 'CacheOnly'
-  | 'CacheOrNetwork'
-  | 'NetworkOnly'
-  | 'NoCache';
-
 export type Comment = Node & {
   __typename?: 'Comment';
   author: User;
@@ -75,11 +68,6 @@ export type CreateWebsiteInput = {
   domains: Array<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
-
-export type DedupeMatchMode =
-  | 'None'
-  | 'Operation'
-  | 'Variables';
 
 export type DeleteCommentInput = {
   commentId: Scalars['ID']['input'];
@@ -189,11 +177,6 @@ export type PageViewerPermissions = {
   toggleClosed: Scalars['Boolean']['output'];
   togglePreModeration: Scalars['Boolean']['output'];
 };
-
-/** The Component scalar is only defined if the user has any component fields */
-export type PaginateMode =
-  | 'Infinite'
-  | 'SinglePage';
 
 export type PublishCommentInput = {
   commentId: Scalars['ID']['input'];
@@ -324,7 +307,6 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  CachePolicy: CachePolicy;
   Comment: ResolverTypeWrapper<CommentSelectModel>;
   CommentEdge: ResolverTypeWrapper<Omit<CommentEdge, 'node'> & { node: ResolversTypes['Comment'] }>;
   CommentViewerPermissions: ResolverTypeWrapper<CommentViewerPermissions>;
@@ -333,7 +315,6 @@ export type ResolversTypes = {
   CreateCommentInput: CreateCommentInput;
   CreateWebsiteInput: CreateWebsiteInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
-  DedupeMatchMode: DedupeMatchMode;
   DeleteCommentInput: DeleteCommentInput;
   Edge: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Edge']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
@@ -345,7 +326,6 @@ export type ResolversTypes = {
   PageInput: PageInput;
   PageOverrides: PageOverrides;
   PageViewerPermissions: ResolverTypeWrapper<PageViewerPermissions>;
-  PaginateMode: PaginateMode;
   PublishCommentInput: PublishCommentInput;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -387,111 +367,6 @@ export type ResolversParentTypes = {
   User: UserSelectModel;
   Website: WebsiteSelectModel;
 };
-
-export type Comment_DeleteDirectiveArgs = { };
-
-export type Comment_DeleteDirectiveResolver<Result, Parent, ContextType = Context, Args = Comment_DeleteDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type Website_DeleteDirectiveArgs = { };
-
-export type Website_DeleteDirectiveResolver<Result, Parent, ContextType = Context, Args = Website_DeleteDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type AllListsDirectiveArgs = { };
-
-export type AllListsDirectiveResolver<Result, Parent, ContextType = Context, Args = AllListsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type AppendDirectiveArgs = { };
-
-export type AppendDirectiveResolver<Result, Parent, ContextType = Context, Args = AppendDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type ArgumentsDirectiveArgs = { };
-
-export type ArgumentsDirectiveResolver<Result, Parent, ContextType = Context, Args = ArgumentsDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type BlockingDirectiveArgs = { };
-
-export type BlockingDirectiveResolver<Result, Parent, ContextType = Context, Args = BlockingDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type Blocking_DisableDirectiveArgs = { };
-
-export type Blocking_DisableDirectiveResolver<Result, Parent, ContextType = Context, Args = Blocking_DisableDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type CacheDirectiveArgs = {
-  partial?: Maybe<Scalars['Boolean']['input']>;
-  policy?: Maybe<CachePolicy>;
-};
-
-export type CacheDirectiveResolver<Result, Parent, ContextType = Context, Args = CacheDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type DedupeDirectiveArgs = {
-  cancelFirst?: Maybe<Scalars['Boolean']['input']>;
-  match?: Maybe<DedupeMatchMode>;
-};
-
-export type DedupeDirectiveResolver<Result, Parent, ContextType = Context, Args = DedupeDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type ListDirectiveArgs = {
-  connection?: Maybe<Scalars['Boolean']['input']>;
-  name: Scalars['String']['input'];
-};
-
-export type ListDirectiveResolver<Result, Parent, ContextType = Context, Args = ListDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type LoadDirectiveArgs = { };
-
-export type LoadDirectiveResolver<Result, Parent, ContextType = Context, Args = LoadDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type LoadingDirectiveArgs = {
-  cascade?: Maybe<Scalars['Boolean']['input']>;
-  count?: Maybe<Scalars['Int']['input']>;
-};
-
-export type LoadingDirectiveResolver<Result, Parent, ContextType = Context, Args = LoadingDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type Mask_DisableDirectiveArgs = { };
-
-export type Mask_DisableDirectiveResolver<Result, Parent, ContextType = Context, Args = Mask_DisableDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type Mask_EnableDirectiveArgs = { };
-
-export type Mask_EnableDirectiveResolver<Result, Parent, ContextType = Context, Args = Mask_EnableDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type OptimisticKeyDirectiveArgs = { };
-
-export type OptimisticKeyDirectiveResolver<Result, Parent, ContextType = Context, Args = OptimisticKeyDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type PaginateDirectiveArgs = {
-  mode?: Maybe<PaginateMode>;
-  name?: Maybe<Scalars['String']['input']>;
-};
-
-export type PaginateDirectiveResolver<Result, Parent, ContextType = Context, Args = PaginateDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type ParentIdDirectiveArgs = {
-  value: Scalars['ID']['input'];
-};
-
-export type ParentIdDirectiveResolver<Result, Parent, ContextType = Context, Args = ParentIdDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type PrependDirectiveArgs = { };
-
-export type PrependDirectiveResolver<Result, Parent, ContextType = Context, Args = PrependDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type RequiredDirectiveArgs = { };
-
-export type RequiredDirectiveResolver<Result, Parent, ContextType = Context, Args = RequiredDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type WhenDirectiveArgs = { };
-
-export type WhenDirectiveResolver<Result, Parent, ContextType = Context, Args = WhenDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type When_NotDirectiveArgs = { };
-
-export type When_NotDirectiveResolver<Result, Parent, ContextType = Context, Args = When_NotDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type WithDirectiveArgs = { };
-
-export type WithDirectiveResolver<Result, Parent, ContextType = Context, Args = WithDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type CommentResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Comment'] = ResolversParentTypes['Comment']> = {
   author?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
@@ -632,27 +507,3 @@ export type Resolvers<ContextType = Context> = {
   Website?: WebsiteResolvers<ContextType>;
 };
 
-export type DirectiveResolvers<ContextType = Context> = {
-  Comment_delete?: Comment_DeleteDirectiveResolver<any, any, ContextType>;
-  Website_delete?: Website_DeleteDirectiveResolver<any, any, ContextType>;
-  allLists?: AllListsDirectiveResolver<any, any, ContextType>;
-  append?: AppendDirectiveResolver<any, any, ContextType>;
-  arguments?: ArgumentsDirectiveResolver<any, any, ContextType>;
-  blocking?: BlockingDirectiveResolver<any, any, ContextType>;
-  blocking_disable?: Blocking_DisableDirectiveResolver<any, any, ContextType>;
-  cache?: CacheDirectiveResolver<any, any, ContextType>;
-  dedupe?: DedupeDirectiveResolver<any, any, ContextType>;
-  list?: ListDirectiveResolver<any, any, ContextType>;
-  load?: LoadDirectiveResolver<any, any, ContextType>;
-  loading?: LoadingDirectiveResolver<any, any, ContextType>;
-  mask_disable?: Mask_DisableDirectiveResolver<any, any, ContextType>;
-  mask_enable?: Mask_EnableDirectiveResolver<any, any, ContextType>;
-  optimisticKey?: OptimisticKeyDirectiveResolver<any, any, ContextType>;
-  paginate?: PaginateDirectiveResolver<any, any, ContextType>;
-  parentID?: ParentIdDirectiveResolver<any, any, ContextType>;
-  prepend?: PrependDirectiveResolver<any, any, ContextType>;
-  required?: RequiredDirectiveResolver<any, any, ContextType>;
-  when?: WhenDirectiveResolver<any, any, ContextType>;
-  when_not?: When_NotDirectiveResolver<any, any, ContextType>;
-  with?: WithDirectiveResolver<any, any, ContextType>;
-};

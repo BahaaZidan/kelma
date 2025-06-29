@@ -1,0 +1,42 @@
+import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { IGraphQLConfig } from 'graphql-config';
+
+const config: IGraphQLConfig = {
+	schema: ['src/lib/graphql/schema.graphql'],
+	extensions: {
+		codegen: {
+			generates: {
+				'./src/lib/__generated__/graphql-resolvers-types.ts': {
+					plugins: [
+						{
+							add: {
+								content: '/* eslint-disable */',
+							},
+						},
+						'typescript',
+						'typescript-resolvers',
+					],
+					config: {
+						enumsAsTypes: true,
+						maybeValue: 'T | null | undefined',
+						useTypeImports: true,
+						contextType: '$lib/graphql/server/context#Context',
+						scalars: {
+							ID: 'string',
+							DateTime: 'Date',
+							URL: 'URL',
+						},
+						mappers: {
+							Website: '$lib/server/db/schema#WebsiteSelectModel',
+							Page: '$lib/server/db/schema#PageSelectModel',
+							Comment: '$lib/server/db/schema#CommentSelectModel',
+							User: '$lib/server/db/schema#UserSelectModel',
+						},
+					},
+				},
+			},
+		} satisfies CodegenConfig,
+	},
+};
+
+export default config;

@@ -22,9 +22,12 @@ export default defineConfig({
 		}),
 		watchAndRun([
 			{
-				name: 'graphql:gen',
-				watch: [path.resolve('src/lib/graphql/schema.graphql'), path.resolve('graphql.config.ts')],
-				run: 'pnpm graphql:gen',
+				name: 'graphql:resolvers:gen',
+				watch: [
+					path.resolve('src/lib/graphql/schema.graphql'),
+					path.resolve('graphql.config.server.ts'),
+				],
+				run: 'pnpm graphql:resolvers:gen',
 				delay: 10,
 				logs: ['streamError'],
 			},
