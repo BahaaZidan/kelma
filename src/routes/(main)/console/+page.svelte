@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { CircleAlertIcon, CopyIcon, PlusIcon } from '@lucide/svelte';
+	import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
+	import CopyIcon from '@lucide/svelte/icons/copy';
+	import PlusIcon from '@lucide/svelte/icons/plus';
 	import { onMount } from 'svelte';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';

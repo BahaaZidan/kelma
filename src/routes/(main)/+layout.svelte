@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { LayoutDashboardIcon, LogOutIcon } from '@lucide/svelte';
+	import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
+	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import { siGithub } from 'simple-icons';
 
 	import { route } from '$lib/__generated__/routes';

@@ -1,10 +1,8 @@
 <script lang="ts">
-	import {
-		EllipsisVerticalIcon,
-		SquareCheckBigIcon,
-		SquarePenIcon,
-		Trash2Icon,
-	} from '@lucide/svelte';
+	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+	import SquareCheckBigIcon from '@lucide/svelte/icons/square-check-big';
+	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
+	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
 	import { ar, enUS } from 'date-fns/locale';
 

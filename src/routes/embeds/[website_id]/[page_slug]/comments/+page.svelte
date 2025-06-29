@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SettingsIcon } from '@lucide/svelte';
+	import SettingsIcon from '@lucide/svelte/icons/settings';
 	import { TextareaAutosize } from 'runed';
 	import { onMount } from 'svelte';
 

@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends Record<string, unknown>, F extends FormPathArrays<T>">
-	import { XIcon } from '@lucide/svelte';
+	import XIcon from '@lucide/svelte/icons/x';
 	import type { ClassValue } from 'svelte/elements';
 	import { arrayProxy, type FormPathArrays, type SuperForm } from 'sveltekit-superforms';
 
