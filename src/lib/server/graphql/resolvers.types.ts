@@ -1,7 +1,7 @@
 /* eslint-disable */
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { WebsiteSelectModel, PageSelectModel, CommentSelectModel, UserSelectModel } from '$lib/server/db/schema';
-import type { Context } from '$lib/graphql/server/context';
+import type { Context } from '$lib/server/graphql/context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };

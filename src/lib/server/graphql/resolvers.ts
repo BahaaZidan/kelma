@@ -4,8 +4,9 @@ import { DateTimeResolver, URLResolver } from 'graphql-scalars';
 import { Base64 } from 'js-base64';
 import * as v from 'valibot';
 
-import type { Resolvers } from '$lib/__generated__/graphql-resolvers-types';
 import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
+
+import type { Resolvers } from './resolvers.types';
 
 const schema = v.object({
 	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),

@@ -2,11 +2,11 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 import type { IGraphQLConfig } from 'graphql-config';
 
 const config: IGraphQLConfig = {
-	schema: ['src/lib/graphql/schema.graphql'],
+	schema: ['src/lib/schema.graphql'],
 	extensions: {
 		codegen: {
 			generates: {
-				'./src/lib/__generated__/graphql-resolvers-types.ts': {
+				'./src/lib/server/graphql/resolvers.types.ts': {
 					plugins: [
 						{
 							add: {
@@ -20,7 +20,7 @@ const config: IGraphQLConfig = {
 						enumsAsTypes: true,
 						maybeValue: 'T | null | undefined',
 						useTypeImports: true,
-						contextType: '$lib/graphql/server/context#Context',
+						contextType: '$lib/server/graphql/context#Context',
 						scalars: {
 							ID: 'string',
 							DateTime: 'Date',

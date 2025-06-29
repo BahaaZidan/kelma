@@ -4,9 +4,9 @@
 
 	import { fragment, graphql, type BaseInfoFormComponent } from '$houdini';
 
-	import Checkbox from '$lib/components/Checkbox.svelte';
-	import TextArrayInput from '$lib/components/TextArrayInput.svelte';
-	import TextInput from '$lib/components/TextInput.svelte';
+	import Checkbox from '$lib/client/components/Checkbox.svelte';
+	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
+	import TextInput from '$lib/client/components/TextInput.svelte';
 
 	import { baseInfoSchema } from './schemas';
 

@@ -1,12 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { createSchema, createYoga } from 'graphql-yoga';
 
-import { createLoaders } from '$lib/graphql/server/context';
 import { getDB } from '$lib/server/db';
 
+import { createLoaders } from './context';
 import { resolvers } from './resolvers';
 
-const schemaFiles = import.meta.glob('$lib/graphql/schema.graphql', {
+const schemaFiles = import.meta.glob('$lib/schema.graphql', {
 	query: '?raw',
 	import: 'default',
 	eager: true,

@@ -8,10 +8,10 @@
 
 	import { graphql } from '$houdini';
 
+	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
+	import TextInput from '$lib/client/components/TextInput.svelte';
+	import TitledSection from '$lib/client/components/TitledSection.svelte';
 	import { Toasts } from '$lib/client/toasts.svelte';
-	import TextArrayInput from '$lib/components/TextArrayInput.svelte';
-	import TextInput from '$lib/components/TextInput.svelte';
-	import TitledSection from '$lib/components/TitledSection.svelte';
 
 	import BaseInfoForm from './BaseInfoForm.svelte';
 	import { baseInfoSchema } from './schemas';

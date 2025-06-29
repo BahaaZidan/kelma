@@ -3,9 +3,9 @@
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
 	import { siGithub } from 'simple-icons';
 
-	import { route } from '$lib/__generated__/routes';
 	import { authClient, signOut } from '$lib/client/auth';
-	import BrandIcon from '$lib/components/BrandIcon.svelte';
+	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
+	import { route } from '$lib/routes';
 
 	import type { LayoutProps } from './$types';
 

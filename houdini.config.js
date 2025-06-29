@@ -3,7 +3,7 @@
 /** @type {import('houdini').ConfigFile} */
 const config = {
 	runtimeDir: '.houdini',
-	schemaPath: 'src/lib/graphql/schema.graphql',
+	schemaPath: 'src/lib/schema.graphql',
 	plugins: {
 		'houdini-svelte': {},
 	},

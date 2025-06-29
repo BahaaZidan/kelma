@@ -2,7 +2,7 @@
 	import { siGithub } from 'simple-icons';
 
 	import { authClient } from '$lib/client/auth';
-	import BrandIcon from '$lib/components/BrandIcon.svelte';
+	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
 
 	import type { PageProps } from './$types';
 

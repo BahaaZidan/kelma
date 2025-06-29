@@ -5,10 +5,10 @@
 
 	import { graphql } from '$houdini';
 
-	import { route } from '$lib/__generated__/routes';
 	import { signOut } from '$lib/client/auth';
-	import Comment from '$lib/components/Comment.svelte';
+	import Comment from '$lib/client/components/Comment.svelte';
 	import { m } from '$lib/paraglide/messages.js';
+	import { route } from '$lib/routes';
 
 	import type { PageProps } from './$types';
 

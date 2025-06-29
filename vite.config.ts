@@ -18,15 +18,12 @@ export default defineConfig({
 			strategy: ['url'],
 		}),
 		kitRoutes({
-			generated_file_path: 'src/lib/__generated__/routes.ts',
+			generated_file_path: 'src/lib/routes.ts',
 		}),
 		watchAndRun([
 			{
 				name: 'graphql:resolvers:gen',
-				watch: [
-					path.resolve('src/lib/graphql/schema.graphql'),
-					path.resolve('graphql.config.server.ts'),
-				],
+				watch: [path.resolve('src/lib/schema.graphql'), path.resolve('graphql.config.server.ts')],
 				run: 'pnpm graphql:resolvers:gen',
 				delay: 10,
 				logs: ['streamError'],

@@ -2,7 +2,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 
-import { inferDir } from '$lib/i18n';
+import { type Locale } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { getAuth, type Session } from '$lib/server/auth';
 import { getDB } from '$lib/server/db';
@@ -39,3 +39,8 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 	});
 
 export const handle = sequence(handleAuth, handleParaglide);
+
+function inferDir(lang: Locale): 'rtl' | 'ltr' {
+	if (lang === 'ar') return 'rtl';
+	return 'ltr';
+}
