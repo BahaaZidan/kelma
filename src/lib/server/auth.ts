@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter, type DB } from 'better-auth/adapters/drizzle';
 
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
+import { PUBLIC_BASE_URL } from '$env/static/public';
 
 import type { UserSelectModel } from './db/schema';
 
@@ -18,6 +19,7 @@ export const getAuth = (db: DB) => {
 		},
 		// TODO: only trust paying customers
 		trustedOrigins: ['*'],
+		baseURL: PUBLIC_BASE_URL,
 	});
 };
 
