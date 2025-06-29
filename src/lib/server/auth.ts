@@ -1,8 +1,8 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter, type DB } from 'better-auth/adapters/drizzle';
 
-import { env } from '$env/dynamic/private';
-import { PUBLIC_BASE_URL } from '$env/static/public';
+import { env as privateVars } from '$env/dynamic/private';
+import { env as publicVars } from '$env/dynamic/public';
 
 import type { UserSelectModel } from './db/schema';
 
@@ -13,13 +13,13 @@ export const getAuth = (db: DB) => {
 		}),
 		socialProviders: {
 			github: {
-				clientId: env.GITHUB_CLIENT_ID,
-				clientSecret: env.GITHUB_CLIENT_SECRET,
+				clientId: privateVars.GITHUB_CLIENT_ID,
+				clientSecret: privateVars.GITHUB_CLIENT_SECRET,
 			},
 		},
 		// TODO: only trust paying customers
 		trustedOrigins: ['*'],
-		baseURL: PUBLIC_BASE_URL,
+		baseURL: publicVars.PUBLIC_BASE_URL,
 	});
 };
 
