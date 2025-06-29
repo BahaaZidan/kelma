@@ -13,7 +13,7 @@ export const getAuth = (db: DB) => {
 		}),
 		socialProviders: {
 			github: {
-				clientId: privateVars.GITHUB_CLIENT_ID,
+				clientId: publicVars.PUBLIC_GITHUB_CLIENT_ID,
 				clientSecret: privateVars.GITHUB_CLIENT_SECRET,
 			},
 		},
