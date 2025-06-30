@@ -249,11 +249,7 @@ export const resolvers: Resolvers = {
 		owner: (parent, _args, { loaders }) => {
 			return loaders.users.load(parent.ownerId);
 		},
-		page: async (parent, args, { db }) => {
-			const {
-				input: { slug, overrides },
-			} = args;
-
+		page: async (parent, { input: { slug, overrides } }, { db }) => {
 			if (overrides) {
 				const page = (
 					await db
@@ -345,14 +341,14 @@ export const resolvers: Resolvers = {
 	},
 	Comment: {
 		id: (parent) => toGlobalId('Comment', parent.id),
-		author: (parent, _args, context) => {
-			return context.loaders.users.load(parent.authorId);
+		author: (parent, _args, { loaders }) => {
+			return loaders.users.load(parent.authorId);
 		},
-		page: (parent, _args, context) => {
-			return context.loaders.pages.load(parent.pageId);
+		page: (parent, _args, { loaders }) => {
+			return loaders.pages.load(parent.pageId);
 		},
-		website: (parent, _args, context) => {
-			return context.loaders.websites.load(parent.websiteId);
+		website: (parent, _args, { loaders }) => {
+			return loaders.websites.load(parent.websiteId);
 		},
 		permissions: (parent, _args, { locals }) => {
 			const loggedInUserId = locals.session?.user.id;
