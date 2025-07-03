@@ -198,7 +198,7 @@
 					{m.loading_more()}
 				{:else if $query.pageInfo.hasNextPage}
 					{m.load_more()}
-				{:else}{m.nothing_more_to_load()}{/if}
+				{/if}
 			</button>
 		</div>
 		<span class="py-6">
