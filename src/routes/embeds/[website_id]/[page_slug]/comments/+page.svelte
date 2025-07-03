@@ -190,7 +190,7 @@
 			{/each}
 
 			<button
-				class="btn"
+				class={['btn', { hidden: !$query.fetching && !$query.pageInfo.hasNextPage }]}
 				onclick={() => query.loadNextPage()}
 				disabled={!$query.pageInfo.hasNextPage || $query.fetching}
 			>
