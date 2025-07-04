@@ -1,4 +1,4 @@
-import { type InferSelectModel } from 'drizzle-orm';
+import { sql, type InferSelectModel } from 'drizzle-orm';
 import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const userTable = sqliteTable('user', {
@@ -68,8 +68,13 @@ export const websiteTable = sqliteTable('website', {
 		.notNull()
 		.references(() => userTable.id, { onDelete: 'cascade' }),
 	name: text().notNull(),
-	domains: text('domains', { mode: 'json' }).notNull().$type<string[]>().default([]),
-	preModeration: integer('pre_moderation', { mode: 'boolean' }).default(false).notNull(),
+	domains: text('domains', { mode: 'json' })
+		.notNull()
+		.$type<string[]>()
+		.default(sql`'[]'`),
+	preModeration: integer('pre_moderation', { mode: 'boolean' })
+		.default(sql`0`)
+		.notNull(),
 });
 export type WebsiteSelectModel = InferSelectModel<typeof websiteTable>;
 
@@ -83,8 +88,12 @@ export const pageTable = sqliteTable(
 			.references(() => websiteTable.id, { onDelete: 'cascade' }),
 		name: text(),
 		url: text(),
-		preModeration: integer('pre_moderation', { mode: 'boolean' }).default(false).notNull(),
-		closed: integer('closed', { mode: 'boolean' }).default(false).notNull(),
+		preModeration: integer('pre_moderation', { mode: 'boolean' })
+			.default(sql`0`)
+			.notNull(),
+		closed: integer('closed', { mode: 'boolean' })
+			.default(sql`0`)
+			.notNull(),
 	},
 	(self) => [uniqueIndex('slug_websiteId_uniq').on(self.slug, self.websiteId)]
 );
@@ -99,7 +108,9 @@ export const commentTable = sqliteTable('comment', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
-	published: integer('published', { mode: 'boolean' }).default(true).notNull(),
+	published: integer('published', { mode: 'boolean' })
+		.default(sql`1`)
+		.notNull(),
 	pageId: integer('page_id')
 		.notNull()
 		.references(() => pageTable.id, { onDelete: 'cascade' }),
