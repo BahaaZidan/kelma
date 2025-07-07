@@ -15,6 +15,13 @@
       "when": 1751871929805,
       "tag": "0001_ordinary_christian_walker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1751901805222,
+      "tag": "0002_rare_abomination",
+      "breakpoints": true
     }
   ]
 }
