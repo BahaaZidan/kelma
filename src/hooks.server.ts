@@ -1,4 +1,4 @@
-import { error, redirect, type Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
@@ -44,6 +44,8 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 
 const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 	const response = resolve(event);
+	const not_found = new Response('not_found', { status: 404 });
+	const payment_required = new Response('payment_required', { status: 402 });
 	if (event.route.id === '/embeds/[website_id]/[page_slug]/comments' && event.params.website_id) {
 		const website_id = Number(fromGlobalId(event.params.website_id).id);
 		const db = getDB(event.platform?.env.DB);
@@ -51,7 +53,7 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 			columns: { ownerId: true },
 			where: (t, { eq }) => eq(t.id, website_id),
 		});
-		if (!website) return error(404);
+		if (!website) return not_found;
 
 		try {
 			const balance_decrement_result = await db
@@ -59,9 +61,9 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 				.set({ balance: sql`${userTable.balance} - ${PAGEVIEW_COST}` })
 				.where(eq(userTable.id, website.ownerId));
 
-			if (!balance_decrement_result.success) return error(402);
+			if (!balance_decrement_result.success) return payment_required;
 		} catch (_e) {
-			return error(402);
+			return payment_required;
 		}
 	}
 
