@@ -11,7 +11,7 @@
 	<div class="bg-base-200 flex flex-col gap-2 rounded-2xl p-4">
 		<p class="text-xl">
 			For <span class="font-bold">{price_slider_val.toLocaleString()}</span>
-			 pageviews
+			pageviews
 		</p>
 		<input
 			type="range"

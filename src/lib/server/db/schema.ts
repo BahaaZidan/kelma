@@ -1,5 +1,5 @@
 import { sql, type InferSelectModel } from 'drizzle-orm';
-import { check, integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { check, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const userTable = sqliteTable(
 	'user',
@@ -17,9 +17,10 @@ export const userTable = sqliteTable(
 		updatedAt: integer('updated_at', { mode: 'timestamp' })
 			.$defaultFn(() => /* @__PURE__ */ new Date())
 			.notNull(),
-		balance_in_cents: real().notNull().default(50),
+		/** balance is stored in cents scaled by 1000 to avoid floating point precision issues */
+		balance: integer().notNull().default(50_000),
 	},
-	(t) => [check('balance_minimum', sql`${t.balance_in_cents} >= 0`)]
+	(t) => [check('balance_minimum', sql`${t.balance} >= 0`)]
 );
 export type UserSelectModel = InferSelectModel<typeof userTable>;
 

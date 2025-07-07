@@ -3,7 +3,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
 
-import { PAGEVIEW_COST_IN_CENTS } from '$lib/constants';
+import { PAGEVIEW_COST } from '$lib/constants';
 import { type Locale } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { getAuth, type Session } from '$lib/server/auth';
@@ -56,7 +56,7 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 		try {
 			const balance_decrement_result = await db
 				.update(userTable)
-				.set({ balance_in_cents: sql`${userTable.balance_in_cents} - ${PAGEVIEW_COST_IN_CENTS}` })
+				.set({ balance: sql`${userTable.balance} - ${PAGEVIEW_COST}` })
 				.where(eq(userTable.id, website.ownerId));
 
 			if (!balance_decrement_result.success) return error(402);
