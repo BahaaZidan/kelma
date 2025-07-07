@@ -1,12 +1,12 @@
 import { and, desc, eq, inArray, lt, not, or } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver } from 'graphql-scalars';
-import { Base64 } from 'js-base64';
 import * as v from 'valibot';
 
 import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
 
 import type { Resolvers } from './resolvers.types';
+import { fromGlobalId, toGlobalId } from './utils';
 
 const schema = v.object({
 	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
@@ -365,12 +365,3 @@ export const resolvers: Resolvers = {
 	DateTime: DateTimeResolver,
 	URL: URLResolver,
 };
-
-function toGlobalId(type: string, id: string | number): string {
-	return Base64.encode(`${type}:${id}`);
-}
-
-function fromGlobalId(globalId: string): { type: string; id: string } {
-	const [type, id] = Base64.decode(globalId).split(':');
-	return { type, id };
-}

@@ -1,22 +1,26 @@
 import { sql, type InferSelectModel } from 'drizzle-orm';
-import { integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { check, integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
-export const userTable = sqliteTable('user', {
-	id: text('id').primaryKey(),
-	name: text('name').notNull(),
-	email: text('email').notNull().unique(),
-	emailVerified: integer('email_verified', { mode: 'boolean' })
-		.$defaultFn(() => false)
-		.notNull(),
-	image: text('image'),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	balance_in_cents: real().notNull().default(50),
-});
+export const userTable = sqliteTable(
+	'user',
+	{
+		id: text('id').primaryKey(),
+		name: text('name').notNull(),
+		email: text('email').notNull().unique(),
+		emailVerified: integer('email_verified', { mode: 'boolean' })
+			.$defaultFn(() => false)
+			.notNull(),
+		image: text('image'),
+		createdAt: integer('created_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		balance_in_cents: real().notNull().default(50),
+	},
+	(t) => [check('balance_minimum', sql`${t.balance_in_cents} >= 0`)]
+);
 export type UserSelectModel = InferSelectModel<typeof userTable>;
 
 export const sessionTable = sqliteTable('session', {
