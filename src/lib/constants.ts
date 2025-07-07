@@ -1,0 +1,1 @@
+export const PAGEVIEW_COST_IN_CENTS = 0.005;
