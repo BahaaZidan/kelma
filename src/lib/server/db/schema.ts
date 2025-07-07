@@ -1,5 +1,5 @@
 import { sql, type InferSelectModel } from 'drizzle-orm';
-import { integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const userTable = sqliteTable('user', {
 	id: text('id').primaryKey(),
@@ -15,6 +15,7 @@ export const userTable = sqliteTable('user', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.$defaultFn(() => /* @__PURE__ */ new Date())
 		.notNull(),
+	balance_in_cents: real().notNull().default(50),
 });
 export type UserSelectModel = InferSelectModel<typeof userTable>;
 
