@@ -6,13 +6,14 @@ import { env } from '$env/dynamic/private';
 import { PAGEVIEW_COST_SCALER } from '$lib/constants';
 import { getDB } from '$lib/server/db';
 import { userTable } from '$lib/server/db/schema';
-import { stripe } from '$lib/server/stripe';
+import { getStripe } from '$lib/server/stripe';
 
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, platform }) => {
 	const rawBody = await request.text();
 	const signature = request.headers.get('stripe-signature');
+	const stripe = getStripe();
 
 	let event: Stripe.Event;
 	try {

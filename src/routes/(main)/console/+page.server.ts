@@ -6,7 +6,7 @@ import * as v from 'valibot';
 import { env } from '$env/dynamic/public';
 
 import { route } from '$lib/routes';
-import { stripe } from '$lib/server/stripe';
+import { getStripe } from '$lib/server/stripe';
 
 import type { Actions, PageServerLoad } from './$types';
 
@@ -26,6 +26,7 @@ export const actions: Actions = {
 		if (!locals.session?.user) return fail(401);
 
 		const redirect_url = new URL(route('/console'), env.PUBLIC_BASE_URL);
+		const stripe = getStripe();
 
 		const session = await stripe.checkout.sessions.create({
 			payment_method_types: ['card'],
