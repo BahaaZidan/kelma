@@ -1,17 +1,14 @@
 import { fail, redirect } from '@sveltejs/kit';
-import Stripe from 'stripe';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import * as v from 'valibot';
 
-import { env as privateEnv } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
+import { env } from '$env/dynamic/public';
 
 import { route } from '$lib/routes';
+import { stripe } from '$lib/server/stripe';
 
 import type { Actions, PageServerLoad } from './$types';
-
-const stripe = new Stripe(privateEnv.SECRET_STRIPE_KEY);
 
 const schema = v.object({
 	amount: v.pipe(v.number(), v.integer(), v.minValue(5)),
@@ -28,7 +25,7 @@ export const actions: Actions = {
 		if (!form.valid) return fail(400, { form });
 		if (!locals.session?.user) return fail(401);
 
-		const redirect_url = new URL(route('/console'), publicEnv.PUBLIC_BASE_URL);
+		const redirect_url = new URL(route('/console'), env.PUBLIC_BASE_URL);
 
 		const session = await stripe.checkout.sessions.create({
 			payment_method_types: ['card'],
