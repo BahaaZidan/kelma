@@ -30,7 +30,7 @@ const SERVERS = {
  * ACTIONS
  */
 const ACTIONS = {
-  
+  "default /console": `/console`
 }
 
 /**
@@ -147,7 +147,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 export type KIT_ROUTES = {
   PAGES: { '/': never, '/console': never, '/embeds/[website_id]/[page_slug]/comments': 'website_id' | 'page_slug', '/embeds/login': never }
   SERVERS: { 'GET /api/graphql': never, 'POST /api/graphql': never, 'OPTIONS /api/graphql': never }
-  ACTIONS: Record<string, never>
+  ACTIONS: { 'default /console': never }
   LINKS: Record<string, never>
   Params: { 'website_id': never, 'page_slug': never }
 }
