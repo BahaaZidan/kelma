@@ -46,6 +46,7 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 	const response = resolve(event);
 	const not_found = new Response('not_found', { status: 404 });
 	const payment_required = new Response('payment_required', { status: 402 });
+
 	if (event.route.id === '/embeds/[website_id]/[page_slug]/comments' && event.params.website_id) {
 		const website_id = Number(fromGlobalId(event.params.website_id).id);
 		const db = getDB(event.platform?.env.DB);

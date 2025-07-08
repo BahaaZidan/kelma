@@ -20,6 +20,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   DateTime: { input: Date; output: Date; }
   URL: { input: URL; output: URL; }
+  USCurrency: { input: any; output: any; }
 };
 
 export type Comment = Node & {
@@ -207,6 +208,7 @@ export type UpdateWebsiteInput = {
 
 export type User = Node & {
   __typename?: 'User';
+  balance: Scalars['USCurrency']['output'];
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
@@ -330,6 +332,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
+  USCurrency: ResolverTypeWrapper<Scalars['USCurrency']['output']>;
   UpdateCommentContentInput: UpdateCommentContentInput;
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: ResolverTypeWrapper<UserSelectModel>;
@@ -362,6 +365,7 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String']['output'];
   URL: Scalars['URL']['output'];
+  USCurrency: Scalars['USCurrency']['output'];
   UpdateCommentContentInput: UpdateCommentContentInput;
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: UserSelectModel;
@@ -469,7 +473,12 @@ export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
   name: 'URL';
 }
 
+export interface UsCurrencyScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['USCurrency'], any> {
+  name: 'USCurrency';
+}
+
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  balance?: Resolver<ResolversTypes['USCurrency'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -503,6 +512,7 @@ export type Resolvers<ContextType = Context> = {
   PageViewerPermissions?: PageViewerPermissionsResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   URL?: GraphQLScalarType;
+  USCurrency?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Website?: WebsiteResolvers<ContextType>;
 };

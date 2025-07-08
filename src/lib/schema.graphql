@@ -115,6 +115,7 @@ type User implements Node {
 	email: String!
 	image: String
 	websites: [Website!]!
+	balance: USCurrency!
 }
 
 type PageInfo {
@@ -140,3 +141,4 @@ interface Edge {
 
 scalar DateTime
 scalar URL
+scalar USCurrency

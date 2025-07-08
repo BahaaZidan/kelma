@@ -20,6 +20,13 @@ export const getAuth = (db: DB) => {
 		// TODO: only trust paying customers
 		trustedOrigins: ['*'],
 		baseURL: publicVars.PUBLIC_BASE_URL,
+		user: {
+			additionalFields: {
+				balance: {
+					type: 'number',
+				},
+			},
+		},
 	});
 };
 

@@ -1,8 +1,9 @@
 import { and, desc, eq, inArray, lt, not, or } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
-import { DateTimeResolver, URLResolver } from 'graphql-scalars';
+import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scalars';
 import * as v from 'valibot';
 
+import { PAGEVIEW_COST_SCALER } from '$lib/constants';
 import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
 
 import type { Resolvers } from './resolvers.types';
@@ -243,6 +244,9 @@ export const resolvers: Resolvers = {
 		websites: (parent, _args, { db }) => {
 			return db.select().from(websiteTable).where(eq(websiteTable.ownerId, parent.id));
 		},
+		balance: (parent) => {
+			return parent.balance / PAGEVIEW_COST_SCALER;
+		},
 	},
 	Website: {
 		id: (parent) => toGlobalId('Website', parent.id),
@@ -364,4 +368,5 @@ export const resolvers: Resolvers = {
 	},
 	DateTime: DateTimeResolver,
 	URL: URLResolver,
+	USCurrency: USCurrencyResolver,
 };
