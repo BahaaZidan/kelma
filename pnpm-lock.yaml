@@ -11,9 +11,6 @@ importers:
       '@inlang/paraglide-js':
         specifier: ^2.0.0
         version: 2.1.0
-      '@stripe/stripe-js':
-        specifier: ^7.4.0
-        version: 7.4.0
       better-auth:
         specifier: ^1.2.8
         version: 1.2.8
@@ -44,9 +41,6 @@ importers:
       stripe:
         specifier: ^18.3.0
         version: 18.3.0(@types/node@22.15.18)
-      svelte-stripe:
-        specifier: ^1.4.0
-        version: 1.4.0(@stripe/stripe-js@7.4.0)(svelte@5.30.2)
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.5
@@ -1546,10 +1540,6 @@ packages:
 
   '@standard-schema/spec@1.0.0':
     resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
-
-  '@stripe/stripe-js@7.4.0':
-    resolution: {integrity: sha512-lQHQPfXPTBeh0XFjq6PqSBAyR7umwcJbvJhXV77uGCUDD6ymXJU/f2164ydLMLCCceNuPlbV9b+1smx98efwWQ==}
-    engines: {node: '>=12.16'}
 
   '@sveltejs/acorn-typescript@1.0.5':
     resolution: {integrity: sha512-IwQk4yfwLdibDlrXVE04jTZYlLnwsTT2PIOQQGNLWfjavGifnk1JD1LcZjZaBTRcxZu2FfPfNLOE04DSu9lqtQ==}
@@ -3857,12 +3847,6 @@ packages:
       svelte:
         optional: true
 
-  svelte-stripe@1.4.0:
-    resolution: {integrity: sha512-RUSui4IszIBXhGt3mT3pLJX17OJ34A0O+LAcZLooWVYQCAv95umVXoRB6WmjMabj3jOoJ8c3KHGufaJLRlIzRg==}
-    peerDependencies:
-      '@stripe/stripe-js': ^3 || ^4
-      svelte: ^3 || ^4 || ^5
-
   svelte2tsx@0.7.39:
     resolution: {integrity: sha512-NX8a7eSqF1hr6WKArvXr7TV7DeE+y0kDFD7L5JP7TWqlwFidzGKaG415p992MHREiiEWOv2xIWXJ+mlONofs0A==}
     peerDependencies:
@@ -5743,8 +5727,6 @@ snapshots:
 
   '@standard-schema/spec@1.0.0':
     optional: true
-
-  '@stripe/stripe-js@7.4.0': {}
 
   '@sveltejs/acorn-typescript@1.0.5(acorn@8.14.1)':
     dependencies:
@@ -8101,11 +8083,6 @@ snapshots:
       postcss-scss: 4.0.9(postcss@8.5.3)
       postcss-selector-parser: 7.1.0
     optionalDependencies:
-      svelte: 5.30.2
-
-  svelte-stripe@1.4.0(@stripe/stripe-js@7.4.0)(svelte@5.30.2):
-    dependencies:
-      '@stripe/stripe-js': 7.4.0
       svelte: 5.30.2
 
   svelte2tsx@0.7.39(svelte@5.30.2)(typescript@5.8.3):
