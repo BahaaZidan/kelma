@@ -24,6 +24,8 @@ export const getAuth = (db: DB) => {
 			additionalFields: {
 				balance: {
 					type: 'number',
+					// WORKAROUND: betterauth is dogshit
+					defaultValue: 50_000,
 				},
 			},
 		},
