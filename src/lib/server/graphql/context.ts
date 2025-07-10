@@ -1,10 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import DataLoader from 'dataloader';
-import { inArray } from 'drizzle-orm';
+import { count, inArray } from 'drizzle-orm';
 import type { YogaInitialContext } from 'graphql-yoga';
 
 import type { DB } from '$lib/server/db';
-import { pageTable, userTable, websiteTable } from '$lib/server/db/schema';
+import { pageTable, replyTable, userTable, websiteTable } from '$lib/server/db/schema';
 
 export function createLoaders(db: DB) {
 	return {
@@ -25,6 +25,24 @@ export function createLoaders(db: DB) {
 				.from(websiteTable)
 				.where(inArray(websiteTable.id, websiteIds));
 			return websites;
+		}),
+		repliesCounts: new DataLoader<number, number>(async (keys) => {
+			const commentIds = [...keys];
+			const rows = await db
+				.select({
+					commentId: replyTable.commentId,
+					count: count(),
+				})
+				.from(replyTable)
+				.where(inArray(replyTable.commentId, commentIds))
+				.groupBy(replyTable.commentId);
+
+			const countMap = new Map<number, number>();
+			for (const row of rows) {
+				countMap.set(row.commentId, row.count);
+			}
+
+			return commentIds.map((id) => countMap.get(id) ?? 0);
 		}),
 	};
 }

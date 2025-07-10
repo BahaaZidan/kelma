@@ -101,6 +101,25 @@ type Comment implements Node {
 	website: Website!
 	author: User!
 	permissions: CommentViewerPermissions!
+	repliesCount: Int!
+	replies(first: Int, after: String): RepliesConnection!
+}
+type Reply implements Node {
+	id: ID!
+	content: String!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	author: User!
+}
+
+type RepliesConnection implements Connection {
+	pageInfo: PageInfo!
+	edges: [ReplyEdge!]!
+}
+
+type ReplyEdge implements Edge {
+	cursor: String
+	node: Reply!
 }
 
 type CommentViewerPermissions {

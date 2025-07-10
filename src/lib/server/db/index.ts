@@ -4,6 +4,7 @@ import {
 	accountTable,
 	commentTable,
 	pageTable,
+	replyTable,
 	sessionTable,
 	userTable,
 	verificationTable,
@@ -20,6 +21,7 @@ const schema = {
 	website: websiteTable,
 	page: pageTable,
 	comment: commentTable,
+	reply: replyTable,
 };
 
 export type DB = ReturnType<typeof drizzle<typeof schema>>;

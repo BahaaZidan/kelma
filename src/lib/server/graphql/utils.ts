@@ -1,6 +1,16 @@
 import { Base64 } from 'js-base64';
 
-export function toGlobalId(type: string, id: string | number): string {
+import type { Comment, Page, Reply, User, Website } from './resolvers.types';
+
+type NodeImplementer = NonNullable<
+	| User['__typename']
+	| Website['__typename']
+	| Page['__typename']
+	| Comment['__typename']
+	| Reply['__typename']
+>;
+
+export function toGlobalId(type: NodeImplementer, id: string | number): string {
 	return Base64.encode(`${type}:${id}`);
 }
 

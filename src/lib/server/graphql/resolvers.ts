@@ -4,7 +4,7 @@ import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scala
 import * as v from 'valibot';
 
 import { PAGEVIEW_COST_SCALER } from '$lib/constants';
-import { commentTable, pageTable, websiteTable } from '$lib/server/db/schema';
+import { commentTable, pageTable, replyTable, websiteTable } from '$lib/server/db/schema';
 
 import type { Resolvers } from './resolvers.types';
 import { fromGlobalId, toGlobalId } from './utils';
@@ -14,6 +14,9 @@ const schema = v.object({
 });
 
 export const resolvers: Resolvers = {
+	DateTime: DateTimeResolver,
+	URL: URLResolver,
+	USCurrency: USCurrencyResolver,
 	Query: {
 		node: async (_parent, { id }, { db }) => {
 			const { type, id: dbId } = fromGlobalId(id);
@@ -39,6 +42,12 @@ export const resolvers: Resolvers = {
 						where: (t, { eq }) => eq(t.id, Number(dbId)),
 					});
 					return comment ? { ...comment, __typename: 'Comment' } : null;
+				}
+				case 'Reply': {
+					const reply = await db.query.reply.findFirst({
+						where: (t, { eq }) => eq(t.id, Number(dbId)),
+					});
+					return reply ? { ...reply, __typename: 'Reply' } : null;
 				}
 				default:
 					return null;
@@ -365,8 +374,40 @@ export const resolvers: Resolvers = {
 				approve: !parent.published && isWebsiteOwner,
 			};
 		},
+		repliesCount: (parent, _args, { loaders }) => {
+			return loaders.repliesCounts.load(parent.id);
+		},
+		replies: async (parent, args, { db }) => {
+			const cursor = args.after;
+			const pageSize = args.first || 10;
+
+			const resultPlusOne = await db
+				.select()
+				.from(replyTable)
+				.orderBy(desc(replyTable.createdAt))
+				.where(
+					and(
+						eq(replyTable.commentId, parent.id),
+						cursor ? lt(replyTable.id, Number(fromGlobalId(cursor).id)) : undefined
+					)
+				)
+				.limit(pageSize + 1);
+
+			const replies = resultPlusOne.slice(0, pageSize);
+
+			return {
+				edges: replies.map((r) => ({ node: r, cursor: toGlobalId('Reply', r.id) })),
+				pageInfo: {
+					hasNextPage: resultPlusOne.length > replies.length,
+					endCursor: replies.length ? toGlobalId('Reply', replies[replies.length - 1].id) : null,
+				},
+			};
+		},
 	},
-	DateTime: DateTimeResolver,
-	URL: URLResolver,
-	USCurrency: USCurrencyResolver,
+	Reply: {
+		id: (parent) => toGlobalId('Reply', parent.id),
+		author: (parent, _args, { loaders }) => {
+			return loaders.users.load(parent.authorId);
+		},
+	},
 };

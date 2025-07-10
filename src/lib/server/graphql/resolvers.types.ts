@@ -1,6 +1,6 @@
 /* eslint-disable */
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import type { WebsiteSelectModel, PageSelectModel, CommentSelectModel, UserSelectModel } from '$lib/server/db/schema';
+import type { WebsiteSelectModel, PageSelectModel, CommentSelectModel, UserSelectModel, ReplySelectModel } from '$lib/server/db/schema';
 import type { Context } from '$lib/server/graphql/context';
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
@@ -32,8 +32,16 @@ export type Comment = Node & {
   page: Page;
   permissions: CommentViewerPermissions;
   published: Scalars['Boolean']['output'];
+  replies: RepliesConnection;
+  repliesCount: Scalars['Int']['output'];
   updatedAt: Scalars['DateTime']['output'];
   website: Website;
+};
+
+
+export type CommentRepliesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type CommentEdge = Edge & {
@@ -194,6 +202,27 @@ export type QueryNodeArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type RepliesConnection = Connection & {
+  __typename?: 'RepliesConnection';
+  edges: Array<ReplyEdge>;
+  pageInfo: PageInfo;
+};
+
+export type Reply = Node & {
+  __typename?: 'Reply';
+  author: User;
+  content: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ReplyEdge = Edge & {
+  __typename?: 'ReplyEdge';
+  cursor?: Maybe<Scalars['String']['output']>;
+  node: Reply;
+};
+
 export type UpdateCommentContentInput = {
   commentId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
@@ -301,9 +330,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  Connection: ( Omit<CommentsConnection, 'edges'> & { edges: Array<_RefType['CommentEdge']> } );
-  Edge: ( Omit<CommentEdge, 'node'> & { node: _RefType['Comment'] } );
-  Node: ( CommentSelectModel ) | ( PageSelectModel ) | ( UserSelectModel ) | ( WebsiteSelectModel );
+  Connection: ( Omit<CommentsConnection, 'edges'> & { edges: Array<_RefType['CommentEdge']> } ) | ( Omit<RepliesConnection, 'edges'> & { edges: Array<_RefType['ReplyEdge']> } );
+  Edge: ( Omit<CommentEdge, 'node'> & { node: _RefType['Comment'] } ) | ( Omit<ReplyEdge, 'node'> & { node: _RefType['Reply'] } );
+  Node: ( CommentSelectModel ) | ( PageSelectModel ) | ( ReplySelectModel ) | ( UserSelectModel ) | ( WebsiteSelectModel );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -330,6 +359,9 @@ export type ResolversTypes = {
   PageViewerPermissions: ResolverTypeWrapper<PageViewerPermissions>;
   PublishCommentInput: PublishCommentInput;
   Query: ResolverTypeWrapper<{}>;
+  RepliesConnection: ResolverTypeWrapper<Omit<RepliesConnection, 'edges'> & { edges: Array<ResolversTypes['ReplyEdge']> }>;
+  Reply: ResolverTypeWrapper<ReplySelectModel>;
+  ReplyEdge: ResolverTypeWrapper<Omit<ReplyEdge, 'node'> & { node: ResolversTypes['Reply'] }>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
   USCurrency: ResolverTypeWrapper<Scalars['USCurrency']['output']>;
@@ -363,6 +395,9 @@ export type ResolversParentTypes = {
   PageViewerPermissions: PageViewerPermissions;
   PublishCommentInput: PublishCommentInput;
   Query: {};
+  RepliesConnection: Omit<RepliesConnection, 'edges'> & { edges: Array<ResolversParentTypes['ReplyEdge']> };
+  Reply: ReplySelectModel;
+  ReplyEdge: Omit<ReplyEdge, 'node'> & { node: ResolversParentTypes['Reply'] };
   String: Scalars['String']['output'];
   URL: Scalars['URL']['output'];
   USCurrency: Scalars['USCurrency']['output'];
@@ -380,6 +415,8 @@ export type CommentResolvers<ContextType = Context, ParentType extends Resolvers
   page?: Resolver<ResolversTypes['Page'], ParentType, ContextType>;
   permissions?: Resolver<ResolversTypes['CommentViewerPermissions'], ParentType, ContextType>;
   published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  replies?: Resolver<ResolversTypes['RepliesConnection'], ParentType, ContextType, Partial<CommentRepliesArgs>>;
+  repliesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   website?: Resolver<ResolversTypes['Website'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -405,7 +442,7 @@ export type CommentsConnectionResolvers<ContextType = Context, ParentType extend
 };
 
 export type ConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Connection'] = ResolversParentTypes['Connection']> = {
-  __resolveType: TypeResolveFn<'CommentsConnection', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CommentsConnection' | 'RepliesConnection', ParentType, ContextType>;
   edges?: Resolver<Array<ResolversTypes['Edge']>, ParentType, ContextType>;
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
 };
@@ -415,7 +452,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type EdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Edge'] = ResolversParentTypes['Edge']> = {
-  __resolveType: TypeResolveFn<'CommentEdge', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CommentEdge' | 'ReplyEdge', ParentType, ContextType>;
   cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Node'], ParentType, ContextType>;
 };
@@ -432,7 +469,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
 };
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = {
-  __resolveType: TypeResolveFn<'Comment' | 'Page' | 'User' | 'Website', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Comment' | 'Page' | 'Reply' | 'User' | 'Website', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
 };
 
@@ -467,6 +504,27 @@ export type PageViewerPermissionsResolvers<ContextType = Context, ParentType ext
 export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   viewer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+};
+
+export type RepliesConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['RepliesConnection'] = ResolversParentTypes['RepliesConnection']> = {
+  edges?: Resolver<Array<ResolversTypes['ReplyEdge']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ReplyResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Reply'] = ResolversParentTypes['Reply']> = {
+  author?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ReplyEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ReplyEdge'] = ResolversParentTypes['ReplyEdge']> = {
+  cursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Reply'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
@@ -511,6 +569,9 @@ export type Resolvers<ContextType = Context> = {
   PageInfo?: PageInfoResolvers<ContextType>;
   PageViewerPermissions?: PageViewerPermissionsResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RepliesConnection?: RepliesConnectionResolvers<ContextType>;
+  Reply?: ReplyResolvers<ContextType>;
+  ReplyEdge?: ReplyEdgeResolvers<ContextType>;
   URL?: GraphQLScalarType;
   USCurrency?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;

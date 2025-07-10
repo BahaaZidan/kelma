@@ -128,3 +128,30 @@ export const commentTable = sqliteTable('comment', {
 		.references(() => userTable.id, { onDelete: 'cascade' }),
 });
 export type CommentSelectModel = InferSelectModel<typeof commentTable>;
+
+export const replyTable = sqliteTable('reply', {
+	id: integer('id').primaryKey(),
+	content: text('content').notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp' })
+		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp' })
+		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.notNull(),
+	published: integer('published', { mode: 'boolean' })
+		.default(sql`1`)
+		.notNull(),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => userTable.id, { onDelete: 'cascade' }),
+	commentId: integer('comment_id')
+		.notNull()
+		.references(() => commentTable.id, { onDelete: 'cascade' }),
+	pageId: integer('page_id')
+		.notNull()
+		.references(() => pageTable.id, { onDelete: 'cascade' }),
+	websiteId: integer('website_id')
+		.notNull()
+		.references(() => websiteTable.id, { onDelete: 'cascade' }),
+});
+export type ReplySelectModel = InferSelectModel<typeof replyTable>;
