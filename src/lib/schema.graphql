@@ -12,6 +12,13 @@ type Mutation {
 	togglePageClosed(id: ID!): Page
 	createWebsite(input: CreateWebsiteInput!): Website!
 	updateWebsite(input: UpdateWebsiteInput!): Website
+	createReply(input: CreateReplyInput!): Reply
+	deleteReply(id: ID!): Reply
+}
+
+input CreateReplyInput {
+	commentId: ID!
+	content: String!
 }
 
 input UpdateWebsiteInput {

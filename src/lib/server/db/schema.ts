@@ -147,11 +147,5 @@ export const replyTable = sqliteTable('reply', {
 	commentId: integer('comment_id')
 		.notNull()
 		.references(() => commentTable.id, { onDelete: 'cascade' }),
-	pageId: integer('page_id')
-		.notNull()
-		.references(() => pageTable.id, { onDelete: 'cascade' }),
-	websiteId: integer('website_id')
-		.notNull()
-		.references(() => websiteTable.id, { onDelete: 'cascade' }),
 });
 export type ReplySelectModel = InferSelectModel<typeof replyTable>;

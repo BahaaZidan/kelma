@@ -73,6 +73,11 @@ export type CreateCommentInput = {
   pageId: Scalars['ID']['input'];
 };
 
+export type CreateReplyInput = {
+  commentId: Scalars['ID']['input'];
+  content: Scalars['String']['input'];
+};
+
 export type CreateWebsiteInput = {
   domains: Array<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -90,8 +95,10 @@ export type Edge = {
 export type Mutation = {
   __typename?: 'Mutation';
   createComment: Comment;
+  createReply?: Maybe<Reply>;
   createWebsite: Website;
   deleteComment?: Maybe<Comment>;
+  deleteReply?: Maybe<Reply>;
   publishComment?: Maybe<Comment>;
   togglePageClosed?: Maybe<Page>;
   togglePagePreModeration?: Maybe<Page>;
@@ -105,6 +112,11 @@ export type MutationCreateCommentArgs = {
 };
 
 
+export type MutationCreateReplyArgs = {
+  input: CreateReplyInput;
+};
+
+
 export type MutationCreateWebsiteArgs = {
   input: CreateWebsiteInput;
 };
@@ -112,6 +124,11 @@ export type MutationCreateWebsiteArgs = {
 
 export type MutationDeleteCommentArgs = {
   input: DeleteCommentInput;
+};
+
+
+export type MutationDeleteReplyArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -344,6 +361,7 @@ export type ResolversTypes = {
   CommentsConnection: ResolverTypeWrapper<Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversTypes['CommentEdge']> }>;
   Connection: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Connection']>;
   CreateCommentInput: CreateCommentInput;
+  CreateReplyInput: CreateReplyInput;
   CreateWebsiteInput: CreateWebsiteInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DeleteCommentInput: DeleteCommentInput;
@@ -380,6 +398,7 @@ export type ResolversParentTypes = {
   CommentsConnection: Omit<CommentsConnection, 'edges'> & { edges: Array<ResolversParentTypes['CommentEdge']> };
   Connection: ResolversInterfaceTypes<ResolversParentTypes>['Connection'];
   CreateCommentInput: CreateCommentInput;
+  CreateReplyInput: CreateReplyInput;
   CreateWebsiteInput: CreateWebsiteInput;
   DateTime: Scalars['DateTime']['output'];
   DeleteCommentInput: DeleteCommentInput;
@@ -459,8 +478,10 @@ export type EdgeResolvers<ContextType = Context, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
+  createReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationCreateReplyArgs, 'input'>>;
   createWebsite?: Resolver<ResolversTypes['Website'], ParentType, ContextType, RequireFields<MutationCreateWebsiteArgs, 'input'>>;
   deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'input'>>;
+  deleteReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationDeleteReplyArgs, 'id'>>;
   publishComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationPublishCommentArgs, 'input'>>;
   togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
   togglePagePreModeration?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePagePreModerationArgs, 'id'>>;

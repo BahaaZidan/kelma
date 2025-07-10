@@ -9,7 +9,7 @@ import { commentTable, pageTable, replyTable, websiteTable } from '$lib/server/d
 import type { Resolvers } from './resolvers.types';
 import { fromGlobalId, toGlobalId } from './utils';
 
-const schema = v.object({
+const contentSchema = v.object({
 	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
 });
 
@@ -60,7 +60,7 @@ export const resolvers: Resolvers = {
 	Mutation: {
 		createComment: async (_, { input }, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
-			const inputValidation = v.safeParse(schema, input);
+			const inputValidation = v.safeParse(contentSchema, input);
 			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
 
 			const pageId = Number(fromGlobalId(input.pageId).id);
@@ -130,7 +130,7 @@ export const resolvers: Resolvers = {
 		},
 		updateCommentContent: async (_, { input }, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
-			const inputValidation = v.safeParse(schema, input);
+			const inputValidation = v.safeParse(contentSchema, input);
 			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
 			const commentId = Number(fromGlobalId(input.commentId).id);
 
@@ -240,6 +240,36 @@ export const resolvers: Resolvers = {
 			)[0];
 
 			return updatedWebsite;
+		},
+		createReply: async (_, { input }, { locals, db }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+			const inputValidation = v.safeParse(contentSchema, input);
+			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
+
+			const commentId = Number(fromGlobalId(input.commentId).id);
+
+			const [createdReply] = await db
+				.insert(replyTable)
+				.values({
+					commentId,
+					authorId: locals.session.user.id,
+					content: inputValidation.output.content,
+				})
+				.returning();
+
+			return createdReply;
+		},
+		deleteReply: async (_, args, { locals, db }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+			const replyId = Number(fromGlobalId(args.id).id);
+
+			// TODO: website admins should be able to delete replies
+			const [deletedReply] = await db
+				.delete(replyTable)
+				.where(and(eq(replyTable.id, replyId), eq(replyTable.authorId, locals.session.user.id)))
+				.returning();
+
+			return deletedReply;
 		},
 	},
 	Node: {
