@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LayoutDashboardIcon from '@lucide/svelte/icons/layout-dashboard';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
-	import { siGithub } from 'simple-icons';
+	import { siGithub, siGoogle } from 'simple-icons';
 
 	import { authClient, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
@@ -14,6 +14,9 @@
 
 	async function githubSignIn() {
 		await authClient.signIn.social({ provider: 'github' });
+	}
+	async function googleSignIn() {
+		await authClient.signIn.social({ provider: 'google' });
 	}
 </script>
 
@@ -59,6 +62,7 @@
 					</ul>
 				</div>
 			{:else}
+				<button onclick={googleSignIn} class="btn">Login <BrandIcon icon={siGoogle} /></button>
 				<button onclick={githubSignIn} class="btn">Login <BrandIcon icon={siGithub} /></button>
 			{/if}
 		</div>

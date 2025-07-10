@@ -16,6 +16,10 @@ export const getAuth = (db: DB) => {
 				clientId: publicVars.PUBLIC_GITHUB_CLIENT_ID,
 				clientSecret: privateVars.GITHUB_CLIENT_SECRET,
 			},
+			google: {
+				clientId: privateVars.AUTH_GOOGLE_ID,
+				clientSecret: privateVars.AUTH_GOOGLE_SECRET,
+			},
 		},
 		// TODO: only trust paying customers
 		trustedOrigins: ['*'],
