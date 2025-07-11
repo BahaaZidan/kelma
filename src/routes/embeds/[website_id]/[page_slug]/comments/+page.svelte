@@ -1,6 +1,5 @@
 <script lang="ts">
 	import SettingsIcon from '@lucide/svelte/icons/settings';
-	import { TextareaAutosize } from 'runed';
 	import { onMount } from 'svelte';
 
 	import { graphql } from '$houdini';
@@ -11,6 +10,7 @@
 
 	import type { PageProps } from './$types';
 	import Comment from './components/Comment.svelte';
+	import CreateCommentForm from './components/CreateCommentForm.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -52,13 +52,7 @@
 			variables: data.queryVariables,
 		});
 	});
-	const CreateComment = graphql(`
-		mutation CreateComment($input: CreateCommentInput!) {
-			createComment(input: $input) {
-				...Embed_Comments_insert @prepend
-			}
-		}
-	`);
+
 	const TogglePageClosed = graphql(`
 		mutation TogglePageClosed($id: ID!) {
 			togglePageClosed(id: $id) {
@@ -91,13 +85,6 @@
 		window.addEventListener('load', sendHeight);
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-	});
-
-	let commentTextarea = $state<HTMLTextAreaElement>(null!);
-	let commentValue = $state('');
-	new TextareaAutosize({
-		element: () => commentTextarea,
-		input: () => commentValue,
 	});
 </script>
 
@@ -162,28 +149,10 @@
 				</span>
 			{/if}
 		</div>
-		<div class="flex w-full flex-col items-end gap-2">
-			<textarea
-				bind:this={commentTextarea}
-				bind:value={commentValue}
-				placeholder={m.comment()}
-				class="textarea w-full"
-				disabled={!website.page.permissions.createComment}
-			></textarea>
-			<button
-				class="btn btn-primary"
-				disabled={!commentValue.length}
-				onclick={async () => {
-					if (!website.page) return;
-					await CreateComment.mutate({
-						input: { pageId: website.page.id, content: commentValue },
-					});
-					commentValue = '';
-				}}
-			>
-				{m.submit()}
-			</button>
-		</div>
+		<CreateCommentForm
+			pageId={website.page.id}
+			disabled={!website.page.permissions.createComment}
+		/>
 		<div class="flex w-full flex-col gap-4 px-2">
 			{#each website.page.comments.edges as { node } (node.id)}
 				<Comment data={node} />
