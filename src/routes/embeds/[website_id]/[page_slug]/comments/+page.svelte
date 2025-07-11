@@ -6,11 +6,11 @@
 	import { graphql } from '$houdini';
 
 	import { signOut } from '$lib/client/auth';
-	import Comment from '$lib/client/components/Comment.svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { route } from '$lib/routes';
 
 	import type { PageProps } from './$types';
+	import Comment from './components/Comment.svelte';
 
 	let { data }: PageProps = $props();
 
