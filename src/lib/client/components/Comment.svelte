@@ -11,7 +11,7 @@
 	import { ar, enUS } from 'date-fns/locale';
 	import { TextareaAutosize } from 'runed';
 
-	import { fragment, graphql, type CommentComponent } from '$houdini';
+	import { cache, fragment, graphql, type CommentComponent } from '$houdini';
 
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -131,6 +131,12 @@
 		element: () => replyTextarea,
 		input: () => replyValue,
 	});
+
+	let comment_replies_count_fragment = graphql(`
+		fragment CommentRepliesCount on Comment {
+			repliesCount
+		}
+	`);
 </script>
 
 <div class="flex items-start gap-4">
@@ -173,12 +179,22 @@
 						<button
 							disabled={!replyValue.length}
 							onclick={async () => {
-								await CreateReplyMutation.mutate({
+								const mutationResult = await CreateReplyMutation.mutate({
 									commentId: id,
 									input: { commentId: id, content: replyValue },
 								});
+								// TODO: better error handling
+								if (mutationResult.errors) return;
+								const comment = cache.get('Comment', { id });
+								comment.write({
+									fragment: comment_replies_count_fragment,
+									data: {
+										repliesCount: repliesCount + 1,
+									},
+								});
 								reply_textbox = false;
 								replyValue = '';
+								reply_open = true;
 							}}
 							class="btn btn-xs btn-primary"
 						>

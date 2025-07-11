@@ -20,6 +20,9 @@ const config = {
 	},
 	// TODO: consider using "include" instead.
 	exclude: ['src/lib/paraglide/**/*', 'src/worker-configuration.d.ts'],
+	features: {
+		imperativeCache: true,
+	},
 };
 
 export default config;
