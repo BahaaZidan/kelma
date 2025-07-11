@@ -171,7 +171,7 @@
 				disabled={!website.page.permissions.createComment}
 			></textarea>
 			<button
-				class="btn"
+				class="btn btn-primary"
 				disabled={!commentValue.length}
 				onclick={async () => {
 					if (!website.page) return;

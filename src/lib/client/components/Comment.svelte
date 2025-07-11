@@ -9,6 +9,7 @@
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
 	import { ar, enUS } from 'date-fns/locale';
+	import { TextareaAutosize } from 'runed';
 
 	import { fragment, graphql, type CommentComponent } from '$houdini';
 
@@ -114,6 +115,22 @@
 	);
 
 	let reply_open = $state(false);
+	let reply_textbox = $state(false);
+
+	const CreateReplyMutation = graphql(`
+		mutation CreateReply($input: CreateReplyInput!, $commentId: ID!) {
+			createReply(input: $input) {
+				...Comment_Replies_insert @prepend @parentID(value: $commentId)
+			}
+		}
+	`);
+
+	let replyTextarea = $state<HTMLTextAreaElement>(null!);
+	let replyValue = $state('');
+	new TextareaAutosize({
+		element: () => replyTextarea,
+		input: () => replyValue,
+	});
 </script>
 
 <div class="flex items-start gap-4">
@@ -140,8 +157,36 @@
 			<div class="flex gap-2">
 				<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
 				<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>
-				<button class="btn btn-xs btn-ghost">{m.reply()}</button>
+				<button class="btn btn-xs btn-ghost" onclick={() => (reply_textbox = !reply_textbox)}>
+					{m.reply()}
+				</button>
 			</div>
+			{#if reply_textbox}
+				<div class="flex flex-col gap-2">
+					<textarea
+						bind:this={replyTextarea}
+						bind:value={replyValue}
+						class="textarea w-full"
+					></textarea>
+					<div class="flex justify-end gap-2">
+						<button class="btn btn-xs" onclick={() => (reply_textbox = false)}>{m.cancel()}</button>
+						<button
+							disabled={!replyValue.length}
+							onclick={async () => {
+								await CreateReplyMutation.mutate({
+									commentId: id,
+									input: { commentId: id, content: replyValue },
+								});
+								reply_textbox = false;
+								replyValue = '';
+							}}
+							class="btn btn-xs btn-primary"
+						>
+							{m.submit()}
+						</button>
+					</div>
+				</div>
+			{/if}
 			{#if repliesCount}
 				<details
 					bind:open={reply_open}
@@ -187,59 +232,56 @@
 				</details>
 			{/if}
 		</div>
-		{#if Object.values(permissions).includes(true)}
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
-					<EllipsisVerticalIcon size={18} />
-				</div>
-				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-				<ul
-					tabindex="0"
-					class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
-				>
-					{#if permissions.approve}
-						<li>
-							<button onclick={() => PublishComment.mutate({ input: { commentId: id } })}>
-								<SquareCheckBigIcon />
-								{m.approve()}
-							</button>
-						</li>
-					{/if}
-					{#if permissions.delete}
-						<li>
-							<button
-								onclick={() => {
-									let confirmed = confirm('Are you sure you want to delete this comment ?');
-									if (confirmed) DeleteComment.mutate({ input: { commentId: id } });
-								}}
-							>
-								<Trash2Icon />
-								{m.delete()}
-							</button>
-						</li>
-					{/if}
-					{#if permissions.edit}
-						<li>
-							<button
-								onclick={() => {
-									editing = true;
-								}}
-							>
-								<SquarePenIcon />
-								{m.edit()}
-							</button>
-						</li>
-					{/if}
-				</ul>
+		<div
+			class={['dropdown dropdown-end', { invisible: Object.values(permissions).includes(true) }]}
+		>
+			<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
+				<EllipsisVerticalIcon size={18} />
 			</div>
-		{/if}
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+			<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+				{#if permissions.approve}
+					<li>
+						<button onclick={() => PublishComment.mutate({ input: { commentId: id } })}>
+							<SquareCheckBigIcon />
+							{m.approve()}
+						</button>
+					</li>
+				{/if}
+				{#if permissions.delete}
+					<li>
+						<button
+							onclick={() => {
+								let confirmed = confirm('Are you sure you want to delete this comment ?');
+								if (confirmed) DeleteComment.mutate({ input: { commentId: id } });
+							}}
+						>
+							<Trash2Icon />
+							{m.delete()}
+						</button>
+					</li>
+				{/if}
+				{#if permissions.edit}
+					<li>
+						<button
+							onclick={() => {
+								editing = true;
+							}}
+						>
+							<SquarePenIcon />
+							{m.edit()}
+						</button>
+					</li>
+				{/if}
+			</ul>
+		</div>
 	{:else}
 		<div class="flex grow flex-col gap-3">
 			<textarea class="textarea w-full" name="content" bind:value={contentVal}></textarea>
 			<div class="flex justify-end gap-2">
 				<button class="btn" onclick={() => (editing = false)}>{m.cancel()}</button>
 				<button
-					class="btn"
+					class="btn btn-primary"
 					onclick={async () => {
 						await UpdateCommentContent.mutate({ input: { commentId: id, content: contentVal } });
 						editing = false;
