@@ -140,7 +140,7 @@
 			<div class="flex gap-2">
 				<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
 				<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>
-				<button class="btn btn-xs btn-ghost">Reply</button>
+				<button class="btn btn-xs btn-ghost">{m.reply()}</button>
 			</div>
 			{#if repliesCount}
 				<details
@@ -158,7 +158,8 @@
 						{:else}
 							<ChevronDownIcon />
 						{/if}
-						{repliesCount} Replies
+						{repliesCount}
+						{m.replies()}
 					</summary>
 					<div class="flex flex-col gap-2">
 						{#each replies as reply (reply.id)}

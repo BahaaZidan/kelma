@@ -18,5 +18,7 @@
 	"approve": "Approve",
 	"delete": "Delete",
 	"edit": "Edit",
-	"cancel": "Cancel"
+	"cancel": "Cancel",
+	"reply": "Reply",
+	"replies": "Replies"
 }

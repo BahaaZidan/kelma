@@ -18,5 +18,7 @@
 	"approve": "إعتماد",
 	"delete": "حذف",
 	"edit": "تعديل",
-	"cancel": "إلغاء"
+	"cancel": "إلغاء",
+	"reply": "رُد",
+	"replies": "ردود"
 }
