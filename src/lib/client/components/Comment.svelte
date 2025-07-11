@@ -63,7 +63,6 @@
 			updateCommentContent(input: $input) {
 				id
 				content
-				createdAt
 				updatedAt
 			}
 		}
@@ -72,9 +71,6 @@
 		mutation PublishComment($input: PublishCommentInput!) {
 			publishComment(input: $input) {
 				id
-				content
-				createdAt
-				updatedAt
 				published
 			}
 		}
