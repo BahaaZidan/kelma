@@ -1,7 +1,11 @@
 <script lang="ts">
+	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 	import SquareCheckBigIcon from '@lucide/svelte/icons/square-check-big';
 	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
+	import ThumbsDownIcon from '@lucide/svelte/icons/thumbs-down';
+	import ThumbsUpIcon from '@lucide/svelte/icons/thumbs-up';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
 	import { ar, enUS } from 'date-fns/locale';
@@ -36,11 +40,12 @@
 						edit
 						approve
 					}
+					repliesCount
 				}
 			`)
 		)
 	);
-	let { id, content, createdAt, author, permissions, published } = $derived($comment);
+	let { id, content, createdAt, author, permissions, published, repliesCount } = $derived($comment);
 
 	let editing = $state(false);
 	let contentVal = $derived(content);
@@ -78,6 +83,37 @@
 		en: enUS,
 		ar,
 	} as const;
+
+	const repliesQuery = graphql(`
+		query CommentRepliesQuery($id: ID!) {
+			node(id: $id) {
+				... on Comment {
+					id
+					replies(first: 10) @paginate(name: "Comment_Replies") {
+						edges {
+							node {
+								id
+								content
+								createdAt
+								author {
+									id
+									image
+									name
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	`);
+	let replies = $derived(
+		$repliesQuery.data?.node?.__typename === 'Comment'
+			? $repliesQuery.data?.node.replies.edges.map(({ node }) => node)
+			: []
+	);
+
+	let reply_open = $state(false);
 </script>
 
 <div class="flex items-start gap-4">
@@ -89,7 +125,7 @@
 	{#if !editing}
 		<div class="flex grow flex-col">
 			<span>
-				<b>{author.name}</b>
+				<span class="font-semibold">{author.name}</span>
 				<span class="text-secondary text-sm">
 					{formatDistance(createdAt, new Date(), {
 						addSuffix: true,
@@ -101,6 +137,54 @@
 				{/if}
 			</span>
 			<span class="whitespace-pre-wrap">{content}</span>
+			<div class="flex gap-2">
+				<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
+				<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>
+				<button class="btn btn-xs btn-ghost">Reply</button>
+			</div>
+			{#if repliesCount}
+				<details
+					bind:open={reply_open}
+					ontoggle={(e) => {
+						if (!e.currentTarget.open) return;
+						repliesQuery.fetch({ variables: { id } });
+					}}
+				>
+					<summary class="btn btn-ghost btn-xs w-24 p-1">
+						{#if $repliesQuery.fetching}
+							<span class="loading loading-spinner loading-xs"></span>
+						{:else if reply_open}
+							<ChevronUpIcon />
+						{:else}
+							<ChevronDownIcon />
+						{/if}
+						{repliesCount} Replies
+					</summary>
+					<div class="flex flex-col gap-2">
+						{#each replies as reply (reply.id)}
+							<div class="flex items-start gap-4">
+								<img
+									src={reply.author.image || 'https://avatars.githubusercontent.com/u/22656046?v=4'}
+									alt="{reply.author.name} {m.profile_picture()}"
+									class="mt-1 size-6 rounded-full"
+								/>
+								<div class="flex grow flex-col">
+									<span>
+										<span class="font-semibold">{reply.author.name}</span>
+										<span class="text-secondary text-sm">
+											{formatDistance(reply.createdAt, new Date(), {
+												addSuffix: true,
+												locale: localeMap[getLocale()],
+											})}
+										</span>
+									</span>
+									<span class="whitespace-pre-wrap">{reply.content}</span>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</details>
+			{/if}
 		</div>
 		{#if Object.values(permissions).includes(true)}
 			<div class="dropdown dropdown-end">
