@@ -249,7 +249,7 @@
 			{/if}
 		</div>
 		<div
-			class={['dropdown dropdown-end', { invisible: Object.values(permissions).includes(true) }]}
+			class={['dropdown dropdown-end', { invisible: !Object.values(permissions).includes(true) }]}
 		>
 			<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
 				<EllipsisVerticalIcon size={18} />
