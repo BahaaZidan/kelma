@@ -13,7 +13,6 @@
 	type Props = {
 		data: BaseInfoFormComponent;
 	};
-
 	let { data }: Props = $props();
 
 	let website = $derived(

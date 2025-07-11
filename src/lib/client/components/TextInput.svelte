@@ -44,7 +44,7 @@
 				{type}
 				name={field}
 				bind:value={$value}
-				aria-invalid={$errors ? 'true' : undefined}
+				aria-invalid={!!$errors}
 				{...$constraints}
 			/>
 			<span>{label}</span>
