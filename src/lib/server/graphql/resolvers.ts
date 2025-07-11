@@ -65,41 +65,39 @@ export const resolvers: Resolvers = {
 
 			const pageId = Number(fromGlobalId(input.pageId).id);
 
-			const page = (
-				await db
-					.select({
-						id: pageTable.id,
-						closed: pageTable.closed,
-						preModeration: pageTable.preModeration,
-						website: {
-							id: websiteTable.id,
-							ownerId: websiteTable.ownerId,
-							preModeration: websiteTable.preModeration,
-						},
-					})
-					.from(pageTable)
-					.where(eq(pageTable.id, pageId))
-					.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
-					.limit(1)
-			)[0];
+			const [page] = await db
+				.select({
+					id: pageTable.id,
+					closed: pageTable.closed,
+					preModeration: pageTable.preModeration,
+					website: {
+						id: websiteTable.id,
+						ownerId: websiteTable.ownerId,
+						preModeration: websiteTable.preModeration,
+					},
+				})
+				.from(pageTable)
+				.where(eq(pageTable.id, pageId))
+				.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
+				.limit(1);
+
 			if (!page) throw new GraphQLError('NOT_FOUND');
 			if (page.closed) throw new GraphQLError('UNAUTHORIZED');
 
 			const website = page.website!;
-			const insertResult = (
-				await db
-					.insert(commentTable)
-					.values({
-						content: inputValidation.output.content,
-						authorId: locals.session.user.id,
-						pageId: page.id,
-						websiteId: website.id,
-						published:
-							website.ownerId === locals.session.user.id ||
-							(!website.preModeration && !page.preModeration),
-					})
-					.returning()
-			)[0];
+			const [insertResult] = await db
+				.insert(commentTable)
+				.values({
+					content: inputValidation.output.content,
+					authorId: locals.session.user.id,
+					pageId: page.id,
+					websiteId: website.id,
+					published:
+						website.ownerId === locals.session.user.id ||
+						(!website.preModeration && !page.preModeration),
+				})
+				.returning();
+
 			if (!insertResult) throw new GraphQLError('INTERNAL_SERVER_ERROR');
 
 			return insertResult;
@@ -109,20 +107,18 @@ export const resolvers: Resolvers = {
 
 			const commentId = Number(fromGlobalId(input.commentId).id);
 
-			const deletedComment = (
-				await db
-					.delete(commentTable)
-					.where(
-						and(
-							eq(commentTable.id, commentId),
-							or(
-								eq(commentTable.authorId, locals.session.user.id),
-								inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser || [])
-							)
+			const [deletedComment] = await db
+				.delete(commentTable)
+				.where(
+					and(
+						eq(commentTable.id, commentId),
+						or(
+							eq(commentTable.authorId, locals.session.user.id),
+							inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser || [])
 						)
 					)
-					.returning()
-			)[0];
+				)
+				.returning();
 
 			if (!deletedComment) throw new GraphQLError('UNAUTHORIZED');
 
@@ -134,18 +130,16 @@ export const resolvers: Resolvers = {
 			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
 			const commentId = Number(fromGlobalId(input.commentId).id);
 
-			const updatedComment = (
-				await db
-					.update(commentTable)
-					.set({
-						content: inputValidation.output.content,
-						updatedAt: new Date(),
-					})
-					.where(
-						and(eq(commentTable.id, commentId), eq(commentTable.authorId, locals.session.user.id))
-					)
-					.returning()
-			)[0];
+			const [updatedComment] = await db
+				.update(commentTable)
+				.set({
+					content: inputValidation.output.content,
+					updatedAt: new Date(),
+				})
+				.where(
+					and(eq(commentTable.id, commentId), eq(commentTable.authorId, locals.session.user.id))
+				)
+				.returning();
 
 			if (!updatedComment) throw new GraphQLError('UNAUTHORIZED');
 
@@ -156,21 +150,20 @@ export const resolvers: Resolvers = {
 				throw new GraphQLError('UNAUTHORIZED');
 			const commentId = Number(fromGlobalId(input.commentId).id);
 
-			const updatedComment = (
-				await db
-					.update(commentTable)
-					.set({
-						published: true,
-					})
-					.where(
-						and(
-							eq(commentTable.id, commentId),
-							eq(commentTable.published, false),
-							inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser)
-						)
+			const [updatedComment] = await db
+				.update(commentTable)
+				.set({
+					published: true,
+				})
+				.where(
+					and(
+						eq(commentTable.id, commentId),
+						eq(commentTable.published, false),
+						inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser)
 					)
-					.returning()
-			)[0];
+				)
+				.returning();
+
 			if (!updatedComment) throw new GraphQLError('UNAUTHORIZED');
 
 			return updatedComment;
@@ -180,18 +173,16 @@ export const resolvers: Resolvers = {
 				throw new GraphQLError('UNAUTHORIZED');
 
 			const pageDBId = Number(fromGlobalId(args.id).id);
-			const updatedPage = (
-				await db
-					.update(pageTable)
-					.set({ closed: not(pageTable.closed) })
-					.where(
-						and(
-							eq(pageTable.id, pageDBId),
-							inArray(pageTable.websiteId, locals.session.websitesOwnedByCurrentUser)
-						)
+			const [updatedPage] = await db
+				.update(pageTable)
+				.set({ closed: not(pageTable.closed) })
+				.where(
+					and(
+						eq(pageTable.id, pageDBId),
+						inArray(pageTable.websiteId, locals.session.websitesOwnedByCurrentUser)
 					)
-					.returning()
-			)[0];
+				)
+				.returning();
 
 			return updatedPage;
 		},
@@ -200,29 +191,26 @@ export const resolvers: Resolvers = {
 				throw new GraphQLError('UNAUTHORIZED');
 
 			const pageDBId = Number(fromGlobalId(args.id).id);
-			const updatedPage = (
-				await db
-					.update(pageTable)
-					.set({ preModeration: not(pageTable.preModeration) })
-					.where(
-						and(
-							eq(pageTable.id, pageDBId),
-							inArray(pageTable.websiteId, locals.session.websitesOwnedByCurrentUser)
-						)
+			const [updatedPage] = await db
+				.update(pageTable)
+				.set({ preModeration: not(pageTable.preModeration) })
+				.where(
+					and(
+						eq(pageTable.id, pageDBId),
+						inArray(pageTable.websiteId, locals.session.websitesOwnedByCurrentUser)
 					)
-					.returning()
-			)[0];
+				)
+				.returning();
 
 			return updatedPage;
 		},
 		createWebsite: async (_, { input }, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
-			const createdWebsite = (
-				await db
-					.insert(websiteTable)
-					.values({ ownerId: locals.session.user.id, name: input.name, domains: input.domains })
-					.returning()
-			)[0];
+			const [createdWebsite] = await db
+				.insert(websiteTable)
+				.values({ ownerId: locals.session.user.id, name: input.name, domains: input.domains })
+				.returning();
+
 			return createdWebsite;
 		},
 		updateWebsite: async (_, { input }, { locals, db }) => {
@@ -235,9 +223,11 @@ export const resolvers: Resolvers = {
 				...(input.domains?.length ? { domains: input.domains } : {}),
 				...(typeof input.preModeration === 'boolean' ? { preModeration: input.preModeration } : {}),
 			};
-			const updatedWebsite = (
-				await db.update(websiteTable).set(setMap).where(eq(websiteTable.id, dbId)).returning()
-			)[0];
+			const [updatedWebsite] = await db
+				.update(websiteTable)
+				.set(setMap)
+				.where(eq(websiteTable.id, dbId))
+				.returning();
 
 			return updatedWebsite;
 		},
@@ -294,30 +284,28 @@ export const resolvers: Resolvers = {
 		},
 		page: async (parent, { input: { slug, overrides } }, { db }) => {
 			if (overrides) {
-				const page = (
-					await db
-						.insert(pageTable)
-						.values({
-							slug,
-							websiteId: parent.id,
-							name: overrides.name,
-							url: overrides.url.toString(),
-						})
-						.onConflictDoUpdate({
-							target: [pageTable.slug, pageTable.websiteId],
-							set: { name: overrides.name, url: overrides.url.toString() },
-						})
-						.returning()
-				)[0];
+				const [page] = await db
+					.insert(pageTable)
+					.values({
+						slug,
+						websiteId: parent.id,
+						name: overrides.name,
+						url: overrides.url.toString(),
+					})
+					.onConflictDoUpdate({
+						target: [pageTable.slug, pageTable.websiteId],
+						set: { name: overrides.name, url: overrides.url.toString() },
+					})
+					.returning();
+
 				return page;
 			}
-			const page = (
-				await db
-					.select()
-					.from(pageTable)
-					.where(and(eq(pageTable.websiteId, parent.id), eq(pageTable.slug, slug)))
-					.limit(1)
-			)[0];
+			const [page] = await db
+				.select()
+				.from(pageTable)
+				.where(and(eq(pageTable.websiteId, parent.id), eq(pageTable.slug, slug)))
+				.limit(1);
+
 			return page;
 		},
 	},
