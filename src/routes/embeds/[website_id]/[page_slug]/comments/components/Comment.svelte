@@ -113,8 +113,8 @@
 			: []
 	);
 
-	let reply_open = $state(false);
-	let reply_textbox = $state(false);
+	let replies_list_shown = $state(false);
+	let create_reply_form_shown = $state(false);
 
 	const superform = superForm(
 		defaults({ content: $comment.content }, valibot(commentContentSchema)),
@@ -159,24 +159,27 @@
 			<div class="flex gap-2">
 				<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
 				<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>
-				<button class="btn btn-xs btn-ghost" onclick={() => (reply_textbox = !reply_textbox)}>
+				<button
+					class="btn btn-xs btn-ghost"
+					onclick={() => (create_reply_form_shown = !create_reply_form_shown)}
+				>
 					{m.reply()}
 				</button>
 			</div>
-			{#if reply_textbox}
+			{#if create_reply_form_shown}
 				<CreateReplyForm
 					commentId={$comment.id}
 					commentRepliesCount={$comment.repliesCount}
-					onCancel={() => (reply_textbox = false)}
+					onCancel={() => (create_reply_form_shown = false)}
 					onSuccess={() => {
-						reply_textbox = false;
-						reply_open = true;
+						create_reply_form_shown = false;
+						replies_list_shown = true;
 					}}
 				/>
 			{/if}
 			{#if $comment.repliesCount}
 				<details
-					bind:open={reply_open}
+					bind:open={replies_list_shown}
 					ontoggle={(e) => {
 						if (!e.currentTarget.open) return;
 						repliesQuery.fetch({ variables: { id: $comment.id } });
@@ -185,7 +188,7 @@
 					<summary class="btn btn-ghost btn-xs w-24 p-1">
 						{#if $repliesQuery.fetching}
 							<span class="loading loading-spinner loading-xs"></span>
-						{:else if reply_open}
+						{:else if replies_list_shown}
 							<ChevronUpIcon />
 						{:else}
 							<ChevronDownIcon />
