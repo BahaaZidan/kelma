@@ -87,8 +87,8 @@
 	let editing = $state(false);
 
 	const DeleteComment = graphql(`
-		mutation DeleteComment($input: DeleteCommentInput!) {
-			deleteComment(input: $input) {
+		mutation DeleteComment($id: ID!) {
+			deleteComment(id: $id) {
 				id @Comment_delete
 			}
 		}
@@ -258,7 +258,7 @@
 						<button
 							onclick={() => {
 								let confirmed = confirm('Are you sure you want to delete this comment ?');
-								if (confirmed) DeleteComment.mutate({ input: { commentId: $comment.id } });
+								if (confirmed) DeleteComment.mutate({ id: $comment.id });
 							}}
 						>
 							<Trash2Icon />

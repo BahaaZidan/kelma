@@ -92,10 +92,10 @@ export const resolvers: Resolvers = {
 
 			return insertResult;
 		},
-		deleteComment: async (_, { input }, { locals, db }) => {
+		deleteComment: async (_, args, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 
-			const commentId = Number(fromGlobalId(input.commentId).id);
+			const commentId = Number(fromGlobalId(args.id).id);
 
 			const [deletedComment] = await db
 				.delete(commentTable)

@@ -74,10 +74,6 @@ export type CreateWebsiteInput = {
   name: Scalars['String']['input'];
 };
 
-export type DeleteCommentInput = {
-  commentId: Scalars['ID']['input'];
-};
-
 export type Edge = {
   cursor?: Maybe<Scalars['String']['output']>;
   node: Node;
@@ -112,7 +108,7 @@ export type MutationCreateWebsiteArgs = {
 
 
 export type MutationDeleteCommentArgs = {
-  input: DeleteCommentInput;
+  id: Scalars['ID']['input'];
 };
 
 
@@ -327,7 +323,6 @@ export type ResolversTypes = {
   CreateReplyInput: CreateReplyInput;
   CreateWebsiteInput: CreateWebsiteInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
-  DeleteCommentInput: DeleteCommentInput;
   Edge: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Edge']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -361,7 +356,6 @@ export type ResolversParentTypes = {
   CreateReplyInput: CreateReplyInput;
   CreateWebsiteInput: CreateWebsiteInput;
   DateTime: Scalars['DateTime']['output'];
-  DeleteCommentInput: DeleteCommentInput;
   Edge: ResolversInterfaceTypes<ResolversParentTypes>['Edge'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -429,7 +423,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   createComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
   createReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationCreateReplyArgs, 'input'>>;
   createWebsite?: Resolver<ResolversTypes['Website'], ParentType, ContextType, RequireFields<MutationCreateWebsiteArgs, 'input'>>;
-  deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'input'>>;
+  deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'id'>>;
   deleteReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationDeleteReplyArgs, 'id'>>;
   togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
   updateCommentContent?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
