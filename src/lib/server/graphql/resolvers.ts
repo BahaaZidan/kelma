@@ -5,13 +5,10 @@ import * as v from 'valibot';
 
 import { PAGEVIEW_COST_SCALER } from '$lib/constants';
 import { commentTable, pageTable, replyTable, websiteTable } from '$lib/server/db/schema';
+import { contentSchema } from '$lib/validation-schemas';
 
 import type { Resolvers } from './resolvers.types';
 import { fromGlobalId, toGlobalId } from './utils';
-
-const contentSchema = v.object({
-	content: v.pipe(v.string(), v.trim(), v.minLength(4), v.maxLength(300)),
-});
 
 export const resolvers: Resolvers = {
 	DateTime: DateTimeResolver,
@@ -235,6 +232,25 @@ export const resolvers: Resolvers = {
 				.returning();
 
 			return deletedReply;
+		},
+		updateReply: async (_, { input }, { locals, db }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+			const inputValidation = v.safeParse(contentSchema, input);
+			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
+			const replyId = Number(fromGlobalId(input.replyId).id);
+
+			const [updatedReply] = await db
+				.update(replyTable)
+				.set({
+					content: inputValidation.output.content,
+					updatedAt: new Date(),
+				})
+				.where(and(eq(replyTable.id, replyId), eq(replyTable.authorId, locals.session.user.id)))
+				.returning();
+
+			if (!updatedReply) throw new GraphQLError('UNAUTHORIZED');
+
+			return updatedReply;
 		},
 	},
 	Node: {

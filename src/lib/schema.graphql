@@ -12,6 +12,12 @@ type Mutation {
 	updateWebsite(input: UpdateWebsiteInput!): Website
 	createReply(input: CreateReplyInput!): Reply
 	deleteReply(id: ID!): Reply
+	updateReply(input: UpdateReplyInput!): Reply
+}
+
+input UpdateReplyInput {
+	replyId: ID!
+	content: String!
 }
 
 input CreateReplyInput {

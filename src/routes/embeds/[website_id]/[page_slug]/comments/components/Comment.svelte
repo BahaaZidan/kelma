@@ -23,9 +23,9 @@
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
+	import { contentSchema } from '$lib/validation-schemas';
 
 	import CreateReplyForm from './CreateReplyForm.svelte';
-	import { commentContentSchema } from './schemas';
 
 	type Props = {
 		data: CommentComponent;
@@ -140,23 +140,20 @@
 	let replies_list_shown = $state(false);
 	let create_reply_form_shown = $state(false);
 
-	const superform = superForm(
-		defaults({ content: $comment.content }, valibot(commentContentSchema)),
-		{
-			SPA: true,
-			validators: valibot(commentContentSchema),
-			id: `edit_comment_superform_${$comment.id}`,
-			async onUpdate({ form }) {
-				if (form.valid) {
-					await UpdateCommentContent.mutate({
-						input: { commentId: $comment.id, content: form.data.content },
-					});
-					editing = false;
-				}
-			},
-			resetForm: false,
-		}
-	);
+	const superform = superForm(defaults({ content: $comment.content }, valibot(contentSchema)), {
+		SPA: true,
+		validators: valibot(contentSchema),
+		id: `edit_comment_superform_${$comment.id}`,
+		async onUpdate({ form }) {
+			if (form.valid) {
+				await UpdateCommentContent.mutate({
+					input: { commentId: $comment.id, content: form.data.content },
+				});
+				editing = false;
+			}
+		},
+		resetForm: false,
+	});
 
 	const DeleteReply = graphql(`
 		mutation DeleteReply($id: ID!) {

@@ -6,8 +6,7 @@
 
 	import Textarea from '$lib/client/components/Textarea.svelte';
 	import { m } from '$lib/paraglide/messages.js';
-
-	import { commentContentSchema } from './schemas';
+	import { contentSchema } from '$lib/validation-schemas';
 
 	interface Props {
 		disabled?: boolean;
@@ -23,10 +22,10 @@
 		}
 	`);
 
-	const superform = superForm(defaults(valibot(commentContentSchema)), {
+	const superform = superForm(defaults(valibot(contentSchema)), {
 		SPA: true,
 		id: 'create_comment_superform',
-		validators: valibot(commentContentSchema),
+		validators: valibot(contentSchema),
 		async onUpdate({ form }) {
 			if (form.valid) {
 				await CreateComment.mutate({

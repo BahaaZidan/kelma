@@ -88,6 +88,7 @@ export type Mutation = {
   deleteReply?: Maybe<Reply>;
   togglePageClosed?: Maybe<Page>;
   updateCommentContent?: Maybe<Comment>;
+  updateReply?: Maybe<Reply>;
   updateWebsite?: Maybe<Website>;
 };
 
@@ -124,6 +125,11 @@ export type MutationTogglePageClosedArgs = {
 
 export type MutationUpdateCommentContentArgs = {
   input: UpdateCommentContentInput;
+};
+
+
+export type MutationUpdateReplyArgs = {
+  input: UpdateReplyInput;
 };
 
 
@@ -205,6 +211,11 @@ export type ReplyEdge = Edge & {
 export type UpdateCommentContentInput = {
   commentId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
+};
+
+export type UpdateReplyInput = {
+  content: Scalars['String']['input'];
+  replyId: Scalars['ID']['input'];
 };
 
 export type UpdateWebsiteInput = {
@@ -340,6 +351,7 @@ export type ResolversTypes = {
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
   USCurrency: ResolverTypeWrapper<Scalars['USCurrency']['output']>;
   UpdateCommentContentInput: UpdateCommentContentInput;
+  UpdateReplyInput: UpdateReplyInput;
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: ResolverTypeWrapper<UserSelectModel>;
   Website: ResolverTypeWrapper<WebsiteSelectModel>;
@@ -373,6 +385,7 @@ export type ResolversParentTypes = {
   URL: Scalars['URL']['output'];
   USCurrency: Scalars['USCurrency']['output'];
   UpdateCommentContentInput: UpdateCommentContentInput;
+  UpdateReplyInput: UpdateReplyInput;
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: UserSelectModel;
   Website: WebsiteSelectModel;
@@ -427,6 +440,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   deleteReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationDeleteReplyArgs, 'id'>>;
   togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
   updateCommentContent?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
+  updateReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationUpdateReplyArgs, 'input'>>;
   updateWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationUpdateWebsiteArgs, 'input'>>;
 };
 
