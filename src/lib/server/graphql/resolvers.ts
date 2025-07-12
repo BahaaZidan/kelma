@@ -69,27 +69,22 @@ export const resolvers: Resolvers = {
 				.select({
 					id: pageTable.id,
 					closed: pageTable.closed,
-					website: {
-						id: websiteTable.id,
-						ownerId: websiteTable.ownerId,
-					},
+					websiteId: pageTable.websiteId,
 				})
 				.from(pageTable)
 				.where(eq(pageTable.id, pageId))
-				.leftJoin(websiteTable, eq(pageTable.websiteId, websiteTable.id))
 				.limit(1);
 
 			if (!page) throw new GraphQLError('NOT_FOUND');
 			if (page.closed) throw new GraphQLError('UNAUTHORIZED');
 
-			const website = page.website!;
 			const [insertResult] = await db
 				.insert(commentTable)
 				.values({
 					content: inputValidation.output.content,
 					authorId: locals.session.user.id,
 					pageId: page.id,
-					websiteId: website.id,
+					websiteId: page.websiteId,
 				})
 				.returning();
 
@@ -193,9 +188,6 @@ export const resolvers: Resolvers = {
 
 			const [comment] = await db
 				.select({
-					website: {
-						ownerId: websiteTable.ownerId,
-					},
 					page: {
 						closed: pageTable.closed,
 					},
@@ -203,7 +195,6 @@ export const resolvers: Resolvers = {
 				.from(commentTable)
 				.where(eq(commentTable.id, commentId))
 				.leftJoin(pageTable, eq(commentTable.pageId, pageTable.id))
-				.leftJoin(websiteTable, eq(commentTable.websiteId, websiteTable.id))
 				.limit(1);
 			if (!comment || comment.page?.closed) throw new GraphQLError('UNAUTHORIZED');
 
