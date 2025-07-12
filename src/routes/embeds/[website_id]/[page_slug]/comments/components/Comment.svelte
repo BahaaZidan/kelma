@@ -157,6 +157,14 @@
 			resetForm: false,
 		}
 	);
+
+	const DeleteReply = graphql(`
+		mutation DeleteReply($id: ID!) {
+			deleteReply(id: $id) {
+				id @Reply_delete
+			}
+		}
+	`);
 </script>
 
 <div class="flex items-start gap-4">
@@ -238,6 +246,48 @@
 										</span>
 									</span>
 									<span class="whitespace-pre-wrap">{reply.content}</span>
+								</div>
+								<div
+									class={[
+										'dropdown dropdown-end',
+										{ invisible: !Object.values(permissions).includes(true) },
+									]}
+								>
+									<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
+										<EllipsisVerticalIcon size={16} />
+									</div>
+									<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+									<ul
+										tabindex="0"
+										class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+									>
+										{#if permissions.delete}
+											<li>
+												<button
+													onclick={async () => {
+														let confirmed = confirm('Are you sure you want to delete this reply ?');
+														if (!confirmed) return;
+														await DeleteReply.mutate({ id: reply.id });
+													}}
+												>
+													<Trash2Icon />
+													{m.delete()}
+												</button>
+											</li>
+										{/if}
+										<!-- {#if permissions.edit}
+					<li>
+						<button
+							onclick={() => {
+								editing = true;
+							}}
+						>
+							<SquarePenIcon />
+							{m.edit()}
+						</button>
+					</li>
+				{/if} -->
+									</ul>
 								</div>
 							</div>
 						{/each}
