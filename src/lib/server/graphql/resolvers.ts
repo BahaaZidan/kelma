@@ -358,17 +358,6 @@ export const resolvers: Resolvers = {
 		website: (parent, _args, { loaders }) => {
 			return loaders.websites.load(parent.websiteId);
 		},
-		permissions: async (parent, _args, { locals }) => {
-			const isWebsiteOwner = (locals.session?.websitesOwnedByCurrentUser || []).includes(
-				parent.websiteId
-			);
-
-			return {
-				createComment: !parent.closed && !!locals.session?.user,
-				toggleClosed: isWebsiteOwner,
-				togglePreModeration: isWebsiteOwner,
-			};
-		},
 	},
 	Comment: {
 		id: (parent) => toGlobalId('Comment', parent.id),

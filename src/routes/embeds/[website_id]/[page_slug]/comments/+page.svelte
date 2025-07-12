@@ -16,6 +16,10 @@
 
 	let query = graphql(`
 		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
+			viewer {
+				id
+				name
+			}
 			node(id: $websiteId) {
 				... on Website {
 					id
@@ -36,11 +40,6 @@
 									...CommentComponent
 								}
 							}
-						}
-						permissions {
-							createComment
-							toggleClosed
-							togglePreModeration
 						}
 					}
 				}
@@ -69,6 +68,7 @@
 			}
 		}
 	`);
+	let viewer = $derived($query.data?.viewer);
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
 
 	function sendHeight() {
@@ -91,13 +91,13 @@
 {#if website?.page}
 	<div data-theme={data.theme} class="flex flex-col items-center gap-2">
 		<div class="flex w-full items-center justify-between">
-			{#if data.session}
+			{#if viewer}
 				<div class="flex items-center gap-1">
 					<div>
 						{m.logged_in_as()}
-						<b>{data.session.user.name}</b>
+						<b>{viewer.name}</b>
 					</div>
-					{#if website.page.permissions.toggleClosed && website.page.permissions.togglePreModeration}
+					{#if website.owner.id === viewer.id}
 						<details class="dropdown">
 							<summary class="btn btn-sm btn-warning m-1"><SettingsIcon size={18} /></summary>
 							<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
@@ -149,10 +149,7 @@
 				</span>
 			{/if}
 		</div>
-		<CreateCommentForm
-			pageId={website.page.id}
-			disabled={!website.page.permissions.createComment}
-		/>
+		<CreateCommentForm pageId={website.page.id} disabled={!viewer || website.page.closed} />
 		<div class="flex w-full flex-col gap-4 px-2">
 			{#each website.page.comments.edges as { node } (node.id)}
 				<Comment data={node} />
