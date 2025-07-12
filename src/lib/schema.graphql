@@ -109,6 +109,7 @@ type Reply implements Node {
 	createdAt: DateTime!
 	updatedAt: DateTime!
 	author: User!
+	published: Boolean!
 }
 
 type RepliesConnection implements Connection {

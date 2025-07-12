@@ -142,6 +142,7 @@
 								id
 								content
 								createdAt
+								published
 								author {
 									id
 									image
@@ -262,6 +263,11 @@
 												locale: localeMap[getLocale()],
 											})}
 										</span>
+										{#if !reply.published}
+											<div class="badge badge-info badge-sm rounded-2xl">
+												{m.awaiting_approval()}
+											</div>
+										{/if}
 									</span>
 									<span class="whitespace-pre-wrap">{reply.content}</span>
 								</div>

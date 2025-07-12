@@ -238,15 +238,23 @@ export const resolvers: Resolvers = {
 
 			const commentId = Number(fromGlobalId(input.commentId).id);
 
-			const [page] = await db
+			const [comment] = await db
 				.select({
-					closed: pageTable.closed,
+					website: {
+						preModeration: websiteTable.preModeration,
+						ownerId: websiteTable.ownerId,
+					},
+					page: {
+						preModeration: pageTable.preModeration,
+						closed: pageTable.closed,
+					},
 				})
 				.from(commentTable)
 				.where(eq(commentTable.id, commentId))
 				.leftJoin(pageTable, eq(commentTable.pageId, pageTable.id))
+				.leftJoin(websiteTable, eq(commentTable.websiteId, websiteTable.id))
 				.limit(1);
-			if (!page || page.closed) throw new GraphQLError('UNAUTHORIZED');
+			if (!comment || comment.page?.closed) throw new GraphQLError('UNAUTHORIZED');
 
 			const [createdReply] = await db
 				.insert(replyTable)
@@ -254,6 +262,9 @@ export const resolvers: Resolvers = {
 					commentId,
 					authorId: locals.session.user.id,
 					content: inputValidation.output.content,
+					published:
+						comment.website?.ownerId === locals.session.user.id ||
+						(!comment.page?.preModeration && !comment.website?.preModeration),
 				})
 				.returning();
 
