@@ -100,7 +100,6 @@ type Comment implements Node {
 	page: Page!
 	website: Website!
 	author: User!
-	permissions: CommentViewerPermissions!
 	repliesCount: Int!
 	replies(first: Int, after: String): RepliesConnection!
 }
@@ -120,12 +119,6 @@ type RepliesConnection implements Connection {
 type ReplyEdge implements Edge {
 	cursor: String
 	node: Reply!
-}
-
-type CommentViewerPermissions {
-	delete: Boolean!
-	edit: Boolean!
-	approve: Boolean!
 }
 
 type User implements Node {

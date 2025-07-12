@@ -12,7 +12,13 @@
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';
 
-	import { fragment, graphql, type CommentComponent } from '$houdini';
+	import {
+		fragment,
+		graphql,
+		type CommentComponent,
+		type CommentComponentViewer,
+		type CommentComponentWebsite,
+	} from '$houdini';
 
 	import Textarea from '$lib/client/components/Textarea.svelte';
 	import { m } from '$lib/paraglide/messages.js';
@@ -23,9 +29,11 @@
 
 	type Props = {
 		data: CommentComponent;
+		viewer?: CommentComponentViewer | null;
+		website: CommentComponentWebsite;
 	};
 
-	let { data }: Props = $props();
+	let { data, viewer, website }: Props = $props();
 
 	let comment = $derived(
 		fragment(
@@ -41,16 +49,41 @@
 						name
 						image
 					}
-					permissions {
-						delete
-						edit
-						approve
-					}
 					repliesCount
 				}
 			`)
 		)
 	);
+
+	let viewer_ = $derived(
+		fragment(
+			viewer,
+			graphql(`
+				fragment CommentComponentViewer on User {
+					id
+				}
+			`)
+		)
+	);
+
+	let website_ = $derived(
+		fragment(
+			website,
+			graphql(`
+				fragment CommentComponentWebsite on Website {
+					owner {
+						id
+					}
+				}
+			`)
+		)
+	);
+
+	let permissions = $derived({
+		delete: $comment.author.id === $viewer_?.id || $viewer_?.id === $website_.owner.id,
+		edit: $comment.author.id === $viewer_?.id,
+		approve: !$comment.published && $viewer_?.id === $website_.owner.id,
+	});
 
 	let editing = $state(false);
 
@@ -223,17 +256,14 @@
 			{/if}
 		</div>
 		<div
-			class={[
-				'dropdown dropdown-end',
-				{ invisible: !Object.values($comment.permissions).includes(true) },
-			]}
+			class={['dropdown dropdown-end', { invisible: !Object.values(permissions).includes(true) }]}
 		>
 			<div tabindex="0" role="button" class="btn btn-circle btn-ghost">
 				<EllipsisVerticalIcon size={18} />
 			</div>
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-				{#if $comment.permissions.approve}
+				{#if permissions.approve}
 					<li>
 						<button onclick={() => PublishComment.mutate({ input: { commentId: $comment.id } })}>
 							<SquareCheckBigIcon />
@@ -241,7 +271,7 @@
 						</button>
 					</li>
 				{/if}
-				{#if $comment.permissions.delete}
+				{#if permissions.delete}
 					<li>
 						<button
 							onclick={() => {
@@ -254,7 +284,7 @@
 						</button>
 					</li>
 				{/if}
-				{#if $comment.permissions.edit}
+				{#if permissions.edit}
 					<li>
 						<button
 							onclick={() => {

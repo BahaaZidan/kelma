@@ -370,17 +370,6 @@ export const resolvers: Resolvers = {
 		website: (parent, _args, { loaders }) => {
 			return loaders.websites.load(parent.websiteId);
 		},
-		permissions: (parent, _args, { locals }) => {
-			const loggedInUserId = locals.session?.user.id;
-			const websitesOwnedByLoggedInUser = locals.session?.websitesOwnedByCurrentUser;
-			const isWebsiteOwner = websitesOwnedByLoggedInUser?.includes(parent.websiteId) ?? false;
-
-			return {
-				delete: parent.authorId === loggedInUserId || isWebsiteOwner,
-				edit: parent.authorId === loggedInUserId,
-				approve: !parent.published && isWebsiteOwner,
-			};
-		},
 		repliesCount: (parent, _args, { loaders }) => {
 			return loaders.repliesCounts.load(parent.id);
 		},

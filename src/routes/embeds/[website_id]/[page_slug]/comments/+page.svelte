@@ -17,11 +17,13 @@
 	let query = graphql(`
 		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
 			viewer {
+				...CommentComponentViewer
 				id
 				name
 			}
 			node(id: $websiteId) {
 				... on Website {
+					...CommentComponentWebsite
 					id
 					name
 					owner {
@@ -152,7 +154,7 @@
 		<CreateCommentForm pageId={website.page.id} disabled={!viewer || website.page.closed} />
 		<div class="flex w-full flex-col gap-4 px-2">
 			{#each website.page.comments.edges as { node } (node.id)}
-				<Comment data={node} />
+				<Comment data={node} {viewer} {website} />
 			{/each}
 
 			<button
