@@ -16,6 +16,7 @@
 		fragment,
 		graphql,
 		type CommentComponent,
+		type CommentComponentPage,
 		type CommentComponentViewer,
 		type CommentComponentWebsite,
 	} from '$houdini';
@@ -31,9 +32,10 @@
 		data: CommentComponent;
 		viewer?: CommentComponentViewer | null;
 		website: CommentComponentWebsite;
+		page: CommentComponentPage;
 	};
 
-	let { data, viewer, website }: Props = $props();
+	let { data, viewer, website, page }: Props = $props();
 
 	let comment = $derived(
 		fragment(
@@ -74,6 +76,18 @@
 					owner {
 						id
 					}
+				}
+			`)
+		)
+	);
+
+	let page_ = $derived(
+		fragment(
+			page,
+			graphql(`
+				fragment CommentComponentPage on Page {
+					closed
+					preModeration
 				}
 			`)
 		)
@@ -189,16 +203,18 @@
 				{/if}
 			</span>
 			<span class="whitespace-pre-wrap">{$comment.content}</span>
-			<div class="flex gap-2">
-				<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
-				<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>
-				<button
-					class="btn btn-xs btn-ghost"
-					onclick={() => (create_reply_form_shown = !create_reply_form_shown)}
-				>
-					{m.reply()}
-				</button>
-			</div>
+			{#if $viewer_ && !$page_.closed}
+				<div class="flex gap-2">
+					<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
+					<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>
+					<button
+						class="btn btn-xs btn-ghost"
+						onclick={() => (create_reply_form_shown = !create_reply_form_shown)}
+					>
+						{m.reply()}
+					</button>
+				</div>
+			{/if}
 			{#if create_reply_form_shown}
 				<CreateReplyForm
 					commentId={$comment.id}

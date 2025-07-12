@@ -31,6 +31,7 @@
 					}
 					preModeration
 					page(input: $pageInput) {
+						...CommentComponentPage
 						id
 						preModeration
 						closed
@@ -154,7 +155,7 @@
 		<CreateCommentForm pageId={website.page.id} disabled={!viewer || website.page.closed} />
 		<div class="flex w-full flex-col gap-4 px-2">
 			{#each website.page.comments.edges as { node } (node.id)}
-				<Comment data={node} {viewer} {website} />
+				<Comment data={node} {viewer} {website} page={website.page} />
 			{/each}
 
 			<button

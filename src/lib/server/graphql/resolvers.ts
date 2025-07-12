@@ -238,6 +238,16 @@ export const resolvers: Resolvers = {
 
 			const commentId = Number(fromGlobalId(input.commentId).id);
 
+			const [page] = await db
+				.select({
+					closed: pageTable.closed,
+				})
+				.from(commentTable)
+				.where(eq(commentTable.id, commentId))
+				.leftJoin(pageTable, eq(commentTable.pageId, pageTable.id))
+				.limit(1);
+			if (!page || page.closed) throw new GraphQLError('UNAUTHORIZED');
+
 			const [createdReply] = await db
 				.insert(replyTable)
 				.values({
