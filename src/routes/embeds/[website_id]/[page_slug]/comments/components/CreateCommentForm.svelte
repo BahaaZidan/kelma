@@ -25,6 +25,7 @@
 
 	const superform = superForm(defaults(valibot(commentContentSchema)), {
 		SPA: true,
+		id: 'create_comment_superform',
 		validators: valibot(commentContentSchema),
 		async onUpdate({ form }) {
 			if (form.valid) {
