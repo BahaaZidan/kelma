@@ -17,11 +17,11 @@
 		graphql,
 		type CommentComponent,
 		type CommentComponentPage,
-		type CommentComponentViewer,
 		type CommentComponentWebsite,
 	} from '$houdini';
 
 	import Textarea from '$lib/client/components/Textarea.svelte';
+	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
 
@@ -30,12 +30,11 @@
 
 	type Props = {
 		data: CommentComponent;
-		viewer?: CommentComponentViewer | null;
 		website: CommentComponentWebsite;
 		page: CommentComponentPage;
 	};
 
-	let { data, viewer, website, page }: Props = $props();
+	let { data, website, page }: Props = $props();
 
 	let comment = $derived(
 		fragment(
@@ -52,17 +51,6 @@
 						image
 					}
 					repliesCount
-				}
-			`)
-		)
-	);
-
-	let viewer_ = $derived(
-		fragment(
-			viewer,
-			graphql(`
-				fragment CommentComponentViewer on User {
-					id
 				}
 			`)
 		)
@@ -93,10 +81,11 @@
 		)
 	);
 
+	let viewer = getViewerContext();
 	let permissions = $derived({
-		delete: $comment.author.id === $viewer_?.id || $viewer_?.id === $website_.owner.id,
-		edit: $comment.author.id === $viewer_?.id,
-		approve: !$comment.published && $viewer_?.id === $website_.owner.id,
+		delete: $comment.author.id === viewer?.id || viewer?.id === $website_.owner.id,
+		edit: $comment.author.id === viewer?.id,
+		approve: !$comment.published && viewer?.id === $website_.owner.id,
 	});
 
 	let editing = $state(false);
@@ -204,7 +193,7 @@
 				{/if}
 			</span>
 			<span class="whitespace-pre-wrap">{$comment.content}</span>
-			{#if $viewer_ && !$page_.closed}
+			{#if viewer && !$page_.closed}
 				<div class="flex gap-2">
 					<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
 					<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>

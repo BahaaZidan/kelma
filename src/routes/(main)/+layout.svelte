@@ -5,12 +5,13 @@
 
 	import { authClient, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
+	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { route } from '$lib/routes';
 
 	import type { LayoutProps } from './$types';
 
-	let { children, data }: LayoutProps = $props();
-	let user = $derived(data.session?.user);
+	let { children }: LayoutProps = $props();
+	let viewer = getViewerContext();
 
 	async function githubSignIn() {
 		await authClient.signIn.social({ provider: 'github' });
@@ -45,11 +46,11 @@
 		</div>
 		<div class="navbar-center hidden lg:flex"></div>
 		<div class="navbar-end">
-			{#if user}
+			{#if viewer}
 				<div class="dropdown dropdown-end">
 					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
 						<div class="w-10 rounded-full">
-							<img alt="{user.name} Avatar" src={user.image} />
+							<img alt="{viewer.name} Avatar" src={viewer.image} />
 						</div>
 					</div>
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->

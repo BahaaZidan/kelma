@@ -5,6 +5,7 @@
 	import { graphql } from '$houdini';
 
 	import { signOut } from '$lib/client/auth';
+	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { route } from '$lib/routes';
 
@@ -16,11 +17,6 @@
 
 	let query = graphql(`
 		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
-			viewer {
-				...CommentComponentViewer
-				id
-				name
-			}
 			node(id: $websiteId) {
 				... on Website {
 					...CommentComponentWebsite
@@ -71,7 +67,7 @@
 			}
 		}
 	`);
-	let viewer = $derived($query.data?.viewer);
+	let viewer = getViewerContext();
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
 
 	function sendHeight() {
@@ -155,7 +151,7 @@
 		<CreateCommentForm pageId={website.page.id} disabled={!viewer || website.page.closed} />
 		<div class="flex w-full flex-col gap-4 px-2">
 			{#each website.page.comments.edges as { node } (node.id)}
-				<Comment data={node} {viewer} {website} page={website.page} />
+				<Comment data={node} {website} page={website.page} />
 			{/each}
 
 			<button

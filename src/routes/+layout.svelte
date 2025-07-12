@@ -2,8 +2,14 @@
 	import '../app.css';
 
 	import { Toasts } from '$lib/client/toasts.svelte';
+	import { setViewerContext } from '$lib/client/viewer.svelte';
 
-	let { children } = $props();
+	import type { LayoutProps } from './$houdini';
+
+	let { children, data }: LayoutProps = $props();
+	let { ViewerQuery } = data;
+	let viewer = $derived($ViewerQuery.data?.viewer);
+	setViewerContext(() => viewer);
 </script>
 
 <div class="toast toast-end">
