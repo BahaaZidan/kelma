@@ -213,10 +213,25 @@ export const resolvers: Resolvers = {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 			const replyId = Number(fromGlobalId(args.id).id);
 
-			// TODO: website admins should be able to delete replies
+			const [reply] = await db
+				.select({
+					comment: {
+						websiteId: commentTable.websiteId,
+					},
+				})
+				.from(replyTable)
+				.where(eq(replyTable.id, replyId))
+				.leftJoin(commentTable, eq(replyTable.commentId, commentTable.id))
+				.limit(1);
+			if (!reply.comment?.websiteId) throw new GraphQLError('NOT_FOUND');
+
 			const [deletedReply] = await db
 				.delete(replyTable)
-				.where(and(eq(replyTable.id, replyId), eq(replyTable.authorId, locals.session.user.id)))
+				.where(
+					locals.session.websitesOwnedByCurrentUser?.includes(reply.comment.websiteId)
+						? eq(replyTable.id, replyId)
+						: and(eq(replyTable.id, replyId), eq(replyTable.authorId, locals.session.user.id))
+				)
 				.returning();
 
 			return deletedReply;
