@@ -30,7 +30,6 @@ export type Comment = Node & {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   page: Page;
-  published: Scalars['Boolean']['output'];
   replies: RepliesConnection;
   repliesCount: Scalars['Int']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -91,9 +90,7 @@ export type Mutation = {
   createWebsite: Website;
   deleteComment?: Maybe<Comment>;
   deleteReply?: Maybe<Reply>;
-  publishComment?: Maybe<Comment>;
   togglePageClosed?: Maybe<Page>;
-  togglePagePreModeration?: Maybe<Page>;
   updateCommentContent?: Maybe<Comment>;
   updateWebsite?: Maybe<Website>;
 };
@@ -124,17 +121,7 @@ export type MutationDeleteReplyArgs = {
 };
 
 
-export type MutationPublishCommentArgs = {
-  input: PublishCommentInput;
-};
-
-
 export type MutationTogglePageClosedArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationTogglePagePreModerationArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -158,7 +145,6 @@ export type Page = Node & {
   comments: CommentsConnection;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
-  preModeration: Scalars['Boolean']['output'];
   slug: Scalars['String']['output'];
   url?: Maybe<Scalars['URL']['output']>;
   website: Website;
@@ -188,10 +174,6 @@ export type PageOverrides = {
   url: Scalars['URL']['input'];
 };
 
-export type PublishCommentInput = {
-  commentId: Scalars['ID']['input'];
-};
-
 export type Query = {
   __typename?: 'Query';
   node?: Maybe<Node>;
@@ -215,7 +197,6 @@ export type Reply = Node & {
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  published: Scalars['Boolean']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -234,7 +215,6 @@ export type UpdateWebsiteInput = {
   domains?: InputMaybe<Array<Scalars['String']['input']>>;
   id: Scalars['ID']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  preModeration?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type User = Node & {
@@ -254,7 +234,6 @@ export type Website = Node & {
   name: Scalars['String']['output'];
   owner: User;
   page?: Maybe<Page>;
-  preModeration: Scalars['Boolean']['output'];
 };
 
 
@@ -358,7 +337,6 @@ export type ResolversTypes = {
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PageInput: PageInput;
   PageOverrides: PageOverrides;
-  PublishCommentInput: PublishCommentInput;
   Query: ResolverTypeWrapper<{}>;
   RepliesConnection: ResolverTypeWrapper<Omit<RepliesConnection, 'edges'> & { edges: Array<ResolversTypes['ReplyEdge']> }>;
   Reply: ResolverTypeWrapper<ReplySelectModel>;
@@ -393,7 +371,6 @@ export type ResolversParentTypes = {
   PageInfo: PageInfo;
   PageInput: PageInput;
   PageOverrides: PageOverrides;
-  PublishCommentInput: PublishCommentInput;
   Query: {};
   RepliesConnection: Omit<RepliesConnection, 'edges'> & { edges: Array<ResolversParentTypes['ReplyEdge']> };
   Reply: ReplySelectModel;
@@ -413,7 +390,6 @@ export type CommentResolvers<ContextType = Context, ParentType extends Resolvers
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Page'], ParentType, ContextType>;
-  published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   replies?: Resolver<ResolversTypes['RepliesConnection'], ParentType, ContextType, Partial<CommentRepliesArgs>>;
   repliesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -455,9 +431,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   createWebsite?: Resolver<ResolversTypes['Website'], ParentType, ContextType, RequireFields<MutationCreateWebsiteArgs, 'input'>>;
   deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'input'>>;
   deleteReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationDeleteReplyArgs, 'id'>>;
-  publishComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationPublishCommentArgs, 'input'>>;
   togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
-  togglePagePreModeration?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePagePreModerationArgs, 'id'>>;
   updateCommentContent?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
   updateWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationUpdateWebsiteArgs, 'input'>>;
 };
@@ -472,7 +446,6 @@ export type PageResolvers<ContextType = Context, ParentType extends ResolversPar
   comments?: Resolver<ResolversTypes['CommentsConnection'], ParentType, ContextType, Partial<PageCommentsArgs>>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  preModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   website?: Resolver<ResolversTypes['Website'], ParentType, ContextType>;
@@ -503,7 +476,6 @@ export type ReplyResolvers<ContextType = Context, ParentType extends ResolversPa
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  published?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -538,7 +510,6 @@ export type WebsiteResolvers<ContextType = Context, ParentType extends Resolvers
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   page?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<WebsitePageArgs, 'input'>>;
-  preModeration?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

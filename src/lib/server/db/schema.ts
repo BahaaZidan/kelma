@@ -78,9 +78,6 @@ export const websiteTable = sqliteTable('website', {
 		.notNull()
 		.$type<string[]>()
 		.default(sql`'[]'`),
-	preModeration: integer('pre_moderation', { mode: 'boolean' })
-		.default(sql`0`)
-		.notNull(),
 });
 export type WebsiteSelectModel = InferSelectModel<typeof websiteTable>;
 
@@ -94,9 +91,6 @@ export const pageTable = sqliteTable(
 			.references(() => websiteTable.id, { onDelete: 'cascade' }),
 		name: text(),
 		url: text(),
-		preModeration: integer('pre_moderation', { mode: 'boolean' })
-			.default(sql`0`)
-			.notNull(),
 		closed: integer('closed', { mode: 'boolean' })
 			.default(sql`0`)
 			.notNull(),
@@ -113,9 +107,6 @@ export const commentTable = sqliteTable('comment', {
 		.notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	published: integer('published', { mode: 'boolean' })
-		.default(sql`1`)
 		.notNull(),
 	pageId: integer('page_id')
 		.notNull()
@@ -137,9 +128,6 @@ export const replyTable = sqliteTable('reply', {
 		.notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	published: integer('published', { mode: 'boolean' })
-		.default(sql`1`)
 		.notNull(),
 	authorId: text('author_id')
 		.notNull()

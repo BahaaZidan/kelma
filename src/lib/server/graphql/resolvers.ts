@@ -69,11 +69,9 @@ export const resolvers: Resolvers = {
 				.select({
 					id: pageTable.id,
 					closed: pageTable.closed,
-					preModeration: pageTable.preModeration,
 					website: {
 						id: websiteTable.id,
 						ownerId: websiteTable.ownerId,
-						preModeration: websiteTable.preModeration,
 					},
 				})
 				.from(pageTable)
@@ -92,9 +90,6 @@ export const resolvers: Resolvers = {
 					authorId: locals.session.user.id,
 					pageId: page.id,
 					websiteId: website.id,
-					published:
-						website.ownerId === locals.session.user.id ||
-						(!website.preModeration && !page.preModeration),
 				})
 				.returning();
 
@@ -145,29 +140,6 @@ export const resolvers: Resolvers = {
 
 			return updatedComment;
 		},
-		publishComment: async (_, { input }, { locals, db }) => {
-			if (!locals.session?.websitesOwnedByCurrentUser?.length)
-				throw new GraphQLError('UNAUTHORIZED');
-			const commentId = Number(fromGlobalId(input.commentId).id);
-
-			const [updatedComment] = await db
-				.update(commentTable)
-				.set({
-					published: true,
-				})
-				.where(
-					and(
-						eq(commentTable.id, commentId),
-						eq(commentTable.published, false),
-						inArray(commentTable.websiteId, locals.session.websitesOwnedByCurrentUser)
-					)
-				)
-				.returning();
-
-			if (!updatedComment) throw new GraphQLError('UNAUTHORIZED');
-
-			return updatedComment;
-		},
 		togglePageClosed: async (_, args, { locals, db }) => {
 			if (!locals.session?.websitesOwnedByCurrentUser?.length)
 				throw new GraphQLError('UNAUTHORIZED');
@@ -176,24 +148,6 @@ export const resolvers: Resolvers = {
 			const [updatedPage] = await db
 				.update(pageTable)
 				.set({ closed: not(pageTable.closed) })
-				.where(
-					and(
-						eq(pageTable.id, pageDBId),
-						inArray(pageTable.websiteId, locals.session.websitesOwnedByCurrentUser)
-					)
-				)
-				.returning();
-
-			return updatedPage;
-		},
-		togglePagePreModeration: async (_, args, { locals, db }) => {
-			if (!locals.session?.websitesOwnedByCurrentUser?.length)
-				throw new GraphQLError('UNAUTHORIZED');
-
-			const pageDBId = Number(fromGlobalId(args.id).id);
-			const [updatedPage] = await db
-				.update(pageTable)
-				.set({ preModeration: not(pageTable.preModeration) })
 				.where(
 					and(
 						eq(pageTable.id, pageDBId),
@@ -221,7 +175,6 @@ export const resolvers: Resolvers = {
 			const setMap = {
 				...(input.name ? { name: input.name } : {}),
 				...(input.domains?.length ? { domains: input.domains } : {}),
-				...(typeof input.preModeration === 'boolean' ? { preModeration: input.preModeration } : {}),
 			};
 			const [updatedWebsite] = await db
 				.update(websiteTable)
@@ -241,11 +194,9 @@ export const resolvers: Resolvers = {
 			const [comment] = await db
 				.select({
 					website: {
-						preModeration: websiteTable.preModeration,
 						ownerId: websiteTable.ownerId,
 					},
 					page: {
-						preModeration: pageTable.preModeration,
 						closed: pageTable.closed,
 					},
 				})
@@ -262,9 +213,6 @@ export const resolvers: Resolvers = {
 					commentId,
 					authorId: locals.session.user.id,
 					content: inputValidation.output.content,
-					published:
-						comment.website?.ownerId === locals.session.user.id ||
-						(!comment.page?.preModeration && !comment.website?.preModeration),
 				})
 				.returning();
 
@@ -332,10 +280,7 @@ export const resolvers: Resolvers = {
 	},
 	Page: {
 		id: (parent) => toGlobalId('Page', parent.id),
-		comments: async (parent, args, { locals, db }) => {
-			const isWebsiteOwner = locals.session?.websitesOwnedByCurrentUser?.includes(parent.websiteId);
-			const loggedInUserId = locals.session?.user.id;
-
+		comments: async (parent, args, { db }) => {
 			const cursor = args.after;
 			const pageSize = args.first || 10;
 
@@ -345,21 +290,8 @@ export const resolvers: Resolvers = {
 				.orderBy(desc(commentTable.createdAt))
 				.where(
 					and(
-						and(
-							eq(commentTable.pageId, parent.id),
-							eq(commentTable.websiteId, parent.websiteId),
-							!isWebsiteOwner
-								? or(
-										eq(commentTable.published, true),
-										loggedInUserId
-											? and(
-													eq(commentTable.published, false),
-													eq(commentTable.authorId, loggedInUserId)
-												)
-											: undefined
-									)
-								: undefined
-						),
+						eq(commentTable.pageId, parent.id),
+						eq(commentTable.websiteId, parent.websiteId),
 						cursor ? lt(commentTable.id, Number(fromGlobalId(cursor).id)) : undefined
 					)
 				)

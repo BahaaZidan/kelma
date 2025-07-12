@@ -25,11 +25,9 @@
 					owner {
 						id
 					}
-					preModeration
 					page(input: $pageInput) {
 						...CommentComponentPage
 						id
-						preModeration
 						closed
 						url
 						comments(first: 10) @paginate(name: "Embed_Comments") {
@@ -56,14 +54,6 @@
 			togglePageClosed(id: $id) {
 				id
 				closed
-			}
-		}
-	`);
-	const TogglePagePreModeration = graphql(`
-		mutation TogglePagePreModeration($id: ID!) {
-			togglePagePreModeration(id: $id) {
-				id
-				preModeration
 			}
 		}
 	`);
@@ -113,20 +103,6 @@
 											}}
 										/>
 										{m.closed()}
-									</label>
-								</li>
-								<li>
-									<label class="label">
-										<input
-											type="checkbox"
-											checked={website.page.preModeration}
-											class="toggle"
-											disabled={$TogglePagePreModeration.fetching}
-											onchange={() => {
-												if (website.page) TogglePagePreModeration.mutate({ id: website.page.id });
-											}}
-										/>
-										{m.pre_moderation()}
 									</label>
 								</li>
 							</ul>

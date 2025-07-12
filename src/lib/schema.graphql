@@ -7,8 +7,6 @@ type Mutation {
 	createComment(input: CreateCommentInput!): Comment!
 	deleteComment(input: DeleteCommentInput!): Comment
 	updateCommentContent(input: UpdateCommentContentInput!): Comment
-	publishComment(input: PublishCommentInput!): Comment
-	togglePagePreModeration(id: ID!): Page
 	togglePageClosed(id: ID!): Page
 	createWebsite(input: CreateWebsiteInput!): Website!
 	updateWebsite(input: UpdateWebsiteInput!): Website
@@ -25,7 +23,6 @@ input UpdateWebsiteInput {
 	id: ID!
 	name: String
 	domains: [String!]
-	preModeration: Boolean
 }
 
 input CreateWebsiteInput {
@@ -47,15 +44,10 @@ input UpdateCommentContentInput {
 	content: String!
 }
 
-input PublishCommentInput {
-	commentId: ID!
-}
-
 type Website implements Node {
 	id: ID!
 	name: String!
 	owner: User!
-	preModeration: Boolean!
 	domains: [String!]!
 	page(input: PageInput!): Page
 }
@@ -76,7 +68,6 @@ type Page implements Node {
 	website: Website!
 	name: String
 	url: URL
-	preModeration: Boolean!
 	closed: Boolean!
 	comments(first: Int, after: String): CommentsConnection!
 }
@@ -96,7 +87,6 @@ type Comment implements Node {
 	content: String!
 	createdAt: DateTime!
 	updatedAt: DateTime!
-	published: Boolean!
 	page: Page!
 	website: Website!
 	author: User!
@@ -109,7 +99,6 @@ type Reply implements Node {
 	createdAt: DateTime!
 	updatedAt: DateTime!
 	author: User!
-	published: Boolean!
 }
 
 type RepliesConnection implements Connection {

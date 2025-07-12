@@ -2,7 +2,6 @@
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
-	import SquareCheckBigIcon from '@lucide/svelte/icons/square-check-big';
 	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
 	import ThumbsDownIcon from '@lucide/svelte/icons/thumbs-down';
 	import ThumbsUpIcon from '@lucide/svelte/icons/thumbs-up';
@@ -44,7 +43,6 @@
 					id
 					content
 					createdAt
-					published
 					author {
 						id
 						name
@@ -75,7 +73,6 @@
 			graphql(`
 				fragment CommentComponentPage on Page {
 					closed
-					preModeration
 				}
 			`)
 		)
@@ -85,7 +82,6 @@
 	let permissions = $derived({
 		delete: $comment.author.id === viewer?.id || viewer?.id === $website_.owner.id,
 		edit: $comment.author.id === viewer?.id,
-		approve: !$comment.published && viewer?.id === $website_.owner.id,
 	});
 
 	let editing = $state(false);
@@ -106,14 +102,6 @@
 			}
 		}
 	`);
-	const PublishComment = graphql(`
-		mutation PublishComment($input: PublishCommentInput!) {
-			publishComment(input: $input) {
-				id
-				published
-			}
-		}
-	`);
 
 	const localeMap = {
 		en: enUS,
@@ -131,7 +119,6 @@
 								id
 								content
 								createdAt
-								published
 								author {
 									id
 									image
@@ -188,9 +175,6 @@
 						locale: localeMap[getLocale()],
 					})}
 				</span>
-				{#if !$comment.published}
-					<div class="badge badge-info badge-sm rounded-2xl">{m.awaiting_approval()}</div>
-				{/if}
 			</span>
 			<span class="whitespace-pre-wrap">{$comment.content}</span>
 			{#if viewer && !$page_.closed}
@@ -252,11 +236,6 @@
 												locale: localeMap[getLocale()],
 											})}
 										</span>
-										{#if !reply.published}
-											<div class="badge badge-info badge-sm rounded-2xl">
-												{m.awaiting_approval()}
-											</div>
-										{/if}
 									</span>
 									<span class="whitespace-pre-wrap">{reply.content}</span>
 								</div>
@@ -274,14 +253,6 @@
 			</div>
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 			<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-				{#if permissions.approve}
-					<li>
-						<button onclick={() => PublishComment.mutate({ input: { commentId: $comment.id } })}>
-							<SquareCheckBigIcon />
-							{m.approve()}
-						</button>
-					</li>
-				{/if}
 				{#if permissions.delete}
 					<li>
 						<button
