@@ -7,7 +7,6 @@
 	import ThumbsUpIcon from '@lucide/svelte/icons/thumbs-up';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
-	import { ar, enUS } from 'date-fns/locale';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';
 
@@ -20,6 +19,7 @@
 	} from '$houdini';
 
 	import Textarea from '$lib/client/components/Textarea.svelte';
+	import { dateLocaleMap } from '$lib/client/i18n';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -83,11 +83,6 @@
 		}
 	`);
 
-	const localeMap = {
-		en: enUS,
-		ar,
-	} as const;
-
 	const repliesQuery = graphql(`
 		query CommentRepliesQuery($id: ID!) {
 			node(id: $id) {
@@ -143,7 +138,7 @@
 				<span class="text-secondary text-sm">
 					{formatDistance($comment.createdAt, new Date(), {
 						addSuffix: true,
-						locale: localeMap[getLocale()],
+						locale: dateLocaleMap[getLocale()],
 					})}
 				</span>
 			</span>

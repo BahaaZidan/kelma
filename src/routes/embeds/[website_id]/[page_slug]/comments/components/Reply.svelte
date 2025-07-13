@@ -2,10 +2,10 @@
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
-	import { ar, enUS } from 'date-fns/locale';
 
 	import { fragment, graphql, type ReplyComponent, type WebsiteOwner } from '$houdini';
 
+	import { dateLocaleMap } from '$lib/client/i18n';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -44,11 +44,6 @@
 		edit: $reply.author.id === viewer?.id,
 	});
 
-	const localeMap = {
-		en: enUS,
-		ar,
-	} as const;
-
 	const DeleteReply = graphql(`
 		mutation DeleteReply($id: ID!) {
 			deleteReply(id: $id) {
@@ -70,7 +65,7 @@
 			<span class="text-secondary text-sm">
 				{formatDistance($reply.createdAt, new Date(), {
 					addSuffix: true,
-					locale: localeMap[getLocale()],
+					locale: dateLocaleMap[getLocale()],
 				})}
 			</span>
 		</span>
