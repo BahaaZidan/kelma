@@ -19,14 +19,14 @@
 		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
 			node(id: $websiteId) {
 				... on Website {
-					...CommentComponentWebsite
+					...WebsiteOwner
 					id
 					name
 					owner {
 						id
 					}
 					page(input: $pageInput) {
-						...CommentComponentPage
+						...IsPageClosed
 						id
 						closed
 						url
