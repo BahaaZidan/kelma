@@ -9,22 +9,31 @@ import { pageTable, replyTable, userTable, websiteTable } from '$lib/server/db/s
 export function createLoaders(db: DB) {
 	return {
 		users: new DataLoader(async (keys: readonly string[]) => {
-			const usersIds = [...keys];
-			const users = await db.select().from(userTable).where(inArray(userTable.id, usersIds));
-			return users;
+			const users = await db
+				.select()
+				.from(userTable)
+				.where(inArray(userTable.id, keys as string[]));
+
+			const userMap = new Map(users.map((user) => [user.id, user]));
+			return keys.map((key) => userMap.get(key) ?? null);
 		}),
 		pages: new DataLoader(async (keys: readonly number[]) => {
-			const pageIds = [...keys];
-			const pages = await db.select().from(pageTable).where(inArray(pageTable.id, pageIds));
-			return pages;
+			const pages = await db
+				.select()
+				.from(pageTable)
+				.where(inArray(pageTable.id, keys as number[]));
+
+			const pageMap = new Map(pages.map((page) => [page.id, page]));
+			return keys.map((key) => pageMap.get(key) ?? null);
 		}),
 		websites: new DataLoader(async (keys: readonly number[]) => {
-			const websiteIds = [...keys];
 			const websites = await db
 				.select()
 				.from(websiteTable)
-				.where(inArray(websiteTable.id, websiteIds));
-			return websites;
+				.where(inArray(websiteTable.id, keys as number[]));
+
+			const websiteMap = new Map(websites.map((site) => [site.id, site]));
+			return keys.map((key) => websiteMap.get(key) ?? null);
 		}),
 		repliesCounts: new DataLoader<number, number>(async (keys) => {
 			const commentIds = [...keys];

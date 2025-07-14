@@ -271,7 +271,7 @@ export const resolvers: Resolvers = {
 	Website: {
 		id: (parent) => toGlobalId('Website', parent.id),
 		owner: (parent, _args, { loaders }) => {
-			return loaders.users.load(parent.ownerId);
+			return throwIfNull(loaders.users.load(parent.ownerId));
 		},
 		page: async (parent, { input: { slug, overrides } }, { db }) => {
 			if (overrides) {
@@ -331,19 +331,19 @@ export const resolvers: Resolvers = {
 			};
 		},
 		website: (parent, _args, { loaders }) => {
-			return loaders.websites.load(parent.websiteId);
+			return throwIfNull(loaders.websites.load(parent.websiteId));
 		},
 	},
 	Comment: {
 		id: (parent) => toGlobalId('Comment', parent.id),
 		author: (parent, _args, { loaders }) => {
-			return loaders.users.load(parent.authorId);
+			return throwIfNull(loaders.users.load(parent.authorId));
 		},
 		page: (parent, _args, { loaders }) => {
-			return loaders.pages.load(parent.pageId);
+			return throwIfNull(loaders.pages.load(parent.pageId));
 		},
 		website: (parent, _args, { loaders }) => {
-			return loaders.websites.load(parent.websiteId);
+			return throwIfNull(loaders.websites.load(parent.websiteId));
 		},
 		repliesCount: (parent, _args, { loaders }) => {
 			return loaders.repliesCounts.load(parent.id);
@@ -378,7 +378,13 @@ export const resolvers: Resolvers = {
 	Reply: {
 		id: (parent) => toGlobalId('Reply', parent.id),
 		author: (parent, _args, { loaders }) => {
-			return loaders.users.load(parent.authorId);
+			return throwIfNull(loaders.users.load(parent.authorId));
 		},
 	},
 };
+
+async function throwIfNull<T>(value: Promise<T>) {
+	const result = await value;
+	if (!result) throw new GraphQLError('INTERNAL_SERVER_ERROR');
+	return result;
+}
