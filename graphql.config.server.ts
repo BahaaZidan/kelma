@@ -1,4 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { TypeScriptPluginConfig } from '@graphql-codegen/typescript';
+import type { TypeScriptResolversPluginConfig } from '@graphql-codegen/typescript-resolvers';
 import type { IGraphQLConfig } from 'graphql-config';
 
 const config: IGraphQLConfig = {
@@ -33,7 +35,7 @@ const config: IGraphQLConfig = {
 							User: '$lib/server/db/schema#UserSelectModel',
 							Reply: '$lib/server/db/schema#ReplySelectModel',
 						},
-					},
+					} satisfies TypeScriptPluginConfig & TypeScriptResolversPluginConfig,
 				},
 			},
 		} satisfies CodegenConfig,
