@@ -1,4 +1,5 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
+	import type { ClassValue } from 'svelte/elements';
 	import { formFieldProxy, type FormPathLeaves, type SuperForm } from 'sveltekit-superforms';
 
 	import AutoSizeTextarea from './AutoSizeTextarea.svelte';
@@ -9,8 +10,9 @@
 		field: FormPathLeaves<T, string>;
 		placeholder?: string;
 		disabled?: boolean;
+		class?: ClassValue;
 	}
-	let { superform, field, placeholder, disabled }: Props = $props();
+	let { superform, field, placeholder, disabled, class: class_ }: Props = $props();
 	const { value, errors, constraints } = formFieldProxy(superform, field);
 </script>
 
@@ -19,7 +21,7 @@
 		bind:value={$value as string}
 		name={field}
 		aria-invalid={!!$errors}
-		class={['textarea w-full', { 'textarea-error': !!$errors }]}
+		class={['textarea w-full', { 'textarea-error': !!$errors }, class_]}
 		{disabled}
 		{placeholder}
 		{...$constraints}

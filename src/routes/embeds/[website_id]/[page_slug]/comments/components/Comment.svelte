@@ -250,7 +250,7 @@
 		</div>
 	{:else}
 		<form method="post" use:superform.enhance class="flex grow flex-col gap-3">
-			<Textarea {superform} field="content" placeholder={m.comment()} />
+			<Textarea {superform} field="content" />
 			<div class="flex justify-end gap-2">
 				<button type="button" class="btn" onclick={() => (editing = false)}>{m.cancel()}</button>
 				<button type="submit" class="btn btn-primary">
