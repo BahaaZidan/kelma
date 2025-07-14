@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
 	import ThumbsDownIcon from '@lucide/svelte/icons/thumbs-down';
@@ -189,6 +190,25 @@
 						{#each replies as reply (reply.id)}
 							<Reply data={reply} {website} />
 						{/each}
+						<div
+							class={[
+								{
+									hidden: !$repliesQuery.fetching && !$repliesQuery.pageInfo.hasNextPage,
+								},
+							]}
+						>
+							<button
+								class="btn btn-sm btn-link"
+								onclick={() => repliesQuery.loadNextPage()}
+								disabled={!$repliesQuery.pageInfo.hasNextPage || $repliesQuery.fetching}
+							>
+								{#if $repliesQuery.fetching}
+									{m.loading_more()}
+								{:else if $repliesQuery.pageInfo.hasNextPage}
+									<CornerDownRightIcon /> More replies
+								{/if}
+							</button>
+						</div>
 					</div>
 				</details>
 			{/if}
