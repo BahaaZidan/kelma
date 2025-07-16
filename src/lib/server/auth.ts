@@ -21,7 +21,6 @@ export const getAuth = (db: DB) => {
 				clientSecret: privateVars.AUTH_GOOGLE_SECRET,
 			},
 		},
-		// TODO: only trust paying customers
 		trustedOrigins: ['*'],
 		baseURL: publicVars.PUBLIC_BASE_URL,
 		user: {
