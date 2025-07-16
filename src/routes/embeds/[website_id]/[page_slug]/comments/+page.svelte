@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CornerDownLeftIcon from '@lucide/svelte/icons/corner-down-left';
 	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
 	import { siGithub, siGoogle } from 'simple-icons';
@@ -9,6 +10,7 @@
 	import { githubSignIn, googleSignIn, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
+	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
 
 	import type { PageProps } from './$types';
@@ -155,7 +157,12 @@
 					{#if $query.fetching}
 						{m.loading_more()}
 					{:else if $query.pageInfo.hasNextPage}
-						<CornerDownRightIcon /> More comments
+						{#if getDir() === 'ltr'}
+							<CornerDownRightIcon />
+						{:else}
+							<CornerDownLeftIcon />
+						{/if}
+						{m.moreComments()}
 					{/if}
 				</button>
 			</div>

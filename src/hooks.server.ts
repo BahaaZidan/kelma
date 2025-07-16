@@ -4,7 +4,7 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
 
 import { PAGEVIEW_COST } from '$lib/constants';
-import { type Locale } from '$lib/paraglide/runtime';
+import { inferDir } from '$lib/i18n';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { getAuth, type Session } from '$lib/server/auth';
 import { getDB } from '$lib/server/db';
@@ -72,8 +72,3 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 };
 
 export const handle = sequence(handleAuth, handleParaglide, handleEmbedPageview);
-
-function inferDir(lang: Locale): 'rtl' | 'ltr' {
-	if (lang === 'ar') return 'rtl';
-	return 'ltr';
-}

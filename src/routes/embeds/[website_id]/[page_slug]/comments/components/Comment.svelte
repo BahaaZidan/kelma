@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
+	import CornerDownLeftIcon from '@lucide/svelte/icons/corner-down-left';
 	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
@@ -22,6 +23,7 @@
 	import Textarea from '$lib/client/components/Textarea.svelte';
 	import { dateLocaleMap } from '$lib/client/i18n';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
+	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { contentSchema } from '$lib/validation-schemas';
@@ -205,7 +207,12 @@
 								{#if $repliesQuery.fetching}
 									{m.loading_more()}
 								{:else if $repliesQuery.pageInfo.hasNextPage}
-									<CornerDownRightIcon /> More replies
+									{#if getDir() === 'ltr'}
+										<CornerDownRightIcon />
+									{:else}
+										<CornerDownLeftIcon />
+									{/if}
+									{m.moreReplies()}
 								{/if}
 							</button>
 						</div>
