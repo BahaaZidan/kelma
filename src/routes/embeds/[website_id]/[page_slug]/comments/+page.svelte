@@ -2,16 +2,15 @@
 	import CornerDownLeftIcon from '@lucide/svelte/icons/corner-down-left';
 	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
-	import { siGithub, siGoogle } from 'simple-icons';
 	import { onMount } from 'svelte';
 
 	import { graphql } from '$houdini';
 
-	import { githubSignIn, googleSignIn, signOut } from '$lib/client/auth';
-	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
+	import { signOut } from '$lib/client/auth';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
+	import { route } from '$lib/routes';
 
 	import type { PageProps } from './$types';
 	import Comment from './components/Comment.svelte';
@@ -71,6 +70,7 @@
 				type: 'resize',
 				height: height,
 			},
+			// TODO: send only the origin of the customer
 			'*'
 		);
 	}
@@ -82,7 +82,7 @@
 </script>
 
 {#if website?.page}
-	<div data-theme={data.theme} class="flex flex-col items-center gap-2">
+	<div data-theme={data.theme} class="flex flex-col items-center gap-2 bg-transparent">
 		<div class="flex w-full items-center justify-between">
 			{#if viewer}
 				<div class="flex items-center gap-1">
@@ -117,21 +117,13 @@
 			{:else}
 				<span>
 					{m.you_must()}
-					<details class="dropdown">
-						<summary class="link mb-1 font-bold">{m.login()}</summary>
-						<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-							<li>
-								<button onclick={() => googleSignIn(website.page?.url)}>
-									<BrandIcon icon={siGoogle} /> Google
-								</button>
-							</li>
-							<li>
-								<button onclick={() => githubSignIn(website.page?.url)}>
-									<BrandIcon icon={siGithub} /> GitHub
-								</button>
-							</li>
-						</ul>
-					</details>
+					<a
+						class="link font-bold"
+						target="_top"
+						href="{route('/embeds/login')}?callback_url={website.page.url}"
+					>
+						{m.login()}
+					</a>
 					{m.to_comment()}
 				</span>
 			{/if}
