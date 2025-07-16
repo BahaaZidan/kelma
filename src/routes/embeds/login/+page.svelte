@@ -1,39 +1,38 @@
 <script lang="ts">
-	import { siGithub } from 'simple-icons';
+	import { siGithub, siGoogle } from 'simple-icons';
 
-	import { authClient } from '$lib/client/auth';
+	import { authClient, githubSignIn, googleSignIn, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-
 	const session = authClient.useSession();
-	async function githubSignIn() {
-		await authClient.signIn.social({ provider: 'github', callbackURL: data.callbackURL });
-	}
-	async function signOut() {
-		await authClient.signOut();
-	}
 
 	$effect(() => {
 		if ($session.data) window.close();
 	});
 </script>
 
-<div class="flex flex-col items-center gap-2 p-4">
-	{#if $session.data}
-		<div>
-			Logged in as <b>{$session.data.user.name}</b>
-		</div>
-		<button class="btn btn-ghost" onclick={signOut}>Logout</button>
-	{:else}
-		<button onclick={githubSignIn} class="btn btn-block">
-			Login <BrandIcon icon={siGithub} />
-		</button>
-	{/if}
+<div class="flex h-screen w-screen items-center justify-center">
+	<div class="flex w-full max-w-md flex-col items-center gap-2 p-4 font-mono">
+		{#if $session.data}
+			<div>
+				Logged in as <b>{$session.data.user.name}</b>
+			</div>
+			<button class="btn btn-ghost" onclick={signOut}>Logout</button>
+		{:else}
+			<h1>Login via</h1>
+			<button onclick={() => googleSignIn(data.callbackURL)} class="btn btn-block">
+				Google <BrandIcon icon={siGoogle} />
+			</button>
+			<button onclick={() => githubSignIn(data.callbackURL)} class="btn btn-block">
+				GitHub <BrandIcon icon={siGithub} />
+			</button>
+		{/if}
 
-	<span class="py-6">
-		Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
-	</span>
+		<span class="py-6">
+			Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
+		</span>
+	</div>
 </div>
