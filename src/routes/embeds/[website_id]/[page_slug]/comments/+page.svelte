@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
 	import { siGithub, siGoogle } from 'simple-icons';
 	import { onMount } from 'svelte';
@@ -139,19 +140,27 @@
 				<Comment data={node} {website} page={website.page} />
 			{/each}
 
-			<button
-				class={['btn', { hidden: !$query.fetching && !$query.pageInfo.hasNextPage }]}
-				onclick={() => query.loadNextPage()}
-				disabled={!$query.pageInfo.hasNextPage || $query.fetching}
+			<div
+				class={[
+					{
+						hidden: !$query.fetching && !$query.pageInfo.hasNextPage,
+					},
+				]}
 			>
-				{#if $query.fetching}
-					{m.loading_more()}
-				{:else if $query.pageInfo.hasNextPage}
-					{m.load_more()}
-				{/if}
-			</button>
+				<button
+					class="btn btn-link"
+					onclick={() => query.loadNextPage()}
+					disabled={!$query.pageInfo.hasNextPage || $query.fetching}
+				>
+					{#if $query.fetching}
+						{m.loading_more()}
+					{:else if $query.pageInfo.hasNextPage}
+						<CornerDownRightIcon /> More comments
+					{/if}
+				</button>
+			</div>
 		</div>
-		<span class="py-6">
+		<span class="py-6 font-mono">
 			{m.powered_by()}
 			<a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
 		</span>
