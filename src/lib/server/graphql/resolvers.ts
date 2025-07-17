@@ -1,10 +1,16 @@
-import { and, desc, eq, inArray, lt, not, or } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, not, or, sql } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scalars';
 import * as v from 'valibot';
 
 import { PAGEVIEW_COST_SCALER } from '$lib/constants';
-import { commentTable, pageTable, replyTable, websiteTable } from '$lib/server/db/schema';
+import {
+	commentTable,
+	membershipTable,
+	pageTable,
+	replyTable,
+	websiteTable,
+} from '$lib/server/db/schema';
 import { contentSchema } from '$lib/validation-schemas';
 
 import type { Resolvers } from './resolvers.types';
@@ -251,6 +257,39 @@ export const resolvers: Resolvers = {
 			if (!updatedReply) throw new GraphQLError('UNAUTHORIZED');
 
 			return updatedReply;
+		},
+		toggleUserWebsiteBan: async (_, { input }, { locals, db }) => {
+			if (!locals.session?.user) throw new GraphQLError('UNAUTHORIZED');
+
+			const userId = fromGlobalId(input.userId).id;
+			const websiteId = Number(fromGlobalId(input.websiteId).id);
+
+			if (!locals.session.websitesOwnedByCurrentUser?.includes(websiteId))
+				throw new GraphQLError('UNAUTHORIZED');
+			if (userId === locals.session.user.id) throw new GraphQLError('UNAUTHORIZED');
+
+			const [membership] = await db
+				.insert(membershipTable)
+				.values({
+					websiteId,
+					userId,
+					banned: true,
+				})
+				.onConflictDoUpdate({
+					target: [membershipTable.websiteId, membershipTable.userId],
+					set: {
+						banned: sql`NOT banned`,
+					},
+				})
+				.returning();
+
+			if (!membership) throw new GraphQLError('INTERNAL_SERVER_ERROR');
+
+			const user = await db.query.user.findFirst({
+				where: (t, { eq }) => eq(t.id, membership.userId),
+			});
+
+			return user;
 		},
 	},
 	Node: {
