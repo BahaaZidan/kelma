@@ -1,5 +1,5 @@
 import { sql, type InferSelectModel } from 'drizzle-orm';
-import { check, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { check, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 export const userTable = sqliteTable(
 	'user',
@@ -137,3 +137,22 @@ export const replyTable = sqliteTable('reply', {
 		.references(() => commentTable.id, { onDelete: 'cascade' }),
 });
 export type ReplySelectModel = InferSelectModel<typeof replyTable>;
+
+export const membershipTable = sqliteTable(
+	'membership',
+	{
+		userId: text('user_id')
+			.notNull()
+			.references(() => userTable.id, { onDelete: 'cascade' }),
+		websiteId: integer('website_id')
+			.notNull()
+			.references(() => websiteTable.id, { onDelete: 'cascade' }),
+		banned: integer('banned', { mode: 'boolean' })
+			.default(sql`0`)
+			.notNull(),
+	},
+	(self) => [
+		uniqueIndex('user_id_website_id').on(self.userId, self.websiteId),
+		index('memberships_website_id').on(self.websiteId),
+	]
+);

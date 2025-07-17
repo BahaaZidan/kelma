@@ -1,0 +1,1 @@
+CREATE INDEX `memberships_website_id` ON `membership` (`website_id`);

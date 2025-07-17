@@ -50,6 +50,20 @@
       "when": 1752333375319,
       "tag": "0006_brainy_tomorrow_man",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1752756702558,
+      "tag": "0007_remarkable_bloodscream",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1752758420733,
+      "tag": "0008_fine_sentry",
+      "breakpoints": true
     }
   ]
 }
