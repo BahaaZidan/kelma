@@ -13,6 +13,12 @@ type Mutation {
 	createReply(input: CreateReplyInput!): Reply
 	deleteReply(id: ID!): Reply
 	updateReply(input: UpdateReplyInput!): Reply
+	toggleUserWebsiteBan(input: ToggleUserWebsiteBan!): User
+}
+
+input ToggleUserWebsiteBan {
+	websiteId: ID!
+	userId: ID!
 }
 
 input UpdateReplyInput {
@@ -52,6 +58,7 @@ type Website implements Node {
 	owner: User!
 	domains: [String!]!
 	page(input: PageInput!): Page
+	bannedUsers: [User!]!
 }
 
 input PageInput {

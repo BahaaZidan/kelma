@@ -299,6 +299,9 @@ export const resolvers: Resolvers = {
 
 			return page;
 		},
+		bannedUsers: async (parent, _args, { loaders }) => {
+			return loaders.websiteBannedUsers.load(parent.id);
+		},
 	},
 	Page: {
 		id: (parent) => toGlobalId('Page', parent.id),
