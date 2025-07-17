@@ -22,5 +22,8 @@
 	"reply": "رُد",
 	"replies": "ردود",
 	"moreReplies": "ردود أكثر",
-	"moreComments": "تعليقات أكثر"
+	"moreComments": "تعليقات أكثر",
+	"ban_author": "حظر الكاتب",
+	"delete_comment_confirm": "هل تريد حذف هذا التعليق ؟",
+	"ban_author_confirm": "هل تريد حظر كاتب هذا التعليق ؟"
 }

@@ -13,12 +13,13 @@ type Mutation {
 	createReply(input: CreateReplyInput!): Reply
 	deleteReply(id: ID!): Reply
 	updateReply(input: UpdateReplyInput!): Reply
-	toggleUserWebsiteBan(input: ToggleUserWebsiteBan!): User
+	updateUserWebsiteBan(input: UpdateUserWebsiteBanInput!): User
 }
 
-input ToggleUserWebsiteBan {
+input UpdateUserWebsiteBanInput {
 	websiteId: ID!
 	userId: ID!
+	banned: Boolean!
 }
 
 input UpdateReplyInput {

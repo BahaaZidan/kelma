@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lt, not, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, not, or } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scalars';
 import * as v from 'valibot';
@@ -258,7 +258,7 @@ export const resolvers: Resolvers = {
 
 			return updatedReply;
 		},
-		toggleUserWebsiteBan: async (_, { input }, { locals, db }) => {
+		updateUserWebsiteBan: async (_, { input }, { locals, db }) => {
 			if (!locals.session?.user) throw new GraphQLError('UNAUTHORIZED');
 
 			const userId = fromGlobalId(input.userId).id;
@@ -273,12 +273,12 @@ export const resolvers: Resolvers = {
 				.values({
 					websiteId,
 					userId,
-					banned: true,
+					banned: input.banned,
 				})
 				.onConflictDoUpdate({
 					target: [membershipTable.websiteId, membershipTable.userId],
 					set: {
-						banned: sql`NOT banned`,
+						banned: input.banned,
 					},
 				})
 				.returning();

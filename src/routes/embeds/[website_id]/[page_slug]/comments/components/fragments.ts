@@ -8,6 +8,7 @@ export const is_page_closed = graphql(`
 
 export const website_owner = graphql(`
 	fragment WebsiteOwner on Website {
+		id
 		owner {
 			id
 		}

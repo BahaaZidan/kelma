@@ -87,9 +87,9 @@ export type Mutation = {
   deleteComment?: Maybe<Comment>;
   deleteReply?: Maybe<Reply>;
   togglePageClosed?: Maybe<Page>;
-  toggleUserWebsiteBan?: Maybe<User>;
   updateCommentContent?: Maybe<Comment>;
   updateReply?: Maybe<Reply>;
+  updateUserWebsiteBan?: Maybe<User>;
   updateWebsite?: Maybe<Website>;
 };
 
@@ -124,11 +124,6 @@ export type MutationTogglePageClosedArgs = {
 };
 
 
-export type MutationToggleUserWebsiteBanArgs = {
-  input: ToggleUserWebsiteBan;
-};
-
-
 export type MutationUpdateCommentContentArgs = {
   input: UpdateCommentContentInput;
 };
@@ -136,6 +131,11 @@ export type MutationUpdateCommentContentArgs = {
 
 export type MutationUpdateReplyArgs = {
   input: UpdateReplyInput;
+};
+
+
+export type MutationUpdateUserWebsiteBanArgs = {
+  input: UpdateUserWebsiteBanInput;
 };
 
 
@@ -214,11 +214,6 @@ export type ReplyEdge = Edge & {
   node: Reply;
 };
 
-export type ToggleUserWebsiteBan = {
-  userId: Scalars['ID']['input'];
-  websiteId: Scalars['ID']['input'];
-};
-
 export type UpdateCommentContentInput = {
   commentId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
@@ -227,6 +222,12 @@ export type UpdateCommentContentInput = {
 export type UpdateReplyInput = {
   content: Scalars['String']['input'];
   replyId: Scalars['ID']['input'];
+};
+
+export type UpdateUserWebsiteBanInput = {
+  banned: Scalars['Boolean']['input'];
+  userId: Scalars['ID']['input'];
+  websiteId: Scalars['ID']['input'];
 };
 
 export type UpdateWebsiteInput = {
@@ -360,11 +361,11 @@ export type ResolversTypes = {
   Reply: ResolverTypeWrapper<ReplySelectModel>;
   ReplyEdge: ResolverTypeWrapper<Omit<ReplyEdge, 'node'> & { node: ResolversTypes['Reply'] }>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  ToggleUserWebsiteBan: ToggleUserWebsiteBan;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
   USCurrency: ResolverTypeWrapper<Scalars['USCurrency']['output']>;
   UpdateCommentContentInput: UpdateCommentContentInput;
   UpdateReplyInput: UpdateReplyInput;
+  UpdateUserWebsiteBanInput: UpdateUserWebsiteBanInput;
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: ResolverTypeWrapper<UserSelectModel>;
   Website: ResolverTypeWrapper<WebsiteSelectModel>;
@@ -395,11 +396,11 @@ export type ResolversParentTypes = {
   Reply: ReplySelectModel;
   ReplyEdge: Omit<ReplyEdge, 'node'> & { node: ResolversParentTypes['Reply'] };
   String: Scalars['String']['output'];
-  ToggleUserWebsiteBan: ToggleUserWebsiteBan;
   URL: Scalars['URL']['output'];
   USCurrency: Scalars['USCurrency']['output'];
   UpdateCommentContentInput: UpdateCommentContentInput;
   UpdateReplyInput: UpdateReplyInput;
+  UpdateUserWebsiteBanInput: UpdateUserWebsiteBanInput;
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: UserSelectModel;
   Website: WebsiteSelectModel;
@@ -453,9 +454,9 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'id'>>;
   deleteReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationDeleteReplyArgs, 'id'>>;
   togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
-  toggleUserWebsiteBan?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationToggleUserWebsiteBanArgs, 'input'>>;
   updateCommentContent?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
   updateReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationUpdateReplyArgs, 'input'>>;
+  updateUserWebsiteBan?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserWebsiteBanArgs, 'input'>>;
   updateWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationUpdateWebsiteArgs, 'input'>>;
 };
 

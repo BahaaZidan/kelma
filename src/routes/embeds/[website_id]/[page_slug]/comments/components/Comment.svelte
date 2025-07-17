@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BanIcon from '@lucide/svelte/icons/ban';
 	import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 	import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
 	import CornerDownLeftIcon from '@lucide/svelte/icons/corner-down-left';
@@ -65,6 +66,7 @@
 	let permissions = $derived({
 		delete: $comment.author.id === viewer?.id || viewer?.id === $website_.owner.id,
 		edit: $comment.author.id === viewer?.id,
+		ban_user: viewer?.id === $website_.owner.id && $comment.author.id !== viewer.id,
 	});
 
 	let editing = $state(false);
@@ -126,6 +128,14 @@
 		},
 		resetForm: false,
 	});
+
+	const UpdateUserWebsiteBan = graphql(`
+		mutation UpdateUserWebsiteBan($input: UpdateUserWebsiteBanInput!) {
+			updateUserWebsiteBan(input: $input) {
+				id
+			}
+		}
+	`);
 </script>
 
 <div class="flex items-start gap-4">
@@ -232,7 +242,7 @@
 					<li>
 						<button
 							onclick={() => {
-								let confirmed = confirm('Are you sure you want to delete this comment ?');
+								let confirmed = confirm(m.delete_comment_confirm());
 								if (confirmed) DeleteComment.mutate({ id: $comment.id });
 							}}
 						>
@@ -250,6 +260,22 @@
 						>
 							<SquarePenIcon />
 							{m.edit()}
+						</button>
+					</li>
+				{/if}
+				{#if permissions.ban_user}
+					<li>
+						<button
+							onclick={() => {
+								let confirmed = confirm(m.ban_author_confirm());
+								if (confirmed)
+									UpdateUserWebsiteBan.mutate({
+										input: { userId: $comment.author.id, websiteId: $website_.id, banned: true },
+									});
+							}}
+						>
+							<BanIcon />
+							{m.ban_author()}
 						</button>
 					</li>
 				{/if}
