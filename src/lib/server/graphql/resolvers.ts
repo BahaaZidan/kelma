@@ -1,9 +1,10 @@
-import { and, desc, eq, inArray, lt, not, or } from 'drizzle-orm';
+import { and, desc, eq, inArray, lt, not, or, sql } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scalars';
 import * as v from 'valibot';
 
 import { PAGEVIEW_COST_SCALER } from '$lib/constants';
+import type { DB } from '$lib/server/db';
 import {
 	commentTable,
 	membershipTable,
@@ -80,6 +81,14 @@ export const resolvers: Resolvers = {
 
 			if (!page) throw new GraphQLError('NOT_FOUND');
 			if (page.closed) throw new GraphQLError('UNAUTHORIZED');
+
+			// throwIfBanned(db, page.websiteId, locals.session.user.id);
+
+			const banned = await isUserBanned(db, page.websiteId, locals.session.user.id);
+			// this error message is intentional. banned users don't need to know they're banned.
+			// a determined harasser might create another acount after a ban if it's visible.
+			// but if the ban is obscured, they might not even realize they got banned.
+			if (banned) throw new GraphQLError('INTERNAL_SERVER_ERROR');
 
 			const [insertResult] = await db
 				.insert(commentTable)
@@ -429,4 +438,21 @@ async function throwIfNull<T>(value: Promise<T>) {
 	const result = await value;
 	if (!result) throw new GraphQLError('INTERNAL_SERVER_ERROR');
 	return result;
+}
+
+async function isUserBanned(db: DB, websiteId: number, userId: string): Promise<boolean> {
+	const result = await db
+		.select({ exists: sql<boolean>`1` })
+		.from(membershipTable)
+		.where(
+			and(
+				eq(membershipTable.websiteId, websiteId),
+				eq(membershipTable.userId, userId),
+				eq(membershipTable.banned, true)
+			)
+		)
+		.limit(1)
+		.get();
+
+	return !!result;
 }
