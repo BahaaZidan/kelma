@@ -26,6 +26,7 @@
 				name
 				image
 				balance
+				pageViewsLeft
 				websites @list(name: "Console_Website_List") {
 					id
 					name
@@ -79,9 +80,9 @@
 				<div class="stat-figure text-secondary">
 					<EyeIcon />
 				</div>
-				<div class="stat-title">Pageviews Left</div>
-				<div class="stat-value">{10_000}</div>
-				<div class="stat-desc">Jan 1st - Feb 1st</div>
+				<div class="stat-title">Page views left</div>
+				<div class="stat-value">{viewer.pageViewsLeft}</div>
+				<div class="stat-desc">Embed loads left across all your websites.</div>
 			</div>
 
 			<div class="stat">

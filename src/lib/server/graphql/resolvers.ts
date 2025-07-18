@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scalars';
 import * as v from 'valibot';
 
-import { PAGEVIEW_COST_SCALER } from '$lib/constants';
+import { PAGEVIEW_COST_IN_CENTS, PAGEVIEW_COST_SCALER } from '$lib/constants';
 import type { DB } from '$lib/server/db';
 import {
 	commentTable,
@@ -314,6 +314,9 @@ export const resolvers: Resolvers = {
 		},
 		balance: (parent) => {
 			return parent.balance / PAGEVIEW_COST_SCALER;
+		},
+		pageViewsLeft: (parent) => {
+			return parent.balance / PAGEVIEW_COST_SCALER / PAGEVIEW_COST_IN_CENTS;
 		},
 	},
 	Website: {

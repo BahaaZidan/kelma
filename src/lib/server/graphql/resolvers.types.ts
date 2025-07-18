@@ -243,6 +243,7 @@ export type User = Node & {
   id: Scalars['ID']['output'];
   image?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  pageViewsLeft: Scalars['Int']['output'];
   websites: Array<Website>;
 };
 
@@ -524,6 +525,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  pageViewsLeft?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   websites?: Resolver<Array<ResolversTypes['Website']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
