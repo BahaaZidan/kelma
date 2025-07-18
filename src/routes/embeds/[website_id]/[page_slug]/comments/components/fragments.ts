@@ -2,6 +2,7 @@ import { graphql } from '$houdini';
 
 export const is_page_closed = graphql(`
 	fragment IsPageClosed on Page {
+		id
 		closed
 	}
 `);

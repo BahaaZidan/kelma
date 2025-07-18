@@ -25,5 +25,6 @@
 	"moreComments": "تعليقات أكثر",
 	"ban_author": "حظر الكاتب",
 	"delete_comment_confirm": "هل تريد حذف هذا التعليق ؟",
-	"ban_author_confirm": "هل تريد حظر كاتب هذا التعليق ؟"
+	"ban_author_confirm": "هل تريد حظر كاتب هذا التعليق ؟",
+	"page_closed_message": "قام مسؤول الموقع بتعطيل التعليقات"
 }
