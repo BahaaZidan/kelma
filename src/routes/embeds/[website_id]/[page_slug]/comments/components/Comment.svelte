@@ -21,6 +21,7 @@
 		type WebsiteOwner,
 	} from '$houdini';
 
+	import Avatar from '$lib/client/components/Avatar.svelte';
 	import Textarea from '$lib/client/components/Textarea.svelte';
 	import { dateLocaleMap } from '$lib/client/i18n';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
@@ -139,10 +140,11 @@
 </script>
 
 <div class="flex items-start gap-4">
-	<img
+	<Avatar
 		src={$comment.author.image}
 		alt="{$comment.author.name} {m.profile_picture()}"
-		class="mt-1 size-10 rounded-full"
+		class="mt-1 size-10"
+		fallback={$comment.author.name}
 	/>
 	{#if !editing}
 		<div class="flex grow flex-col">

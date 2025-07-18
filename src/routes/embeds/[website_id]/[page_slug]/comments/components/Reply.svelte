@@ -8,6 +8,7 @@
 
 	import { fragment, graphql, type ReplyComponent, type WebsiteOwner } from '$houdini';
 
+	import Avatar from '$lib/client/components/Avatar.svelte';
 	import Textarea from '$lib/client/components/Textarea.svelte';
 	import { dateLocaleMap } from '$lib/client/i18n';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
@@ -85,10 +86,11 @@
 </script>
 
 <div class="flex items-start gap-4">
-	<img
+	<Avatar
 		src={$reply.author.image || 'https://avatars.githubusercontent.com/u/22656046?v=4'}
 		alt="{$reply.author.name} {m.profile_picture()}"
-		class="mt-1 size-6 rounded-full"
+		class="mt-1 size-6"
+		fallback={$reply.author.name}
 	/>
 	{#if !editing}
 		<div class="flex grow flex-col">
