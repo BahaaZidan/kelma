@@ -11,6 +11,7 @@
 
 	import { graphql } from '$houdini';
 
+	import Avatar from '$lib/client/components/Avatar.svelte';
 	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
 	import TextInput from '$lib/client/components/TextInput.svelte';
 	import { Toasts } from '$lib/client/toasts.svelte';
@@ -28,10 +29,16 @@
 				balance
 				pageViewsLeft
 				websites @list(name: "Console_Website_List") {
+					...BaseInfoFormComponent
 					id
 					name
 					domains
-					...BaseInfoFormComponent
+					bannedUsers @list(name: "Console_Website_List_Banned_Users") {
+						id
+						name
+						email
+						image
+					}
 				}
 			}
 		}
@@ -71,6 +78,15 @@
 	let { data }: PageProps = $props();
 	const topupSuperform = superForm(data.form);
 	let topupDialog: HTMLDialogElement;
+
+	const UpdateUserWebsiteBan = graphql(`
+		mutation UpdateUserWebsiteBanInConsole($input: UpdateUserWebsiteBanInput!, $websiteId: ID!) {
+			updateUserWebsiteBan(input: $input) {
+				id
+				...Console_Website_List_Banned_Users_remove @parentID(value: $websiteId)
+			}
+		}
+	`);
 </script>
 
 {#if viewer}
@@ -137,6 +153,55 @@
 						</button>
 					</div>
 					<BaseInfoForm data={website} />
+					{#if website.bannedUsers.length}
+						<div class="divider">Banned Users</div>
+						<div class="rounded-box border-base-content/5 bg-base-100 overflow-x-auto border">
+							<table class="table">
+								<thead>
+									<tr>
+										<th></th>
+										<th>Name</th>
+										<th>Email</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each website.bannedUsers as bannedUser (bannedUser.id)}
+										<tr class="hover:bg-base-300">
+											<td>
+												<Avatar
+													src={bannedUser.image}
+													alt={bannedUser.name}
+													fallback={bannedUser.name}
+													class="size-10"
+												/>
+											</td>
+											<td>{bannedUser.name}</td>
+											<td>{bannedUser.email}</td>
+											<td>
+												<button
+													class="btn btn-sm btn-primary"
+													disabled={$UpdateUserWebsiteBan.fetching}
+													onclick={() => {
+														UpdateUserWebsiteBan.mutate({
+															websiteId: website.id,
+															input: {
+																banned: false,
+																userId: bannedUser.id,
+																websiteId: website.id,
+															},
+														});
+													}}
+												>
+													Unban
+												</button>
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{/if}
 				</div>
 			{/each}
 			<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
