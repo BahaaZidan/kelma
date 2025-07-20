@@ -1,3 +1,4 @@
+import { EnvelopArmorPlugin } from '@escape.tech/graphql-armor';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createSchema, createYoga } from 'graphql-yoga';
 
@@ -25,4 +26,11 @@ export const requestHandler = createYoga<RequestEvent>({
 	graphiql: {
 		title: 'gebna.tools API',
 	},
+	plugins: [
+		EnvelopArmorPlugin({
+			maxDepth: {
+				n: 10,
+			},
+		}),
+	],
 });
