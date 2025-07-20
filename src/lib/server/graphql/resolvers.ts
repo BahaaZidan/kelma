@@ -309,13 +309,16 @@ export const resolvers: Resolvers = {
 	},
 	User: {
 		id: (parent) => toGlobalId('User', parent.id),
-		websites: (parent, _args, { db }) => {
+		websites: (parent, _args, { locals, db }) => {
+			if (parent.id !== locals.session?.user.id) throw new GraphQLError('INTERNAL_SERVER_ERROR');
 			return db.select().from(websiteTable).where(eq(websiteTable.ownerId, parent.id));
 		},
-		balance: (parent) => {
+		balance: (parent, _args, { locals }) => {
+			if (parent.id !== locals.session?.user.id) throw new GraphQLError('INTERNAL_SERVER_ERROR');
 			return parent.balance / PAGEVIEW_COST_SCALER;
 		},
-		pageViewsLeft: (parent) => {
+		pageViewsLeft: (parent, _args, { locals }) => {
+			if (parent.id !== locals.session?.user.id) throw new GraphQLError('INTERNAL_SERVER_ERROR');
 			return parent.balance / PAGEVIEW_COST_SCALER / PAGEVIEW_COST_IN_CENTS;
 		},
 	},
