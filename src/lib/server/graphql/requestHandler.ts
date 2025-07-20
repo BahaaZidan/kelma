@@ -1,4 +1,5 @@
 import { EnvelopArmorPlugin } from '@escape.tech/graphql-armor';
+import { useDisableIntrospection } from '@graphql-yoga/plugin-disable-introspection';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createSchema, createYoga } from 'graphql-yoga';
 
@@ -23,10 +24,9 @@ export const requestHandler = createYoga<RequestEvent>({
 
 		return { ...event, db, loaders: createLoaders(db) };
 	},
-	graphiql: {
-		title: 'gebna.tools API',
-	},
+	graphiql: false,
 	plugins: [
+		useDisableIntrospection(),
 		EnvelopArmorPlugin({
 			maxDepth: {
 				n: 10,
