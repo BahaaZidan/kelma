@@ -1,4 +1,4 @@
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect, type Handle, type RequestEvent } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
@@ -51,10 +51,13 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 		const website_id = Number(fromGlobalId(event.params.website_id).id);
 		const db = getDB(event.platform?.env.DB);
 		const website = await db.query.website.findFirst({
-			columns: { ownerId: true },
+			columns: { ownerId: true, domains: true },
 			where: (t, { eq }) => eq(t.id, website_id),
 		});
 		if (!website) return not_found;
+
+		const refererDomain = inferRefererDomain(event);
+		if (!refererDomain || !website.domains.includes(refererDomain)) return not_found;
 
 		try {
 			const balance_decrement_result = await db
@@ -72,3 +75,11 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 };
 
 export const handle = sequence(handleAuth, handleParaglide, handleEmbedPageview);
+
+function inferRefererDomain(event: RequestEvent) {
+	const referer = event.request.headers.get('Referer');
+	if (!referer) return;
+
+	const domain = new URL(referer).hostname;
+	return domain;
+}
