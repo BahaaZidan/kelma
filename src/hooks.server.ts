@@ -1,4 +1,4 @@
-import { redirect, type Handle, type RequestEvent } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
@@ -10,6 +10,7 @@ import { getAuth, type Session } from '$lib/server/auth';
 import { getDB } from '$lib/server/db';
 import { userTable } from '$lib/server/db/schema';
 import { fromGlobalId } from '$lib/server/graphql/utils';
+import { isDomainTrusted } from '$lib/server/utils';
 
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const db = getDB(event.platform?.env.DB);
@@ -56,8 +57,7 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 		});
 		if (!website) return not_found;
 
-		const refererDomain = inferRefererDomain(event);
-		if (!refererDomain || !website.domains.includes(refererDomain)) return not_found;
+		if (!isDomainTrusted(event.request, website.domains)) return not_found;
 
 		try {
 			const balance_decrement_result = await db
@@ -75,11 +75,3 @@ const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 };
 
 export const handle = sequence(handleAuth, handleParaglide, handleEmbedPageview);
-
-function inferRefererDomain(event: RequestEvent) {
-	const referer = event.request.headers.get('Referer');
-	if (!referer) return;
-
-	const domain = new URL(referer).hostname;
-	return domain;
-}

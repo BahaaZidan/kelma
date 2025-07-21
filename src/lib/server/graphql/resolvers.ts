@@ -14,6 +14,7 @@ import {
 } from '$lib/server/db/schema';
 import { contentSchema } from '$lib/validation-schemas';
 
+import { isDomainTrusted } from '../utils';
 import type { Resolvers } from './resolvers.types';
 import { fromGlobalId, toGlobalId } from './utils';
 
@@ -327,7 +328,9 @@ export const resolvers: Resolvers = {
 		owner: (parent, _args, { loaders }) => {
 			return throwIfNull(loaders.users.load(parent.ownerId));
 		},
-		page: async (parent, { input: { slug, overrides } }, { db }) => {
+		page: async (parent, { input: { slug, overrides } }, { db, request }) => {
+			if (!isDomainTrusted(request, parent.domains)) return null;
+
 			if (overrides) {
 				const [page] = await db
 					.insert(pageTable)
