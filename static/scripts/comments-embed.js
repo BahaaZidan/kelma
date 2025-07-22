@@ -19,12 +19,26 @@
 	let iframe = null; // reference to the injected iframe
 
 	/**
-	 * Main function to embed the iframe into a given container
-	 * @param {string | HTMLElement} container - ID of a div or the actual div element
-	 * @param {string} website_id - The ID of the website that you copies from your console
-	 * @param {string} page_id - The ID of the page
+	 * @typedef {Object} Options
+	 * @property {string|HTMLElement} container - DOM container element reference or its id.
+	 * @property {string} website_id - Website ID you copied from console.
+	 * @property {string} page_id - A string that uniquely identifies your page.
+	 * @property {string|null} language - The locale
+	 * @property {string|null} theme - A valid theme name. We support all DaisyUI themes.
 	 */
-	window.embedCommentIframe = function (container, website_id, page_id) {
+
+	/**
+	 * Initializes the widget with the provided options.
+	 *
+	 * @param {Options} options - Configuration options for the widget.
+	 */
+	window.embedCommentIframe = function ({
+		container,
+		website_id,
+		page_id,
+		language = 'en',
+		theme = 'business',
+	}) {
 		const el = typeof container === 'string' ? document.getElementById(container) : container;
 
 		if (!el) {
@@ -37,7 +51,7 @@
 		// const canonicalURL = getCanonicalURL();
 
 		iframe = document.createElement('iframe');
-		iframe.src = `http://localhost:5173/embeds/${website_id}/${page_id}/comments?name=${encodeParam(pageTitle)}&url=${encodeParam(window.location.href)}`;
+		iframe.src = `http://localhost:5173/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(pageTitle)}&url=${encodeParam(window.location.href)}&theme=${theme}`;
 		iframe.width = '100%';
 		iframe.style.border = 'none';
 		iframe.style.display = 'block';
