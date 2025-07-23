@@ -145,10 +145,10 @@
 			</div>
 		{:else}
 			<section class="bg-base-200 flex flex-col gap-4 rounded-2xl p-6">
-				<h2>Copy this code block to get started</h2>
+				<h2>Select a website and copy this code block to get started</h2>
 				<div class="flex gap-4">
 					<fieldset class="fieldset">
-						<legend class="fieldset-legend">Website ID</legend>
+						<legend class="fieldset-legend">Website</legend>
 						<select class="select" bind:value={embed_config.website_id}>
 							<option disabled selected>Website ID</option>
 							{#each viewer.websites as website (website.id)}
@@ -185,8 +185,8 @@
 				</div>
 				<div class="mockup-code w-full">
 					<pre
-						data-prefix="1"><code>&lt;script src="{env.PUBLIC_BASE_URL}/scripts/comments-embed.js" defer&gt;&lt;/script&gt;</code></pre>
-					<pre data-prefix="2"><code>&lt;script&gt;</code></pre>
+						data-prefix="1"><code>&lt;script src="{env.PUBLIC_BASE_URL}/scripts/comments-embed.js"&gt;&lt;/script&gt;</code></pre>
+					<pre data-prefix="2"><code>&lt;script defer&gt;</code></pre>
 					<pre data-prefix="3"><code>{`	if (window.embedCommentIframe) {`}</code></pre>
 					<pre data-prefix="4"><code>{`		window.embedCommentIframe({`}</code></pre>
 					<pre data-prefix="5"><code>			container: {embed_config.container},</code></pre>
