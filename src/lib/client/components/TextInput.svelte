@@ -15,6 +15,8 @@
 		superform,
 		field,
 		label,
+		placeholder,
+		hint,
 		type = 'text',
 		remover,
 		join,
@@ -22,6 +24,8 @@
 		superform: SuperForm<T>;
 		field: FormPathLeaves<T>;
 		label?: string;
+		placeholder?: string;
+		hint?: string;
 		type?: HTMLInputTypeAttribute;
 		join?: Snippet;
 		remover?: {
@@ -36,29 +40,34 @@
 </script>
 
 <div class="flex flex-col">
-	<div class={{ join: isJoined }}>
-		<label class={['floating-label w-xs', { 'join-item': isJoined }]}>
+	<fieldset class="fieldset">
+		{#if label}
+			<legend class="fieldset-legend">{label}</legend>
+		{/if}
+		<div class={{ join: isJoined }}>
 			<input
-				placeholder={label}
-				class={['input', { 'input-error': !!$errors }]}
 				{type}
+				class={['input', { 'input-error': !!$errors, 'join-item': isJoined }]}
+				{placeholder}
 				name={field}
 				bind:value={$value}
 				aria-invalid={!!$errors}
 				{...$constraints}
 			/>
-			<span>{label}</span>
-		</label>
-		{#if join}
-			{@render join()}
-		{:else if remover}
-			<RemoveInputButton
-				{superform}
-				field={remover.field}
-				index={remover.index}
-				class="join-item rounded-r-full"
-			/>
+			{#if join}
+				{@render join()}
+			{:else if remover}
+				<RemoveInputButton
+					{superform}
+					field={remover.field}
+					index={remover.index}
+					class="join-item rounded-r-full"
+				/>
+			{/if}
+		</div>
+		{#if hint}
+			<p class="label">{hint}</p>
 		{/if}
-	</div>
+	</fieldset>
 	<InputFieldError errors={$errors} />
 </div>

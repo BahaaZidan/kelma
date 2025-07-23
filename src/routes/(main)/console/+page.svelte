@@ -1,7 +1,6 @@
 <script lang="ts">
 	import BanknoteArrowUpIcon from '@lucide/svelte/icons/banknote-arrow-up';
 	import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
-	import CopyIcon from '@lucide/svelte/icons/copy';
 	import DollarSignIcon from '@lucide/svelte/icons/dollar-sign';
 	import EyeIcon from '@lucide/svelte/icons/eye';
 	import PlusIcon from '@lucide/svelte/icons/plus';
@@ -14,7 +13,6 @@
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
 	import TextInput from '$lib/client/components/TextInput.svelte';
-	import { Toasts } from '$lib/client/toasts.svelte';
 
 	import type { PageProps } from './$types';
 	import BaseInfoForm from './BaseInfoForm.svelte';
@@ -140,18 +138,6 @@
 					onclick={() => (selectedWebsiteId = website.id)}
 				/>
 				<div class="tab-content bg-base-100 border-base-300 p-6">
-					<div>
-						Website ID: <button
-							class="btn btn-xs btn-info"
-							onclick={() => {
-								navigator.clipboard.writeText(website.id);
-								Toasts.add({ type: 'info', message: 'Website ID copied!' });
-							}}
-						>
-							<CopyIcon size={18} />
-							{website.id}
-						</button>
-					</div>
 					<BaseInfoForm data={website} />
 					{#if website.bannedUsers.length}
 						<div class="divider">Banned Users</div>
@@ -236,7 +222,7 @@
 
 <dialog bind:this={topupDialog} class="modal">
 	<div class="modal-box">
-		<h3 class="text-lg font-bold">Topup</h3>
+		<h3 class="my-4 text-lg font-bold">Topup</h3>
 
 		<form method="post" use:topupSuperform.enhance class="flex flex-col gap-1" id="topup_form">
 			<TextInput superform={topupSuperform} field="amount" type="number" label="Amount" />

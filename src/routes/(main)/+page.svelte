@@ -53,7 +53,7 @@
 		</div>
 	</section>
 
-	<section class="bg-base-200 flex flex-col gap-2 rounded-2xl p-4">
+	<section class="bg-base-200 flex flex-col gap-2 rounded-2xl p-6">
 		<p class="text-xl">
 			For <span class="font-bold">{price_slider_val.toLocaleString()}</span>
 			pageviews
