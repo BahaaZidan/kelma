@@ -3,3 +3,15 @@
 @plugin "daisyui" {
 	themes: all;
 }
+
+@utility btn {
+	@apply rounded-2xl;
+}
+
+@utility card {
+	@apply rounded-2xl;
+}
+
+@utility textarea {
+	@apply rounded-2xl;
+}

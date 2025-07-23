@@ -120,7 +120,7 @@
 					<a
 						class="link font-bold"
 						target="_top"
-						href="{route('/embeds/login')}?callback_url={website.page.url}"
+						href="{route('/login')}?callback_url={website.page.url}"
 					>
 						{m.login()}
 					</a>
