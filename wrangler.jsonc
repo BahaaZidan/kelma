@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "gebna-tools",
+	"name": "kelma",
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"compatibility_date": "2025-06-28",
 	"compatibility_flags": ["nodejs_compat"],
@@ -25,12 +25,12 @@
 	],
 	"routes": [
 		{
-			"pattern": "gebna.tools",
+			"pattern": "kelma.dev",
 			"custom_domain": true,
 		},
 	],
 	"vars": {
-		"PUBLIC_BASE_URL": "https://gebna.tools",
+		"PUBLIC_BASE_URL": "https://kelma.dev",
 		"PUBLIC_GITHUB_CLIENT_ID": "Iv23lido8Xjwy7j8VMV0",
 	},
 	/**
