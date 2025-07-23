@@ -16,12 +16,12 @@
 	const { value, errors, constraints } = formFieldProxy(superform, field);
 </script>
 
-<div class="flex w-full flex-col">
+<div class="flex w-full flex-col p-1">
 	<AutoSizeTextarea
 		bind:value={$value as string}
 		name={field}
 		aria-invalid={!!$errors}
-		class={['textarea w-full', { 'textarea-error': !!$errors }, class_]}
+		class={['textarea w-full resize-none border-none', { 'textarea-error': !!$errors }, class_]}
 		{disabled}
 		{placeholder}
 		{...$constraints}
