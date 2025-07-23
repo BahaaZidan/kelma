@@ -53,6 +53,12 @@
 		</div>
 	</section>
 
+	<section id="get-started" class="px-6 py-6 text-center">
+		<h2 class="mb-4 text-3xl font-bold">Get 10,000 Free Page Views</h2>
+		<p class="mb-6">No credit card required. Start engaging your audience today.</p>
+		<a href={login_url} class="btn btn-accent btn-lg">Create Free Account</a>
+	</section>
+
 	<section class="bg-base-200 flex flex-col gap-2 rounded-2xl p-6">
 		<p class="text-xl">
 			For <span class="font-bold">{price_slider_val.toLocaleString()}</span>
@@ -71,12 +77,6 @@
 				${(price_slider_val * PAGEVIEW_COST_IN_CENTS) / 100}
 			</span>
 		</p>
-	</section>
-
-	<section id="get-started" class="px-6 py-6 text-center">
-		<h2 class="mb-4 text-3xl font-bold">Get 10,000 Free Page Views</h2>
-		<p class="mb-6">No credit card required. Start engaging your audience today.</p>
-		<a href={login_url} class="btn btn-accent btn-lg">Create Free Account</a>
 	</section>
 
 	<footer class="bg-base-300 text-base-content flex justify-between rounded-t-lg p-5">
