@@ -4,15 +4,18 @@
 	import DollarSignIcon from '@lucide/svelte/icons/dollar-sign';
 	import EyeIcon from '@lucide/svelte/icons/eye';
 	import PlusIcon from '@lucide/svelte/icons/plus';
+	import themeObject from 'daisyui/theme/object';
 	import { onMount } from 'svelte';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';
 
+	import { env } from '$env/dynamic/public';
 	import { graphql } from '$houdini';
 
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
 	import TextInput from '$lib/client/components/TextInput.svelte';
+	import { locales, type Locale } from '$lib/paraglide/runtime';
 
 	import type { PageProps } from './$types';
 	import BaseInfoForm from './BaseInfoForm.svelte';
@@ -85,11 +88,26 @@
 			}
 		}
 	`);
+
+	const supportedThemes = Object.keys(themeObject);
+
+	let embed_config: {
+		website_id?: string | null;
+		page_id?: string;
+		container: string;
+		theme: string;
+		language: Locale;
+	} = $state({
+		page_id: 'page-slug-or-uuid',
+		container: 'kelma-container',
+		language: 'en',
+		theme: 'business',
+	});
 </script>
 
-{#if viewer}
-	<section class="flex flex-col">
-		<div class="stats shadow">
+<div class="flex flex-col gap-4 p-4">
+	{#if viewer}
+		<section class="bg-base-200 flex justify-between rounded-2xl p-6">
 			<div class="stat">
 				<div class="stat-figure text-secondary">
 					<EyeIcon />
@@ -111,89 +129,144 @@
 					</button>
 				</div>
 			</div>
-		</div>
-	</section>
-	{#if !viewer.websites.length}
-		<div role="alert" class="alert alert-info">
-			<CircleAlertIcon />
-			<span>
-				You need to <button
-					class="btn btn-link p-0 align-baseline"
-					onclick={() => createWebsiteDialog.showModal()}
-				>
-					create a website
-				</button>
-				to use console.
-			</span>
-		</div>
-	{:else}
-		<div class="tabs tabs-lift p-4">
-			{#each viewer.websites as website (website.id)}
-				<input
-					type="radio"
-					name={website.id}
-					class="tab"
-					aria-label={website.name}
-					checked={website.id === selectedWebsiteId}
-					onclick={() => (selectedWebsiteId = website.id)}
-				/>
-				<div class="tab-content bg-base-100 border-base-300 p-6">
-					<BaseInfoForm data={website} />
-					{#if website.bannedUsers.length}
-						<div class="divider">Banned Users</div>
-						<div class="rounded-box border-base-content/5 bg-base-100 overflow-x-auto border">
-							<table class="table">
-								<thead>
-									<tr>
-										<th></th>
-										<th>Name</th>
-										<th>Email</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each website.bannedUsers as bannedUser (bannedUser.id)}
-										<tr class="hover:bg-base-300">
-											<td>
-												<Avatar
-													src={bannedUser.image}
-													alt={bannedUser.name}
-													fallback={bannedUser.name}
-													class="size-10"
-												/>
-											</td>
-											<td>{bannedUser.name}</td>
-											<td>{bannedUser.email}</td>
-											<td>
-												<button
-													class="btn btn-sm btn-primary"
-													disabled={$UpdateUserWebsiteBan.fetching}
-													onclick={() => {
-														UpdateUserWebsiteBan.mutate({
-															websiteId: website.id,
-															input: {
-																banned: false,
-																userId: bannedUser.id,
-																websiteId: website.id,
-															},
-														});
-													}}
-												>
-													Unban
-												</button>
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					{/if}
+		</section>
+		{#if !viewer.websites.length}
+			<div role="alert" class="alert alert-info">
+				<CircleAlertIcon />
+				<span>
+					<button
+						class="btn btn-link p-0 align-baseline"
+						onclick={() => createWebsiteDialog.showModal()}
+					>
+						Create a website
+					</button>
+					to get started.
+				</span>
+			</div>
+		{:else}
+			<section class="bg-base-200 flex flex-col gap-4 rounded-2xl p-6">
+				<h2>Copy this code block to get started</h2>
+				<div class="flex gap-4">
+					<fieldset class="fieldset">
+						<legend class="fieldset-legend">Website ID</legend>
+						<select class="select" bind:value={embed_config.website_id}>
+							<option disabled selected>Website ID</option>
+							{#each viewer.websites as website (website.id)}
+								<option value={website.id}>{website.name}</option>
+							{/each}
+						</select>
+					</fieldset>
+					<fieldset class="fieldset">
+						<legend class="fieldset-legend">Page ID</legend>
+						<input type="text" class="input" bind:value={embed_config.page_id} />
+					</fieldset>
+					<fieldset class="fieldset">
+						<legend class="fieldset-legend">Container ID</legend>
+						<input type="text" class="input" bind:value={embed_config.container} />
+					</fieldset>
+					<fieldset class="fieldset">
+						<legend class="fieldset-legend">Language</legend>
+						<select class="select" bind:value={embed_config.language}>
+							<option disabled selected>Language</option>
+							{#each locales as locale (locale)}
+								<option>{locale}</option>
+							{/each}
+						</select>
+					</fieldset>
+					<fieldset class="fieldset">
+						<legend class="fieldset-legend">Theme</legend>
+						<select class="select" bind:value={embed_config.theme}>
+							<option disabled selected>Theme</option>
+							{#each supportedThemes as theme (theme)}
+								<option>{theme}</option>
+							{/each}
+						</select>
+					</fieldset>
 				</div>
-			{/each}
-			<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
-		</div>
+				<div class="mockup-code w-full">
+					<pre
+						data-prefix="1"><code>&lt;script src="{env.PUBLIC_BASE_URL}/scripts/comments-embed.js" defer&gt;&lt;/script&gt;</code></pre>
+					<pre data-prefix="2"><code>&lt;script&gt;</code></pre>
+					<pre data-prefix="3"><code>{`	if (window.embedCommentIframe) {`}</code></pre>
+					<pre data-prefix="4"><code>{`		window.embedCommentIframe({`}</code></pre>
+					<pre data-prefix="5"><code>			container: {embed_config.container},</code></pre>
+					<pre data-prefix="6"><code>			website_id: {embed_config.website_id},</code></pre>
+					<pre data-prefix="7"><code>			page_id: {embed_config.page_id},</code></pre>
+					<pre data-prefix="8"><code>			language: {embed_config.language},</code></pre>
+					<pre data-prefix="9"><code>			theme: {embed_config.theme},</code></pre>
+					<pre data-prefix="10"><code>		&#125;&#41;&#59;</code></pre>
+					<pre data-prefix="11"><code>	&#125;</code></pre>
+					<pre data-prefix="12"><code>&lt;/script&gt;</code></pre>
+				</div>
+			</section>
+			<div class="tabs tabs-lift p-4">
+				{#each viewer.websites as website (website.id)}
+					<input
+						type="radio"
+						name={website.id}
+						class="tab"
+						aria-label={website.name}
+						checked={website.id === selectedWebsiteId}
+						onclick={() => (selectedWebsiteId = website.id)}
+					/>
+					<div class="tab-content bg-base-100 border-base-300 p-6">
+						<BaseInfoForm data={website} />
+						{#if website.bannedUsers.length}
+							<div class="divider">Banned Users</div>
+							<div class="rounded-box border-base-content/5 bg-base-100 overflow-x-auto border">
+								<table class="table">
+									<thead>
+										<tr>
+											<th></th>
+											<th>Name</th>
+											<th>Email</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										{#each website.bannedUsers as bannedUser (bannedUser.id)}
+											<tr class="hover:bg-base-300">
+												<td>
+													<Avatar
+														src={bannedUser.image}
+														alt={bannedUser.name}
+														fallback={bannedUser.name}
+														class="size-10"
+													/>
+												</td>
+												<td>{bannedUser.name}</td>
+												<td>{bannedUser.email}</td>
+												<td>
+													<button
+														class="btn btn-sm btn-primary"
+														disabled={$UpdateUserWebsiteBan.fetching}
+														onclick={() => {
+															UpdateUserWebsiteBan.mutate({
+																websiteId: website.id,
+																input: {
+																	banned: false,
+																	userId: bannedUser.id,
+																	websiteId: website.id,
+																},
+															});
+														}}
+													>
+														Unban
+													</button>
+												</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
+						{/if}
+					</div>
+				{/each}
+				<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
+			</div>
+		{/if}
 	{/if}
-{/if}
+</div>
 
 <dialog bind:this={createWebsiteDialog} class="modal">
 	<div class="modal-box">

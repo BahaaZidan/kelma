@@ -19,3 +19,7 @@
 @utility range {
 	@apply rounded-2xl;
 }
+
+@utility alert {
+	@apply rounded-2xl;
+}
