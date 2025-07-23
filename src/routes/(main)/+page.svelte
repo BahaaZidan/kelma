@@ -15,7 +15,7 @@
 </script>
 
 <div class="flex min-h-screen flex-col justify-between">
-	<section class="px-6 py-16 text-center">
+	<section class="px-6 py-10 text-center">
 		<h1 class="mb-4 text-4xl font-bold">Drop-in Comment Section for Every Website</h1>
 		<p class="mx-auto mb-6 max-w-2xl text-lg">
 			Ad-free, privacy-respecting, open-source, and insanely fast. Effortless setup with full
@@ -79,11 +79,11 @@
 		<a href={login_url} class="btn btn-accent btn-lg">Create Free Account</a>
 	</section>
 
-	<footer class="bg-base-300 text-base-content flex justify-between rounded-t-lg p-4">
+	<footer class="bg-base-300 text-base-content flex justify-between rounded-t-lg p-5">
 		<p>
 			Built with 🤍 and <a class="link link-hover" href="https://gebna.gg/">🧀</a>
 		</p>
-		<div class="flex gap-2">
+		<div class="flex gap-3">
 			<a
 				href="mailto:gebnatorky@gmail.com"
 				aria-label="Email"

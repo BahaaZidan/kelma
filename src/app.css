@@ -15,3 +15,7 @@
 @utility textarea {
 	@apply rounded-2xl;
 }
+
+@utility range {
+	@apply rounded-2xl;
+}
