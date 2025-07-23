@@ -32,7 +32,7 @@
 		{/if}
 
 		<span class="py-6">
-			Powered by <a href="https://gebna.tools/" class="link-hover font-bold">gebna.tools</a>
+			Powered by <a href="https://kelma.dev/" class="link-hover font-mono font-bold">kelma</a>
 		</span>
 	</div>
 </div>

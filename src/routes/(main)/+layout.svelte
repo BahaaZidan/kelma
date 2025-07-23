@@ -35,7 +35,7 @@
 					</svg>
 				</div>
 			</div>
-			<a class="btn btn-ghost text-xl" href="/">gebna.tools</a>
+			<a class="btn btn-ghost font-mono text-xl" href="/">kelma</a>
 		</div>
 		<div class="navbar-center hidden lg:flex"></div>
 		<div class="navbar-end">
