@@ -92,7 +92,6 @@
 	const supportedThemes = Object.keys(themeObject);
 
 	let embed_config: {
-		website_id?: string | null;
 		page_id?: string;
 		container: string;
 		theme: string;
@@ -149,7 +148,7 @@
 				<div class="flex gap-4">
 					<fieldset class="fieldset">
 						<legend class="fieldset-legend">Website</legend>
-						<select class="select" bind:value={embed_config.website_id}>
+						<select class="select" bind:value={selectedWebsiteId}>
 							<option disabled selected>Website ID</option>
 							{#each viewer.websites as website (website.id)}
 								<option value={website.id}>{website.name}</option>
@@ -199,71 +198,74 @@
 					<pre data-prefix="12"><code>&lt;/script&gt;</code></pre>
 				</div>
 			</section>
-			<div class="tabs tabs-lift p-4">
-				{#each viewer.websites as website (website.id)}
-					<input
-						type="radio"
-						name={website.id}
-						class="tab"
-						aria-label={website.name}
-						checked={website.id === selectedWebsiteId}
-						onclick={() => (selectedWebsiteId = website.id)}
-					/>
-					<div class="tab-content bg-base-100 border-base-300 p-6">
-						<BaseInfoForm data={website} />
-						{#if website.bannedUsers.length}
-							<div class="divider">Banned Users</div>
-							<div class="rounded-box border-base-content/5 bg-base-100 overflow-x-auto border">
-								<table class="table">
-									<thead>
-										<tr>
-											<th></th>
-											<th>Name</th>
-											<th>Email</th>
-											<th></th>
-										</tr>
-									</thead>
-									<tbody>
-										{#each website.bannedUsers as bannedUser (bannedUser.id)}
-											<tr class="hover:bg-base-300">
-												<td>
-													<Avatar
-														src={bannedUser.image}
-														alt={bannedUser.name}
-														fallback={bannedUser.name}
-														class="size-10"
-													/>
-												</td>
-												<td>{bannedUser.name}</td>
-												<td>{bannedUser.email}</td>
-												<td>
-													<button
-														class="btn btn-sm btn-primary"
-														disabled={$UpdateUserWebsiteBan.fetching}
-														onclick={() => {
-															UpdateUserWebsiteBan.mutate({
-																websiteId: website.id,
-																input: {
-																	banned: false,
-																	userId: bannedUser.id,
-																	websiteId: website.id,
-																},
-															});
-														}}
-													>
-														Unban
-													</button>
-												</td>
+			<section class="bg-base-200 rounded-2xl p-6">
+				<h2>Website settings</h2>
+				<div class="tabs tabs-lift p-4">
+					{#each viewer.websites as website (website.id)}
+						<input
+							type="radio"
+							name={website.id}
+							class="tab"
+							aria-label={website.name}
+							checked={website.id === selectedWebsiteId}
+							onclick={() => (selectedWebsiteId = website.id)}
+						/>
+						<div class="tab-content bg-base-100 border-base-300 p-6">
+							<BaseInfoForm data={website} />
+							{#if website.bannedUsers.length}
+								<div class="divider">Banned Users</div>
+								<div class="rounded-box border-base-content/5 bg-base-100 overflow-x-auto border">
+									<table class="table">
+										<thead>
+											<tr>
+												<th></th>
+												<th>Name</th>
+												<th>Email</th>
+												<th></th>
 											</tr>
-										{/each}
-									</tbody>
-								</table>
-							</div>
-						{/if}
-					</div>
-				{/each}
-				<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
-			</div>
+										</thead>
+										<tbody>
+											{#each website.bannedUsers as bannedUser (bannedUser.id)}
+												<tr class="hover:bg-base-300">
+													<td>
+														<Avatar
+															src={bannedUser.image}
+															alt={bannedUser.name}
+															fallback={bannedUser.name}
+															class="size-10"
+														/>
+													</td>
+													<td>{bannedUser.name}</td>
+													<td>{bannedUser.email}</td>
+													<td>
+														<button
+															class="btn btn-sm btn-primary"
+															disabled={$UpdateUserWebsiteBan.fetching}
+															onclick={() => {
+																UpdateUserWebsiteBan.mutate({
+																	websiteId: website.id,
+																	input: {
+																		banned: false,
+																		userId: bannedUser.id,
+																		websiteId: website.id,
+																	},
+																});
+															}}
+														>
+															Unban
+														</button>
+													</td>
+												</tr>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+							{/if}
+						</div>
+					{/each}
+					<button class="tab" onclick={() => createWebsiteDialog.showModal()}><PlusIcon /></button>
+				</div>
+			</section>
 		{/if}
 	{/if}
 </div>
