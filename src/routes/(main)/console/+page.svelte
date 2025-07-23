@@ -199,8 +199,8 @@
 				</div>
 			</section>
 			<section class="bg-base-200 rounded-2xl p-6">
-				<h2>Website settings</h2>
-				<div class="tabs tabs-lift p-4">
+				<h2 class="mb-4">Website settings</h2>
+				<div class="tabs tabs-lift">
 					{#each viewer.websites as website (website.id)}
 						<input
 							type="radio"
@@ -210,7 +210,7 @@
 							checked={website.id === selectedWebsiteId}
 							onclick={() => (selectedWebsiteId = website.id)}
 						/>
-						<div class="tab-content bg-base-100 border-base-300 p-6">
+						<div class="tab-content p-6">
 							<BaseInfoForm data={website} />
 							{#if website.bannedUsers.length}
 								<div class="divider">Banned Users</div>

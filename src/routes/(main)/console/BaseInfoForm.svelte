@@ -59,6 +59,8 @@
 
 <form method="post" use:enhance class="flex flex-col gap-3">
 	<TextInput {superform} field="name" label="Name" />
-	<TextArrayInput {superform} field="domains" label="Domains" />
-	<button class="btn" type="submit" disabled={$UpdateWebsiteBasicInfo.fetching}>Submit</button>
+	<TextArrayInput {superform} field="domains" label="Trusted Domains" />
+	<button class="btn btn-neutral" type="submit" disabled={$UpdateWebsiteBasicInfo.fetching}>
+		Submit
+	</button>
 </form>
