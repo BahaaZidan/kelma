@@ -57,6 +57,9 @@
 		iframe.style.display = 'block';
 		iframe.loading = 'lazy';
 		iframe.setAttribute('scrolling', 'no');
+		iframe.style.background = 'transparent';
+		iframe.allowTransparency = 'true';
+		iframe.setAttribute('frameborder', '0');
 
 		el.innerHTML = ''; // Clear existing content
 		el.appendChild(iframe);
