@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e0bb317d-4427-4326-bb8e-42ecad18301f",
+  "id": "ccb8ba2c-457e-483c-bbd3-8de0e2267be7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -150,14 +150,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "published": {
-          "name": "published",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "1"
-        },
         "page_id": {
           "name": "page_id",
           "type": "integer",
@@ -226,6 +218,81 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "membership": {
+      "name": "membership",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "website_id": {
+          "name": "website_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "banned": {
+          "name": "banned",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "0"
+        }
+      },
+      "indexes": {
+        "user_id_website_id": {
+          "name": "user_id_website_id",
+          "columns": [
+            "user_id",
+            "website_id"
+          ],
+          "isUnique": true
+        },
+        "memberships_website_id": {
+          "name": "memberships_website_id",
+          "columns": [
+            "website_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "membership_user_id_user_id_fk": {
+          "name": "membership_user_id_user_id_fk",
+          "tableFrom": "membership",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "membership_website_id_website_id_fk": {
+          "name": "membership_website_id_website_id_fk",
+          "tableFrom": "membership",
+          "tableTo": "website",
+          "columnsFrom": [
+            "website_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "page": {
       "name": "page",
       "columns": {
@@ -264,14 +331,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "pre_moderation": {
-          "name": "pre_moderation",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "0"
-        },
         "closed": {
           "name": "closed",
           "type": "integer",
@@ -298,6 +357,85 @@
           "tableTo": "website",
           "columnsFrom": [
             "website_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "reply": {
+      "name": "reply",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "author_id": {
+          "name": "author_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reply_author_id_user_id_fk": {
+          "name": "reply_author_id_user_id_fk",
+          "tableFrom": "reply",
+          "tableTo": "user",
+          "columnsFrom": [
+            "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "reply_comment_id_comment_id_fk": {
+          "name": "reply_comment_id_comment_id_fk",
+          "tableFrom": "reply",
+          "tableTo": "comment",
+          "columnsFrom": [
+            "comment_id"
           ],
           "columnsTo": [
             "id"
@@ -449,6 +587,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "balance": {
+          "name": "balance",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 50000
         }
       },
       "indexes": {
@@ -463,7 +609,12 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "checkConstraints": {
+        "balance_minimum": {
+          "name": "balance_minimum",
+          "value": "\"user\".\"balance\" >= 0"
+        }
+      }
     },
     "verification": {
       "name": "verification",
@@ -548,14 +699,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'[]'"
-        },
-        "pre_moderation": {
-          "name": "pre_moderation",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "0"
         }
       },
       "indexes": {},

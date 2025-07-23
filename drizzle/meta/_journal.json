@@ -5,64 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1751107752618,
-      "tag": "0000_bent_preak",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1751871929805,
-      "tag": "0001_ordinary_christian_walker",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1751901805222,
-      "tag": "0002_rare_abomination",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1751904168084,
-      "tag": "0003_shocking_stark_industries",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1752151471350,
-      "tag": "0004_superb_exodus",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1752152503922,
-      "tag": "0005_past_captain_stacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "6",
-      "when": 1752333375319,
-      "tag": "0006_brainy_tomorrow_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "6",
-      "when": 1752756702558,
-      "tag": "0007_remarkable_bloodscream",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "6",
-      "when": 1752758420733,
-      "tag": "0008_fine_sentry",
+      "when": 1753256886226,
+      "tag": "0000_first_pepper_potts",
       "breakpoints": true
     }
   ]

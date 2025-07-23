@@ -1,1 +1,0 @@
-ALTER TABLE `user` ADD `balance_in_cents` real DEFAULT 50 NOT NULL;
