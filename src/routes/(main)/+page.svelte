@@ -14,7 +14,7 @@
 	const iconClass = 'transition-all duration-300 ease-in-out hover:text-gray-700';
 </script>
 
-<div class="flex min-h-screen flex-col justify-between">
+<div class="flex min-h-screen flex-col justify-between gap-4">
 	<section class="px-6 py-10 text-center">
 		<h1 class="mb-4 text-4xl font-bold">Drop-in Comment Section for Every Website</h1>
 		<p class="mx-auto mb-6 max-w-2xl text-lg">
