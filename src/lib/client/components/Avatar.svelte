@@ -2,7 +2,7 @@
 	import type { ClassValue, HTMLImgAttributes } from 'svelte/elements';
 
 	type Props = {
-		class: ClassValue;
+		class?: ClassValue;
 		fallback: string;
 	} & Pick<HTMLImgAttributes, 'src' | 'alt'>;
 

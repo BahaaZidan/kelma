@@ -5,6 +5,7 @@
 	import { env } from '$env/dynamic/public';
 
 	import { signOut } from '$lib/client/auth';
+	import Avatar from '$lib/client/components/Avatar.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { route } from '$lib/routes';
 
@@ -25,7 +26,7 @@
 				<div class="dropdown dropdown-end">
 					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
 						<div class="w-10 rounded-full">
-							<img alt="{viewer.name} Avatar" src={viewer.image} />
+							<Avatar alt="{viewer.name} Avatar" src={viewer.image} fallback={viewer.name} />
 						</div>
 					</div>
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
