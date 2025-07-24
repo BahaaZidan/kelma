@@ -1,0 +1,21 @@
+query ConsoleQuery {
+	viewer {
+		id
+		name
+		image
+		balance
+		pageViewsLeft
+		websites @list(name: "Console_Website_List") {
+			...BaseInfoFormComponent
+			id
+			name
+			domains
+			bannedUsers @list(name: "Console_Website_List_Banned_Users") {
+				id
+				name
+				email
+				image
+			}
+		}
+	}
+}

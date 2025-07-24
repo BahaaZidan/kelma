@@ -6,6 +6,7 @@
 
 	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
 	import TextInput from '$lib/client/components/TextInput.svelte';
+	import { Toasts } from '$lib/client/toasts.svelte';
 
 	import { baseInfoSchema } from './schemas';
 
@@ -31,14 +32,21 @@
 		SPA: true,
 		validators: valibot(baseInfoSchema),
 		id: $website.id,
+		dataType: 'json',
 		async onUpdate({ form }) {
 			if (form.valid) {
-				await UpdateWebsiteBasicInfo.mutate({
+				const result = await UpdateWebsiteBasicInfo.mutate({
 					input: {
 						id: $website.id,
 						name: form.data.name,
 						domains: form.data.domains,
 					},
+				});
+				Toasts.add({
+					type: result.errors ? 'error' : 'success',
+					message: result.errors
+						? result.errors.map((e) => e.message).join(', ')
+						: 'Website updated successfully!',
 				});
 			}
 		},

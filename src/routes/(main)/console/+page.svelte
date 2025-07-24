@@ -5,7 +5,6 @@
 	import EyeIcon from '@lucide/svelte/icons/eye';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import themeObject from 'daisyui/theme/object';
-	import { onMount } from 'svelte';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';
 
@@ -17,36 +16,13 @@
 	import TextInput from '$lib/client/components/TextInput.svelte';
 	import { locales, type Locale } from '$lib/paraglide/runtime';
 
-	import type { PageProps } from './$types';
+	import type { PageProps } from './$houdini';
 	import BaseInfoForm from './BaseInfoForm.svelte';
 	import { baseInfoSchema } from './schemas';
 
-	let query = graphql(`
-		query ConsoleViewerQuery {
-			viewer {
-				id
-				name
-				image
-				balance
-				pageViewsLeft
-				websites @list(name: "Console_Website_List") {
-					...BaseInfoFormComponent
-					id
-					name
-					domains
-					bannedUsers @list(name: "Console_Website_List_Banned_Users") {
-						id
-						name
-						email
-						image
-					}
-				}
-			}
-		}
-	`);
-	onMount(async () => {
-		await query.fetch();
-	});
+	let { data }: PageProps = $props();
+
+	let query = data.ConsoleQuery;
 	let viewer = $derived($query.data?.viewer);
 
 	let selectedWebsiteId = $derived(viewer?.websites[0].id);
@@ -76,7 +52,6 @@
 		}
 	`);
 
-	let { data }: PageProps = $props();
 	const topupSuperform = superForm(data.form);
 	let topupDialog: HTMLDialogElement;
 
@@ -297,7 +272,7 @@
 
 <dialog bind:this={topupDialog} class="modal">
 	<div class="modal-box">
-		<h3 class="my-4 text-lg font-bold">Topup</h3>
+		<h3 class="mb-4 text-lg font-bold">Topup</h3>
 
 		<form method="post" use:topupSuperform.enhance class="flex flex-col gap-1" id="topup_form">
 			<TextInput superform={topupSuperform} field="amount" type="number" label="Amount" />

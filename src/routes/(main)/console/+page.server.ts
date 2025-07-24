@@ -1,27 +1,18 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import * as v from 'valibot';
 
 import { env } from '$env/dynamic/public';
 
 import { route } from '$lib/routes';
 import { getStripe } from '$lib/server/stripe';
 
-import type { Actions, PageServerLoad } from './$types';
-
-const schema = v.object({
-	amount: v.pipe(v.number(), v.integer(), v.minValue(5)),
-});
-
-export const load: PageServerLoad = async () => {
-	const form = await superValidate(valibot(schema));
-	return { form };
-};
+import type { Actions } from './$types';
+import { topUpSchema } from './schemas';
 
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
-		const form = await superValidate(request, valibot(schema));
+		const form = await superValidate(request, valibot(topUpSchema));
 		if (!form.valid) return fail(400, { form });
 		if (!locals.session?.user) return fail(401);
 

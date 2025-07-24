@@ -14,3 +14,7 @@ export const baseInfoSchema = v.object({
 		v.minLength(1)
 	),
 });
+
+export const topUpSchema = v.object({
+	amount: v.pipe(v.number(), v.integer(), v.minValue(5)),
+});
