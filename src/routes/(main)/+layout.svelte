@@ -24,10 +24,13 @@
 		<div class="navbar-end">
 			{#if viewer}
 				<div class="dropdown dropdown-end">
-					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-						<div class="w-10 rounded-full">
-							<Avatar alt="{viewer.name} Avatar" src={viewer.image} fallback={viewer.name} />
-						</div>
+					<div tabindex="0" role="button" class="btn size-10 overflow-hidden">
+						<Avatar
+							alt="{viewer.name} Avatar"
+							src={viewer.image}
+							fallback={viewer.name}
+							class="min-h-10 min-w-10"
+						/>
 					</div>
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 					<ul
