@@ -29,7 +29,7 @@
 							alt="{viewer.name} Avatar"
 							src={viewer.image}
 							fallback={viewer.name}
-							class="min-h-10 min-w-10"
+							class="size-9 min-h-9 min-w-9"
 						/>
 					</div>
 					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
