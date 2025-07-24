@@ -189,7 +189,7 @@
 					<pre data-prefix="3"><code>{`	if (window.embedCommentIframe) {`}</code></pre>
 					<pre data-prefix="4"><code>{`		window.embedCommentIframe({`}</code></pre>
 					<pre data-prefix="5"><code>			container: {embed_config.container},</code></pre>
-					<pre data-prefix="6"><code>			website_id: {embed_config.website_id},</code></pre>
+					<pre data-prefix="6"><code>			website_id: {selectedWebsiteId},</code></pre>
 					<pre data-prefix="7"><code>			page_id: {embed_config.page_id},</code></pre>
 					<pre data-prefix="8"><code>			language: {embed_config.language},</code></pre>
 					<pre data-prefix="9"><code>			theme: {embed_config.theme},</code></pre>
