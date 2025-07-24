@@ -12,45 +12,11 @@
 	import { m } from '$lib/paraglide/messages.js';
 	import { route } from '$lib/routes';
 
-	import type { PageProps } from './$types';
+	import type { PageProps } from './$houdini';
 	import Comment from './components/Comment.svelte';
 	import CreateCommentForm from './components/CreateCommentForm.svelte';
 
 	let { data }: PageProps = $props();
-
-	let query = graphql(`
-		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
-			node(id: $websiteId) {
-				... on Website {
-					...WebsiteOwner
-					id
-					name
-					owner {
-						id
-					}
-					page(input: $pageInput) {
-						...IsPageClosed
-						id
-						closed
-						url
-						comments(first: 10) @paginate(name: "Embed_Comments") {
-							edges {
-								node {
-									id
-									...CommentComponent
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	`);
-	onMount(async () => {
-		await query.fetch({
-			variables: data.queryVariables,
-		});
-	});
 
 	const TogglePageClosed = graphql(`
 		mutation TogglePageClosed($id: ID!) {
@@ -61,6 +27,7 @@
 		}
 	`);
 	let viewer = getViewerContext();
+	let query = data.BigWebsiteQuery;
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
 
 	function sendHeight() {

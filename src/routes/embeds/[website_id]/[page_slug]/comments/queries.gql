@@ -1,0 +1,26 @@
+query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
+	node(id: $websiteId) {
+		... on Website {
+			...WebsiteOwner
+			id
+			name
+			owner {
+				id
+			}
+			page(input: $pageInput) {
+				...IsPageClosed
+				id
+				closed
+				url
+				comments(first: 10) @paginate(name: "Embed_Comments") {
+					edges {
+						node {
+							id
+							...CommentComponent
+						}
+					}
+				}
+			}
+		}
+	}
+}
