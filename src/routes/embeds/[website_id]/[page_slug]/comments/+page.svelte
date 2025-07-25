@@ -29,6 +29,7 @@
 	let viewer = getViewerContext();
 	let query = data.BigWebsiteQuery;
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
+	let fetchingMore = $state(false);
 
 	function sendHeight() {
 		const height = document.body.scrollHeight;
@@ -101,30 +102,28 @@
 				<Comment data={node} {website} page={website.page} />
 			{/each}
 
-			<div
-				class={[
-					{
-						hidden: !$query.fetching && !$query.pageInfo.hasNextPage,
-					},
-				]}
-			>
-				<button
-					class="btn btn-link"
-					onclick={() => query.loadNextPage()}
-					disabled={!$query.pageInfo.hasNextPage || $query.fetching}
-				>
-					{#if $query.fetching}
-						{m.loading_more()}
-					{:else if $query.pageInfo.hasNextPage}
-						{#if getDir() === 'ltr'}
+			{#if $query.pageInfo.hasNextPage}
+				<div>
+					<button
+						class="btn btn-link"
+						onclick={async () => {
+							fetchingMore = true;
+							await query.loadNextPage();
+							fetchingMore = false;
+						}}
+						disabled={fetchingMore}
+					>
+						{#if fetchingMore}
+							<span class="loading loading-spinner loading-sm"></span>
+						{:else if getDir() === 'ltr'}
 							<CornerDownRightIcon />
 						{:else}
 							<CornerDownLeftIcon />
 						{/if}
 						{m.moreComments()}
-					{/if}
-				</button>
-			</div>
+					</button>
+				</div>
+			{/if}
 		</div>
 		<span class="py-6 font-mono">
 			{m.powered_by()}
