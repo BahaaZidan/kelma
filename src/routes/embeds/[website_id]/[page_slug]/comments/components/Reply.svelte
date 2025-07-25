@@ -153,7 +153,7 @@
 				<button type="submit" class="btn btn-primary btn-sm" disabled={$UpdateReply.fetching}>
 					{m.submit()}
 					{#if $UpdateReply.fetching}
-						<span class="loading loading-spinner loading-sm"></span>
+						<span class="loading loading-spinner loading-xs"></span>
 					{/if}
 				</button>
 			</div>
