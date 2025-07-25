@@ -53,14 +53,19 @@
 			}
 		},
 	});
+
+	let disabled = $derived($CreateReplyMutation.fetching);
 </script>
 
 <form method="post" use:superform.enhance class="flex flex-col gap-2">
-	<Textarea {superform} field="content" />
+	<Textarea {superform} field="content" {disabled} />
 	<div class="flex justify-end gap-2">
-		<button type="button" class="btn btn-xs" onclick={onCancel}>{m.cancel()}</button>
-		<button type="submit" class="btn btn-xs btn-primary">
+		<button type="button" class="btn btn-xs" onclick={onCancel} {disabled}>{m.cancel()}</button>
+		<button type="submit" class="btn btn-xs btn-primary" {disabled}>
 			{m.submit()}
+			{#if $CreateReplyMutation.fetching}
+				<span class="loading loading-spinner loading-sm"></span>
+			{/if}
 		</button>
 	</div>
 </form>
