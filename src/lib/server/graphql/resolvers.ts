@@ -306,28 +306,43 @@ export const resolvers: Resolvers = {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
 			if (!!input.commentId === !!input.replyId) throw new GraphQLError('BAD_REQUEST');
 
-			const globalId = input.commentId || input.replyId;
-			const dbID = Number(fromGlobalId(globalId!).id);
+			const liker = locals.session.user.id;
 
-			try {
-				await db.insert(likesTable).values({
-					liker: locals.session.user.id,
-					...(input.commentId ? { commentId: dbID } : { replyId: dbID }),
+			if (input.commentId) {
+				const commentId = Number(fromGlobalId(input.commentId).id);
+
+				try {
+					await db.insert(likesTable).values({ liker, commentId });
+				} catch (_e) {
+					await db
+						.delete(likesTable)
+						.where(and(eq(likesTable.liker, liker), eq(likesTable.commentId, commentId)));
+				}
+
+				const result = await db.query.comment.findFirst({
+					where: (t, { eq }) => eq(t.id, commentId),
 				});
-			} catch (_e) {
-				await db
-					.delete(likesTable)
-					.where(
-						and(
-							eq(likesTable.liker, locals.session.user.id),
-							input.commentId ? eq(likesTable.commentId, dbID) : eq(likesTable.replyId, dbID)
-						)
-					);
+				if (!result) throw new Error('SOMETHING_WENT_WRONG');
+				return { ...result, __typename: 'Comment' };
 			}
 
-			const query = input.commentId ? db.query.comment : db.query.reply;
-			const result = await query.findFirst({ where: (t, { eq }) => eq(t.id, dbID) });
-			return { ...result, __typename: input.commentId ? 'Comment' : 'Reply' };
+			if (input.replyId) {
+				const replyId = Number(fromGlobalId(input.replyId).id);
+
+				try {
+					await db.insert(likesTable).values({ liker, replyId });
+				} catch (_e) {
+					await db
+						.delete(likesTable)
+						.where(and(eq(likesTable.liker, liker), eq(likesTable.replyId, replyId)));
+				}
+
+				const result = await db.query.reply.findFirst({
+					where: (t, { eq }) => eq(t.id, replyId),
+				});
+				if (!result) throw new Error('SOMETHING_WENT_WRONG');
+				return { ...result, __typename: 'Reply' };
+			}
 		},
 	},
 	Node: {
