@@ -491,17 +491,20 @@ export const resolvers: Resolvers = {
 		author: (parent, _args, { loaders }) => {
 			return throwIfNull(loaders.users.load(parent.authorId));
 		},
+		likedByViewer: (parent, _args, { loaders, locals }) => {
+			if (!locals.session) return null;
+			return loaders.isLikedByUser.load({
+				type: 'Reply',
+				id: parent.id,
+				userId: locals.session.user.id,
+			});
+		},
 	},
 	Likable: {
 		__resolveType(parent) {
 			// @ts-expect-error TODO
 			return parent.__typename;
 		},
-		// likedByViewer: async (parent, _args, { loaders, locals }, info) => {
-		// 	if (!locals.session?.user) return false;
-		// 	console.log(info.parentType.name, { parent });
-		// 	return true;
-		// },
 	},
 };
 
