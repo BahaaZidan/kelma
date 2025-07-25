@@ -228,6 +228,9 @@
 															}}
 														>
 															Unban
+															{#if $UpdateUserWebsiteBan.fetching}
+																<span class="loading loading-spinner loading-sm"></span>
+															{/if}
 														</button>
 													</td>
 												</tr>
