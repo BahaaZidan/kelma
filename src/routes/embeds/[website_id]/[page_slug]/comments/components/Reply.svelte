@@ -143,13 +143,21 @@
 		</div>
 	{:else}
 		<form method="post" use:superform.enhance class="flex grow flex-col gap-3">
-			<Textarea {superform} field="content" />
+			<Textarea {superform} field="content" disabled={$UpdateReply.fetching} />
 			<div class="flex justify-end gap-2">
-				<button type="button" class="btn btn-sm" onclick={() => (editing = false)}>
+				<button
+					type="button"
+					class="btn btn-sm"
+					onclick={() => (editing = false)}
+					disabled={$UpdateReply.fetching}
+				>
 					{m.cancel()}
 				</button>
-				<button type="submit" class="btn btn-primary btn-sm">
+				<button type="submit" class="btn btn-primary btn-sm" disabled={$UpdateReply.fetching}>
 					{m.submit()}
+					{#if $UpdateReply.fetching}
+						<span class="loading loading-spinner loading-sm"></span>
+					{/if}
 				</button>
 			</div>
 		</form>
