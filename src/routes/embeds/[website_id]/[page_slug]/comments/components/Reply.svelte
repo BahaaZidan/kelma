@@ -130,11 +130,7 @@
 				{/if}
 				{#if permissions.edit}
 					<li>
-						<button
-							onclick={() => {
-								editing = true;
-							}}
-						>
+						<button onclick={() => (editing = true)}>
 							<SquarePenIcon />
 							{m.edit()}
 						</button>
