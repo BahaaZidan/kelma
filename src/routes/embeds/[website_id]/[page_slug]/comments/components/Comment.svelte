@@ -242,9 +242,11 @@
 				{#if permissions.delete}
 					<li>
 						<button
-							onclick={() => {
+							onclick={async () => {
 								let confirmed = confirm(m.delete_comment_confirm());
-								if (confirmed) DeleteComment.mutate({ id: $comment.id });
+								if (!confirmed) return;
+								await DeleteComment.mutate({ id: $comment.id });
+								alert('Comment deleted');
 							}}
 						>
 							<Trash2Icon />

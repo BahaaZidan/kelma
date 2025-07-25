@@ -120,6 +120,7 @@
 								let confirmed = confirm('Are you sure you want to delete this reply ?');
 								if (!confirmed) return;
 								await DeleteReply.mutate({ id: $reply.id });
+								alert('Reply deleted');
 							}}
 						>
 							<Trash2Icon />
