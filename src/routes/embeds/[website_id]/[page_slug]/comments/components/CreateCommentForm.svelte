@@ -19,8 +19,6 @@
 	let viewer = getViewerContext();
 	let page_ = $derived(fragment(page, is_page_closed));
 
-	let disabled = $derived(!viewer || $page_.closed);
-
 	const CreateComment = graphql(`
 		mutation CreateComment($input: CreateCommentInput!) {
 			createComment(input: $input) {
@@ -28,6 +26,8 @@
 			}
 		}
 	`);
+
+	let disabled = $derived(!viewer || $page_.closed || $CreateComment.fetching);
 
 	const superform = superForm(defaults(valibot(contentSchema)), {
 		SPA: true,
@@ -52,5 +52,8 @@
 	/>
 	<button class="btn btn-primary" type="submit" {disabled}>
 		{m.submit()}
+		{#if $CreateComment.fetching}
+			<span class="loading loading-spinner loading-sm"></span>
+		{/if}
 	</button>
 </form>
