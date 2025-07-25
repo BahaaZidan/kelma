@@ -14,6 +14,12 @@ type Mutation {
 	deleteReply(id: ID!): Reply
 	updateReply(input: UpdateReplyInput!): Reply
 	updateUserWebsiteBan(input: UpdateUserWebsiteBanInput!): User
+	toggleLike(input: ToggleLikeInput!): Likable
+}
+
+input ToggleLikeInput {
+	commentId: ID
+	replyId: ID
 }
 
 input UpdateUserWebsiteBanInput {
@@ -92,7 +98,7 @@ type CommentEdge implements Edge {
 	node: Comment!
 }
 
-type Comment implements Node {
+type Comment implements Node & Likable {
 	id: ID!
 	content: String!
 	createdAt: DateTime!
@@ -102,13 +108,15 @@ type Comment implements Node {
 	author: User!
 	repliesCount: Int!
 	replies(first: Int, after: String): RepliesConnection!
+	likedByViewer: Boolean
 }
-type Reply implements Node {
+type Reply implements Node & Likable {
 	id: ID!
 	content: String!
 	createdAt: DateTime!
 	updatedAt: DateTime!
 	author: User!
+	likedByViewer: Boolean
 }
 
 type RepliesConnection implements Connection {
@@ -136,6 +144,10 @@ type PageInfo {
 	endCursor: String
 	hasNextPage: Boolean
 	hasPreviousPage: Boolean
+}
+
+interface Likable {
+	likedByViewer: Boolean
 }
 
 interface Connection {

@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import {
 	accountTable,
 	commentTable,
+	likesTable,
 	membershipTable,
 	pageTable,
 	replyTable,
@@ -24,6 +25,7 @@ const schema = {
 	comment: commentTable,
 	reply: replyTable,
 	membership: membershipTable,
+	like: likesTable,
 };
 
 export type DB = ReturnType<typeof drizzle<typeof schema>>;

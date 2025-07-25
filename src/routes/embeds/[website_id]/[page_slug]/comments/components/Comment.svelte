@@ -5,9 +5,8 @@
 	import CornerDownLeftIcon from '@lucide/svelte/icons/corner-down-left';
 	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+	import HeartIcon from '@lucide/svelte/icons/heart';
 	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
-	import ThumbsDownIcon from '@lucide/svelte/icons/thumbs-down';
-	import ThumbsUpIcon from '@lucide/svelte/icons/thumbs-up';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
 	import { defaults, superForm } from 'sveltekit-superforms';
@@ -56,6 +55,7 @@
 						image
 					}
 					repliesCount
+					likedByViewer
 				}
 			`)
 		)
@@ -138,6 +138,18 @@
 			}
 		}
 	`);
+
+	const ToggleCommentLike = graphql(`
+		mutation ToggleCommentLike($commentId: ID!) {
+			toggleLike(input: { commentId: $commentId }) {
+				... on Comment {
+					id
+					likedByViewer
+					__typename
+				}
+			}
+		}
+	`);
 </script>
 
 <div class="flex items-start gap-4">
@@ -161,8 +173,19 @@
 			<span class="whitespace-pre-wrap">{$comment.content}</span>
 			{#if viewer && !$page_.closed}
 				<div class="flex gap-2">
-					<button class="btn btn-xs btn-ghost"><ThumbsUpIcon size={16} /></button>
-					<button class="btn btn-xs btn-ghost"><ThumbsDownIcon size={16} /></button>
+					<button
+						class="btn btn-xs btn-ghost"
+						onclick={async () => {
+							await ToggleCommentLike.mutate({ commentId: $comment.id });
+						}}
+					>
+						<HeartIcon
+							size={16}
+							class={{
+								'fill-red-500': $comment.likedByViewer,
+							}}
+						/>
+					</button>
 					<button
 						class="btn btn-xs btn-ghost"
 						onclick={() => (create_reply_form_shown = !create_reply_form_shown)}

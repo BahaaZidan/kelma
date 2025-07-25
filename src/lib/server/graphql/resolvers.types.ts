@@ -23,12 +23,13 @@ export type Scalars = {
   USCurrency: { input: any; output: any; }
 };
 
-export type Comment = Node & {
+export type Comment = Likable & Node & {
   __typename?: 'Comment';
   author: User;
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  likedByViewer?: Maybe<Scalars['Boolean']['output']>;
   page: Page;
   replies: RepliesConnection;
   repliesCount: Scalars['Int']['output'];
@@ -79,6 +80,10 @@ export type Edge = {
   node: Node;
 };
 
+export type Likable = {
+  likedByViewer?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createComment: Comment;
@@ -86,6 +91,7 @@ export type Mutation = {
   createWebsite: Website;
   deleteComment?: Maybe<Comment>;
   deleteReply?: Maybe<Reply>;
+  toggleLike?: Maybe<Likable>;
   togglePageClosed?: Maybe<Page>;
   updateCommentContent?: Maybe<Comment>;
   updateReply?: Maybe<Reply>;
@@ -116,6 +122,11 @@ export type MutationDeleteCommentArgs = {
 
 export type MutationDeleteReplyArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationToggleLikeArgs = {
+  input: ToggleLikeInput;
 };
 
 
@@ -199,12 +210,13 @@ export type RepliesConnection = Connection & {
   pageInfo: PageInfo;
 };
 
-export type Reply = Node & {
+export type Reply = Likable & Node & {
   __typename?: 'Reply';
   author: User;
   content: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  likedByViewer?: Maybe<Scalars['Boolean']['output']>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -212,6 +224,11 @@ export type ReplyEdge = Edge & {
   __typename?: 'ReplyEdge';
   cursor?: Maybe<Scalars['String']['output']>;
   node: Reply;
+};
+
+export type ToggleLikeInput = {
+  commentId?: InputMaybe<Scalars['ID']['input']>;
+  replyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UpdateCommentContentInput = {
@@ -334,6 +351,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
   Connection: ( Omit<CommentsConnection, 'edges'> & { edges: Array<_RefType['CommentEdge']> } ) | ( Omit<RepliesConnection, 'edges'> & { edges: Array<_RefType['ReplyEdge']> } );
   Edge: ( Omit<CommentEdge, 'node'> & { node: _RefType['Comment'] } ) | ( Omit<ReplyEdge, 'node'> & { node: _RefType['Reply'] } );
+  Likable: ( CommentSelectModel ) | ( ReplySelectModel );
   Node: ( CommentSelectModel ) | ( PageSelectModel ) | ( ReplySelectModel ) | ( UserSelectModel ) | ( WebsiteSelectModel );
 };
 
@@ -351,6 +369,7 @@ export type ResolversTypes = {
   Edge: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Edge']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  Likable: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Likable']>;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Node']>;
   Page: ResolverTypeWrapper<PageSelectModel>;
@@ -362,6 +381,7 @@ export type ResolversTypes = {
   Reply: ResolverTypeWrapper<ReplySelectModel>;
   ReplyEdge: ResolverTypeWrapper<Omit<ReplyEdge, 'node'> & { node: ResolversTypes['Reply'] }>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  ToggleLikeInput: ToggleLikeInput;
   URL: ResolverTypeWrapper<Scalars['URL']['output']>;
   USCurrency: ResolverTypeWrapper<Scalars['USCurrency']['output']>;
   UpdateCommentContentInput: UpdateCommentContentInput;
@@ -386,6 +406,7 @@ export type ResolversParentTypes = {
   Edge: ResolversInterfaceTypes<ResolversParentTypes>['Edge'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  Likable: ResolversInterfaceTypes<ResolversParentTypes>['Likable'];
   Mutation: {};
   Node: ResolversInterfaceTypes<ResolversParentTypes>['Node'];
   Page: PageSelectModel;
@@ -397,6 +418,7 @@ export type ResolversParentTypes = {
   Reply: ReplySelectModel;
   ReplyEdge: Omit<ReplyEdge, 'node'> & { node: ResolversParentTypes['Reply'] };
   String: Scalars['String']['output'];
+  ToggleLikeInput: ToggleLikeInput;
   URL: Scalars['URL']['output'];
   USCurrency: Scalars['USCurrency']['output'];
   UpdateCommentContentInput: UpdateCommentContentInput;
@@ -412,6 +434,7 @@ export type CommentResolvers<ContextType = Context, ParentType extends Resolvers
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  likedByViewer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Page'], ParentType, ContextType>;
   replies?: Resolver<ResolversTypes['RepliesConnection'], ParentType, ContextType, Partial<CommentRepliesArgs>>;
   repliesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -448,12 +471,18 @@ export type EdgeResolvers<ContextType = Context, ParentType extends ResolversPar
   node?: Resolver<ResolversTypes['Node'], ParentType, ContextType>;
 };
 
+export type LikableResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Likable'] = ResolversParentTypes['Likable']> = {
+  __resolveType: TypeResolveFn<'Comment' | 'Reply', ParentType, ContextType>;
+  likedByViewer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationCreateCommentArgs, 'input'>>;
   createReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationCreateReplyArgs, 'input'>>;
   createWebsite?: Resolver<ResolversTypes['Website'], ParentType, ContextType, RequireFields<MutationCreateWebsiteArgs, 'input'>>;
   deleteComment?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationDeleteCommentArgs, 'id'>>;
   deleteReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationDeleteReplyArgs, 'id'>>;
+  toggleLike?: Resolver<Maybe<ResolversTypes['Likable']>, ParentType, ContextType, RequireFields<MutationToggleLikeArgs, 'input'>>;
   togglePageClosed?: Resolver<Maybe<ResolversTypes['Page']>, ParentType, ContextType, RequireFields<MutationTogglePageClosedArgs, 'id'>>;
   updateCommentContent?: Resolver<Maybe<ResolversTypes['Comment']>, ParentType, ContextType, RequireFields<MutationUpdateCommentContentArgs, 'input'>>;
   updateReply?: Resolver<Maybe<ResolversTypes['Reply']>, ParentType, ContextType, RequireFields<MutationUpdateReplyArgs, 'input'>>;
@@ -501,6 +530,7 @@ export type ReplyResolvers<ContextType = Context, ParentType extends ResolversPa
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  likedByViewer?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -547,6 +577,7 @@ export type Resolvers<ContextType = Context> = {
   Connection?: ConnectionResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Edge?: EdgeResolvers<ContextType>;
+  Likable?: LikableResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Node?: NodeResolvers<ContextType>;
   Page?: PageResolvers<ContextType>;

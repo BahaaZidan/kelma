@@ -7,6 +7,7 @@ import { PAGEVIEW_COST_IN_CENTS, PAGEVIEW_COST_SCALER } from '$lib/constants';
 import type { DB } from '$lib/server/db';
 import {
 	commentTable,
+	likesTable,
 	membershipTable,
 	pageTable,
 	replyTable,
@@ -301,11 +302,38 @@ export const resolvers: Resolvers = {
 
 			return user;
 		},
+		toggleLike: async (_, { input }, { locals, db }) => {
+			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
+			if (!!input.commentId === !!input.replyId) throw new GraphQLError('BAD_REQUEST');
+
+			const globalId = input.commentId || input.replyId;
+			const dbID = Number(fromGlobalId(globalId!).id);
+
+			try {
+				await db.insert(likesTable).values({
+					liker: locals.session.user.id,
+					...(input.commentId ? { commentId: dbID } : { replyId: dbID }),
+				});
+			} catch (_e) {
+				await db
+					.delete(likesTable)
+					.where(
+						and(
+							eq(likesTable.liker, locals.session.user.id),
+							input.commentId ? eq(likesTable.commentId, dbID) : eq(likesTable.replyId, dbID)
+						)
+					);
+			}
+
+			const query = input.commentId ? db.query.comment : db.query.reply;
+			const result = await query.findFirst({ where: (t, { eq }) => eq(t.id, dbID) });
+			return { ...result, __typename: input.commentId ? 'Comment' : 'Reply' };
+		},
 	},
 	Node: {
-		__resolveType(obj) {
+		__resolveType(parent) {
 			// @ts-expect-error TODO
-			return obj.__typename;
+			return parent.__typename;
 		},
 	},
 	User: {
@@ -434,12 +462,31 @@ export const resolvers: Resolvers = {
 				},
 			};
 		},
+		likedByViewer: (parent, _args, { loaders, locals }) => {
+			if (!locals.session) return null;
+			return loaders.isLikedByUser.load({
+				type: 'Comment',
+				id: parent.id,
+				userId: locals.session.user.id,
+			});
+		},
 	},
 	Reply: {
 		id: (parent) => toGlobalId('Reply', parent.id),
 		author: (parent, _args, { loaders }) => {
 			return throwIfNull(loaders.users.load(parent.authorId));
 		},
+	},
+	Likable: {
+		__resolveType(parent) {
+			// @ts-expect-error TODO
+			return parent.__typename;
+		},
+		// likedByViewer: async (parent, _args, { loaders, locals }, info) => {
+		// 	if (!locals.session?.user) return false;
+		// 	console.log(info.parentType.name, { parent });
+		// 	return true;
+		// },
 	},
 };
 

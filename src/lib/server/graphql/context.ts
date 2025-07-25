@@ -1,10 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import DataLoader from 'dataloader';
-import { and, count, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray, or } from 'drizzle-orm';
 import type { YogaInitialContext } from 'graphql-yoga';
 
 import type { DB } from '$lib/server/db';
 import {
+	likesTable,
 	membershipTable,
 	pageTable,
 	replyTable,
@@ -85,8 +86,63 @@ export function createLoaders(db: DB) {
 
 			return websiteIds.map((id) => grouped.get(id) ?? []);
 		}),
+		likesCount: new DataLoader<LikesCountKey, number>(async (keys) => {
+			const commentIds = keys.filter((k) => k.type === 'Comment').map((k) => k.id);
+			const replyIds = keys.filter((k) => k.type === 'Reply').map((k) => k.id);
+
+			const rows = await db
+				.select()
+				.from(likesTable)
+				.where(
+					or(
+						inArray(likesTable.commentId, commentIds as number[]),
+						inArray(likesTable.replyId, replyIds as number[])
+					)
+				);
+
+			const map = new Map<string, number>();
+
+			for (const row of rows) {
+				if (row.commentId)
+					map.set(`Comment:${row.commentId}`, (map.get(`Comment:${row.commentId}`) ?? 0) + 1);
+				if (row.replyId)
+					map.set(`Reply:${row.replyId}`, (map.get(`Reply:${row.replyId}`) ?? 0) + 1);
+			}
+
+			return keys.map(({ type, id }) => map.get(`${type}:${id}`) ?? 0);
+		}),
+		isLikedByUser: new DataLoader<LikedByUserKey, boolean>(async (keys) => {
+			const commentKeys = keys.filter((k) => k.type === 'Comment');
+			const replyKeys = keys.filter((k) => k.type === 'Reply');
+
+			const rows = await db
+				.select()
+				.from(likesTable)
+				.where(
+					or(
+						...[
+							...commentKeys.map((k) =>
+								and(eq(likesTable.liker, k.userId), eq(likesTable.commentId, k.id))
+							),
+							...replyKeys.map((k) =>
+								and(eq(likesTable.liker, k.userId), eq(likesTable.replyId, k.id))
+							),
+						]
+					)
+				);
+
+			const set = new Set<string>();
+			for (const r of rows) {
+				if (r.commentId) set.add(`${r.liker}:Comment:${r.commentId}`);
+				if (r.replyId) set.add(`${r.liker}:Reply:${r.replyId}`);
+			}
+
+			return keys.map(({ userId, type, id }) => set.has(`${userId}:${type}:${id}`));
+		}),
 	};
 }
+type LikesCountKey = { type: 'Comment' | 'Reply'; id: number };
+type LikedByUserKey = { userId: string; type: 'Comment' | 'Reply'; id: number };
 
 export type Context = YogaInitialContext &
 	RequestEvent & { loaders: ReturnType<typeof createLoaders>; db: DB };

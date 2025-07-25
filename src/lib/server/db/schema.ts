@@ -156,3 +156,21 @@ export const membershipTable = sqliteTable(
 		index('memberships_website_id').on(self.websiteId),
 	]
 );
+
+export const likesTable = sqliteTable(
+	'like',
+	{
+		id: integer('id').primaryKey(),
+		liker: text('liker')
+			.notNull()
+			.references(() => userTable.id, { onDelete: 'cascade' }),
+		commentId: integer('comment_id').references(() => commentTable.id, { onDelete: 'cascade' }),
+		replyId: integer('reply_id').references(() => replyTable.id, { onDelete: 'cascade' }),
+	},
+	(self) => [
+		uniqueIndex('liker_comment_id').on(self.liker, self.commentId),
+		uniqueIndex('liker_reply_id').on(self.liker, self.replyId),
+		index('on_comment_id').on(self.commentId),
+		index('on_reply_id').on(self.replyId),
+	]
+);
