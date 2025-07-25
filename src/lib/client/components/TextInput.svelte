@@ -66,7 +66,7 @@
 					{superform}
 					field={remover.field}
 					index={remover.index}
-					class="join-item rounded-r-full"
+					class="join-item"
 					{disabled}
 				/>
 			{/if}
