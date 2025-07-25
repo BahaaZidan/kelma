@@ -11,9 +11,10 @@
 		field: F;
 		label: string;
 		addInputText?: string;
+		disabled?: boolean;
 	}
 
-	let { superform, field, label, addInputText }: Props = $props();
+	let { superform, field, label, addInputText, disabled }: Props = $props();
 
 	const { values, errors } = arrayProxy(superform, field);
 </script>
@@ -25,13 +26,14 @@
 	<div class="flex flex-col gap-2">
 		{#each $values as _, index (index)}
 			{/* @ts-expect-error TODO: fix type errors */ null}
-			<TextInput {superform} field="{field}[{index}]" remover={{ field, index }} />
+			<TextInput {superform} field="{field}[{index}]" remover={{ field, index }} {disabled} />
 		{/each}
 		<AddInputButton
 			{superform}
 			{field}
 			initialValue={() => '' as never}
 			text={addInputText ?? 'Add'}
+			{disabled}
 		/>
 		<InputFieldError errors={$errors} />
 	</div>

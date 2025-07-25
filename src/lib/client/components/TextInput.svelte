@@ -11,16 +11,7 @@
 	import InputFieldError from './InputFieldError.svelte';
 	import RemoveInputButton from './RemoveInputButton.svelte';
 
-	let {
-		superform,
-		field,
-		label,
-		placeholder,
-		hint,
-		type = 'text',
-		remover,
-		join,
-	}: {
+	interface Props {
 		superform: SuperForm<T>;
 		field: FormPathLeaves<T>;
 		label?: string;
@@ -32,7 +23,20 @@
 			field: FormPathArrays<T>;
 			index: number;
 		};
-	} = $props();
+		disabled?: boolean;
+	}
+
+	let {
+		superform,
+		field,
+		label,
+		placeholder,
+		hint,
+		type = 'text',
+		remover,
+		join,
+		disabled,
+	}: Props = $props();
 
 	const { value, errors, constraints } = formFieldProxy(superform, field);
 
@@ -52,6 +56,7 @@
 				name={field}
 				bind:value={$value}
 				aria-invalid={!!$errors}
+				{disabled}
 				{...$constraints}
 			/>
 			{#if join}
@@ -62,6 +67,7 @@
 					field={remover.field}
 					index={remover.index}
 					class="join-item rounded-r-full"
+					{disabled}
 				/>
 			{/if}
 		</div>

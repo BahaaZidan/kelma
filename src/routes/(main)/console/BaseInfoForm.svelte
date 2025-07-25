@@ -66,9 +66,17 @@
 </script>
 
 <form method="post" use:enhance class="flex flex-col gap-3">
-	<TextInput {superform} field="name" label="Name" />
-	<TextArrayInput {superform} field="domains" label="Trusted Domains" />
+	<TextInput {superform} field="name" label="Name" disabled={$UpdateWebsiteBasicInfo.fetching} />
+	<TextArrayInput
+		{superform}
+		field="domains"
+		label="Trusted Domains"
+		disabled={$UpdateWebsiteBasicInfo.fetching}
+	/>
 	<button class="btn btn-neutral" type="submit" disabled={$UpdateWebsiteBasicInfo.fetching}>
 		Submit
+		{#if $UpdateWebsiteBasicInfo.fetching}
+			<span class="loading loading-spinner loading-sm"></span>
+		{/if}
 	</button>
 </form>

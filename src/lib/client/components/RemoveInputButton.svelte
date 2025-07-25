@@ -8,9 +8,10 @@
 		field: F;
 		index: number;
 		class?: ClassValue;
+		disabled?: boolean;
 	}
 
-	let { superform, field, index, class: class_ }: Props = $props();
+	let { superform, field, index, class: class_, disabled }: Props = $props();
 
 	const { values } = arrayProxy(superform, field);
 
@@ -19,6 +20,6 @@
 	}
 </script>
 
-<button class={['btn', class_]} type="button" onclick={removeItem}>
+<button class={['btn', class_]} type="button" onclick={removeItem} {disabled}>
 	<XIcon />
 </button>

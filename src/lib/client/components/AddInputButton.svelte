@@ -11,9 +11,10 @@
 		field: F;
 		text: string;
 		initialValue: () => FormPathType<T, F> extends (infer U)[] ? U : never;
+		disabled?: boolean;
 	}
 
-	let { superform, field, text, initialValue }: Props = $props();
+	let { superform, field, text, initialValue, disabled }: Props = $props();
 
 	const { values } = arrayProxy(superform, field);
 </script>
@@ -24,6 +25,7 @@
 	onclick={() => {
 		$values = $values.concat(initialValue());
 	}}
+	{disabled}
 >
 	{text}
 </button>
