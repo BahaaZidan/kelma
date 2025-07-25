@@ -7,6 +7,7 @@
 	import { graphql } from '$houdini';
 
 	import { signOut } from '$lib/client/auth';
+	import Spinner from '$lib/client/components/Spinner.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
@@ -63,7 +64,7 @@
 							<summary class="btn btn-sm btn-warning m-1"><SettingsIcon size={18} /></summary>
 							<ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
 								<div class="mb-2 pl-2 font-bold">{m.page_settings()}</div>
-								<li>
+								<li class={{ 'menu-disabled': $TogglePageClosed.fetching }}>
 									<label class="label">
 										<input
 											type="checkbox"
@@ -75,6 +76,7 @@
 											}}
 										/>
 										{m.closed()}
+										<Spinner enabled={$TogglePageClosed.fetching} />
 									</label>
 								</li>
 							</ul>
