@@ -114,6 +114,7 @@
 
 	let replies_list_shown = $state(false);
 	let create_reply_form_shown = $state(false);
+	let fetchingMoreReplies = $state(false);
 
 	const superform = superForm(defaults({ content: $comment.content }, valibot(contentSchema)), {
 		SPA: true,
@@ -204,30 +205,28 @@
 						{#each replies as reply (reply.id)}
 							<Reply data={reply} {website} />
 						{/each}
-						<div
-							class={[
-								{
-									hidden: !$repliesQuery.fetching && !$repliesQuery.pageInfo.hasNextPage,
-								},
-							]}
-						>
-							<button
-								class="btn btn-sm btn-link"
-								onclick={() => repliesQuery.loadNextPage()}
-								disabled={!$repliesQuery.pageInfo.hasNextPage || $repliesQuery.fetching}
-							>
-								{#if $repliesQuery.fetching}
-									{m.loading_more()}
-								{:else if $repliesQuery.pageInfo.hasNextPage}
-									{#if getDir() === 'ltr'}
+						{#if $repliesQuery.pageInfo.hasNextPage}
+							<div>
+								<button
+									class="btn btn-sm btn-link"
+									onclick={async () => {
+										fetchingMoreReplies = true;
+										await repliesQuery.loadNextPage();
+										fetchingMoreReplies = false;
+									}}
+									disabled={fetchingMoreReplies}
+								>
+									{#if fetchingMoreReplies}
+										<span class="loading loading-spinner loading-sm"></span>
+									{:else if getDir() === 'ltr'}
 										<CornerDownRightIcon />
 									{:else}
 										<CornerDownLeftIcon />
 									{/if}
 									{m.moreReplies()}
-								{/if}
-							</button>
-						</div>
+								</button>
+							</div>
+						{/if}
 					</div>
 				</details>
 			{/if}
