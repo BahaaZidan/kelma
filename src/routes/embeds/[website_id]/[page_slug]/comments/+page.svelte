@@ -7,7 +7,6 @@
 	import { graphql } from '$houdini';
 
 	import { signOut } from '$lib/client/auth';
-	import Spinner from '$lib/client/components/Spinner.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
@@ -76,7 +75,9 @@
 											}}
 										/>
 										{m.closed()}
-										<Spinner enabled={$TogglePageClosed.fetching} />
+										{#if $TogglePageClosed.fetching}
+											<span class="loading loading-spinner loading-sm"></span>
+										{/if}
 									</label>
 								</li>
 							</ul>
