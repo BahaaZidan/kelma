@@ -253,13 +253,18 @@
 		<h3 class="text-lg font-bold">Create Website</h3>
 
 		<form method="post" use:enhance class="flex flex-col gap-1" id="create_website_form">
-			<TextInput {superform} field="name" label="Name" />
-			<TextArrayInput {superform} field="domains" label="Domains" />
+			<TextInput {superform} field="name" label="Name" disabled={$CreateWebsite.fetching} />
+			<TextArrayInput
+				{superform}
+				field="domains"
+				label="Domains"
+				disabled={$CreateWebsite.fetching}
+			/>
 		</form>
 
 		<div class="modal-action">
 			<form method="dialog">
-				<button class="btn">Close</button>
+				<button class="btn" disabled={$CreateWebsite.fetching}>Close</button>
 			</form>
 			<button
 				class="btn btn-primary"
@@ -268,6 +273,9 @@
 				disabled={$CreateWebsite.fetching}
 			>
 				Submit
+				{#if $CreateWebsite.fetching}
+					<span class="loading loading-spinner loading-sm"></span>
+				{/if}
 			</button>
 		</div>
 	</div>
