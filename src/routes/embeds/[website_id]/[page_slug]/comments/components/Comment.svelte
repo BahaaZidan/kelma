@@ -158,30 +158,6 @@
 			repliesCount
 		}
 	`);
-	const superform_create_reply = superForm(defaults(valibot(contentSchema)), {
-		SPA: true,
-		id: `create_reply_superform_${$comment.id}`,
-		validators: valibot(contentSchema),
-		async onUpdate({ form }) {
-			// if (form.valid) {
-			// 	const mutationResult = await CreateReplyMutation.mutate({
-			// 		commentId: $comment.id,
-			// 		input: { commentId: $comment.id, content: form.data.content },
-			// 	});
-			// 	// TODO: better error handling
-			// 	if (mutationResult.errors) return;
-			// 	const comment_ = cache.get('Comment', { id: $comment.id });
-			// 	comment_.write({
-			// 		fragment: comment_replies_count_fragment,
-			// 		data: {
-			// 			repliesCount: $comment.repliesCount + 1,
-			// 		},
-			// 	});
-			// 	create_reply_form_shown = false;
-			// 	replies_list_shown = true;
-			// }
-		},
-	});
 </script>
 
 <div class="flex items-start gap-4">
@@ -238,7 +214,21 @@
 				</div>
 			{/if}
 			{#if create_reply_form_shown}
-				<CreateCommentForm parentId={$comment.id} {page} />
+				<CreateCommentForm
+					parentId={$comment.id}
+					{page}
+					onSuccess={() => {
+						const comment_ = cache.get('Comment', { id: $comment.id });
+						comment_.write({
+							fragment: comment_replies_count_fragment,
+							data: {
+								repliesCount: $comment.repliesCount + 1,
+							},
+						});
+						create_reply_form_shown = false;
+						replies_list_shown = true;
+					}}
+				/>
 			{/if}
 			{#if $comment.repliesCount}
 				<details

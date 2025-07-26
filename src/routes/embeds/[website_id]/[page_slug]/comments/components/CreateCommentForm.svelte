@@ -15,11 +15,20 @@
 	interface Props {
 		page: IsPageClosed;
 		parentId?: string;
+		onSuccess?: () => unknown;
 	}
-	let { page: page_, parentId }: Props = $props();
+	let { page: page_, parentId, onSuccess }: Props = $props();
 	let page = $derived(fragment(page_, is_page_closed));
 
 	let viewer = getViewerContext();
+
+	const CreateReply = graphql(`
+		mutation CreateReply($input: CreateCommentInput!, $parentId: ID!) {
+			createComment(input: $input) {
+				...Comment_Replies_insert @prepend @parentID(value: $parentId)
+			}
+		}
+	`);
 
 	const CreateComment = graphql(`
 		mutation CreateComment($input: CreateCommentInput!) {
@@ -36,11 +45,19 @@
 		id: `create_comment_superform_${parentId || ''}`,
 		validators: valibot(contentSchema),
 		async onUpdate({ form }) {
-			if (form.valid) {
+			if (!form.valid) return;
+			if (!parentId) {
 				await CreateComment.mutate({
+					input: { pageId: $page.id, content: form.data.content },
+				});
+			} else {
+				await CreateReply.mutate({
+					parentId,
 					input: { pageId: $page.id, content: form.data.content, parentId },
 				});
 			}
+
+			onSuccess?.();
 		},
 	});
 	let { isTainted, tainted } = superform;
