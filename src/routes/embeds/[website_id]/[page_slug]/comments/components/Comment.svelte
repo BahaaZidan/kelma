@@ -14,6 +14,7 @@
 	import { valibot } from 'sveltekit-superforms/adapters';
 
 	import {
+		cache,
 		fragment,
 		graphql,
 		type CommentComponent,
@@ -30,7 +31,6 @@
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { contentSchema } from '$lib/validation-schemas';
 
-	import CreateReplyForm from './CreateReplyForm.svelte';
 	import { is_page_closed, website_owner } from './fragments';
 	import Reply from './Reply.svelte';
 
@@ -117,20 +117,23 @@
 	let create_reply_form_shown = $state(false);
 	let fetchingMoreReplies = $state(false);
 
-	const superform = superForm(defaults({ content: $comment.content }, valibot(contentSchema)), {
-		SPA: true,
-		validators: valibot(contentSchema),
-		id: `edit_comment_superform_${$comment.id}`,
-		async onUpdate({ form }) {
-			if (form.valid) {
-				await UpdateCommentContent.mutate({
-					input: { commentId: $comment.id, content: form.data.content },
-				});
-				editing = false;
-			}
-		},
-		resetForm: false,
-	});
+	const superform_update_comment = superForm(
+		defaults({ content: $comment.content }, valibot(contentSchema)),
+		{
+			SPA: true,
+			validators: valibot(contentSchema),
+			id: `edit_comment_superform_${$comment.id}`,
+			async onUpdate({ form }) {
+				if (form.valid) {
+					await UpdateCommentContent.mutate({
+						input: { commentId: $comment.id, content: form.data.content },
+					});
+					editing = false;
+				}
+			},
+			resetForm: false,
+		}
+	);
 
 	const UpdateUserWebsiteBan = graphql(`
 		mutation UpdateUserWebsiteBan($input: UpdateUserWebsiteBanInput!) {
@@ -151,6 +154,44 @@
 			}
 		}
 	`);
+
+	const CreateReplyMutation = graphql(`
+		mutation CreateReply($input: CreateReplyInput!, $commentId: ID!) {
+			createReply(input: $input) {
+				...Comment_Replies_insert @prepend @parentID(value: $commentId)
+			}
+		}
+	`);
+
+	let comment_replies_count_fragment = graphql(`
+		fragment CommentRepliesCount on Comment {
+			repliesCount
+		}
+	`);
+	const superform_create_reply = superForm(defaults(valibot(contentSchema)), {
+		SPA: true,
+		id: `create_reply_superform_${$comment.id}`,
+		validators: valibot(contentSchema),
+		async onUpdate({ form }) {
+			if (form.valid) {
+				const mutationResult = await CreateReplyMutation.mutate({
+					commentId: $comment.id,
+					input: { commentId: $comment.id, content: form.data.content },
+				});
+				// TODO: better error handling
+				if (mutationResult.errors) return;
+				const comment_ = cache.get('Comment', { id: $comment.id });
+				comment_.write({
+					fragment: comment_replies_count_fragment,
+					data: {
+						repliesCount: $comment.repliesCount + 1,
+					},
+				});
+				create_reply_form_shown = false;
+				replies_list_shown = true;
+			}
+		},
+	});
 </script>
 
 <div class="flex items-start gap-4">
@@ -182,8 +223,8 @@
 								'text-accent': $comment.likedByViewer,
 							},
 						]}
-						onclick={async () => {
-							await ToggleCommentLike.mutate({ commentId: $comment.id });
+						onclick={() => {
+							ToggleCommentLike.mutate({ commentId: $comment.id });
 						}}
 						disabled={$ToggleCommentLike.fetching}
 					>
@@ -207,15 +248,33 @@
 				</div>
 			{/if}
 			{#if create_reply_form_shown}
-				<CreateReplyForm
-					commentId={$comment.id}
-					commentRepliesCount={$comment.repliesCount}
-					onCancel={() => (create_reply_form_shown = false)}
-					onSuccess={() => {
-						create_reply_form_shown = false;
-						replies_list_shown = true;
-					}}
-				/>
+				<form method="post" use:superform_create_reply.enhance class="flex flex-col gap-2">
+					<Textarea
+						superform={superform_create_reply}
+						field="content"
+						disabled={$CreateReplyMutation.fetching}
+					/>
+					<div class="flex justify-end gap-2">
+						<button
+							type="button"
+							class="btn btn-xs"
+							onclick={() => (create_reply_form_shown = false)}
+							disabled={$CreateReplyMutation.fetching}
+						>
+							{m.cancel()}
+						</button>
+						<button
+							type="submit"
+							class="btn btn-xs btn-primary"
+							disabled={$CreateReplyMutation.fetching}
+						>
+							{m.submit()}
+							{#if $CreateReplyMutation.fetching}
+								<span class="loading loading-spinner loading-sm"></span>
+							{/if}
+						</button>
+					</div>
+				</form>
 			{/if}
 			{#if $comment.repliesCount}
 				<details
@@ -316,8 +375,12 @@
 			</ul>
 		</div>
 	{:else}
-		<form method="post" use:superform.enhance class="flex grow flex-col gap-3">
-			<Textarea {superform} field="content" disabled={$UpdateCommentContent.fetching} />
+		<form method="post" use:superform_update_comment.enhance class="flex grow flex-col gap-3">
+			<Textarea
+				superform={superform_update_comment}
+				field="content"
+				disabled={$UpdateCommentContent.fetching}
+			/>
 			<div class="flex justify-end gap-2">
 				<button
 					type="button"

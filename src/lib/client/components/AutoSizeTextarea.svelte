@@ -13,6 +13,7 @@
 	new TextareaAutosize({
 		element: () => element,
 		input: () => value,
+		styleProp: 'minHeight',
 	});
 </script>
 
