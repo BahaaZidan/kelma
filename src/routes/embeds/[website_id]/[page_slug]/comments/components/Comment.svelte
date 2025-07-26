@@ -149,7 +149,6 @@
 				... on Comment {
 					id
 					likedByViewer
-					__typename
 				}
 			}
 		}
@@ -297,7 +296,7 @@
 					</summary>
 					<div class="flex flex-col gap-2">
 						{#each replies as reply (reply.id)}
-							<Reply data={reply} {website} />
+							<Reply data={reply} {website} {page} />
 						{/each}
 						{#if $repliesQuery.pageInfo.hasNextPage}
 							<div>
@@ -384,13 +383,17 @@
 			<div class="flex justify-end gap-2">
 				<button
 					type="button"
-					class="btn"
+					class="btn btn-sm"
 					onclick={() => (editing = false)}
 					disabled={$UpdateCommentContent.fetching}
 				>
 					{m.cancel()}
 				</button>
-				<button type="submit" class="btn btn-primary" disabled={$UpdateCommentContent.fetching}>
+				<button
+					type="submit"
+					class="btn btn-primary btn-sm"
+					disabled={$UpdateCommentContent.fetching}
+				>
 					{m.submit()}
 					{#if $UpdateCommentContent.fetching}
 						<span class="loading loading-spinner loading-sm"></span>

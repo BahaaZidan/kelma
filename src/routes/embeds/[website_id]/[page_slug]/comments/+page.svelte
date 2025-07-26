@@ -134,7 +134,7 @@
 				{disabled}
 			/>
 			<button
-				class={['btn btn-primary', { invisible: !isTainted($tainted) }]}
+				class={['btn btn-primary btn-sm', { invisible: !isTainted($tainted) }]}
 				type="submit"
 				{disabled}
 			>
