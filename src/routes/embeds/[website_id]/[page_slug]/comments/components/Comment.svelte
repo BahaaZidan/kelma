@@ -6,6 +6,7 @@
 	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
 	import HeartIcon from '@lucide/svelte/icons/heart';
+	import MessageSquareIcon from '@lucide/svelte/icons/message-square';
 	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
@@ -174,22 +175,33 @@
 			{#if viewer && !$page_.closed}
 				<div class="flex gap-2">
 					<button
-						class="btn btn-xs btn-ghost"
+						class={[
+							'btn btn-xs btn-ghost',
+							{
+								'bg-accent-content': $comment.likedByViewer,
+								'text-accent': $comment.likedByViewer,
+							},
+						]}
 						onclick={async () => {
 							await ToggleCommentLike.mutate({ commentId: $comment.id });
 						}}
+						disabled={$ToggleCommentLike.fetching}
 					>
 						<HeartIcon
 							size={16}
-							class={{
-								'fill-red-500': $comment.likedByViewer,
-							}}
+							class={[
+								{
+									'fill-accent': $comment.likedByViewer,
+								},
+							]}
 						/>
+						{m.like()}
 					</button>
 					<button
 						class="btn btn-xs btn-ghost"
 						onclick={() => (create_reply_form_shown = !create_reply_form_shown)}
 					>
+						<MessageSquareIcon size={16} />
 						{m.reply()}
 					</button>
 				</div>
