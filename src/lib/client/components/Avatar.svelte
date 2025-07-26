@@ -3,7 +3,7 @@
 
 	type Props = {
 		class?: ClassValue;
-		fallback: string;
+		fallback?: string;
 	} & Pick<HTMLImgAttributes, 'src' | 'alt'>;
 
 	let { src, alt, class: class_, fallback }: Props = $props();
@@ -20,7 +20,7 @@
 
 {#if !error}
 	<img {src} {alt} onerror={() => (error = true)} class={['rounded-full', class_]} />
-{:else}
+{:else if fallback}
 	<div
 		class={[
 			'flex items-center justify-center rounded-full text-xl',

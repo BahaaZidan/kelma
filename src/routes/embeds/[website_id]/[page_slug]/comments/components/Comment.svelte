@@ -31,8 +31,8 @@
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { contentSchema } from '$lib/validation-schemas';
 
+	import Comment from './Comment.svelte';
 	import { is_page_closed, website_owner } from './fragments';
-	import Reply from './Reply.svelte';
 
 	type Props = {
 		data: CommentComponent;
@@ -98,7 +98,7 @@
 					replies(first: 10) @paginate(name: "Comment_Replies") {
 						edges {
 							node {
-								...ReplyComponent
+								...CommentComponent
 								id
 							}
 						}
@@ -144,20 +144,10 @@
 	`);
 
 	const ToggleCommentLike = graphql(`
-		mutation ToggleCommentLike($commentId: ID!) {
-			toggleLike(input: { commentId: $commentId }) {
-				... on Comment {
-					id
-					likedByViewer
-				}
-			}
-		}
-	`);
-
-	const CreateReplyMutation = graphql(`
-		mutation CreateReply($input: CreateReplyInput!, $commentId: ID!) {
-			createReply(input: $input) {
-				...Comment_Replies_insert @prepend @parentID(value: $commentId)
+		mutation ToggleCommentLike($id: ID!) {
+			toggleLike(id: $id) {
+				id
+				likedByViewer
 			}
 		}
 	`);
@@ -172,23 +162,23 @@
 		id: `create_reply_superform_${$comment.id}`,
 		validators: valibot(contentSchema),
 		async onUpdate({ form }) {
-			if (form.valid) {
-				const mutationResult = await CreateReplyMutation.mutate({
-					commentId: $comment.id,
-					input: { commentId: $comment.id, content: form.data.content },
-				});
-				// TODO: better error handling
-				if (mutationResult.errors) return;
-				const comment_ = cache.get('Comment', { id: $comment.id });
-				comment_.write({
-					fragment: comment_replies_count_fragment,
-					data: {
-						repliesCount: $comment.repliesCount + 1,
-					},
-				});
-				create_reply_form_shown = false;
-				replies_list_shown = true;
-			}
+			// if (form.valid) {
+			// 	const mutationResult = await CreateReplyMutation.mutate({
+			// 		commentId: $comment.id,
+			// 		input: { commentId: $comment.id, content: form.data.content },
+			// 	});
+			// 	// TODO: better error handling
+			// 	if (mutationResult.errors) return;
+			// 	const comment_ = cache.get('Comment', { id: $comment.id });
+			// 	comment_.write({
+			// 		fragment: comment_replies_count_fragment,
+			// 		data: {
+			// 			repliesCount: $comment.repliesCount + 1,
+			// 		},
+			// 	});
+			// 	create_reply_form_shown = false;
+			// 	replies_list_shown = true;
+			// }
 		},
 	});
 </script>
@@ -223,7 +213,7 @@
 							},
 						]}
 						onclick={() => {
-							ToggleCommentLike.mutate({ commentId: $comment.id });
+							ToggleCommentLike.mutate({ id: $comment.id });
 						}}
 						disabled={$ToggleCommentLike.fetching}
 					>
@@ -246,7 +236,7 @@
 					</button>
 				</div>
 			{/if}
-			{#if create_reply_form_shown}
+			<!-- {#if create_reply_form_shown}
 				<form method="post" use:superform_create_reply.enhance class="flex flex-col gap-2">
 					<Textarea
 						superform={superform_create_reply}
@@ -274,7 +264,7 @@
 						</button>
 					</div>
 				</form>
-			{/if}
+			{/if} -->
 			{#if $comment.repliesCount}
 				<details
 					bind:open={replies_list_shown}
@@ -296,7 +286,7 @@
 					</summary>
 					<div class="flex flex-col gap-2">
 						{#each replies as reply (reply.id)}
-							<Reply data={reply} {website} {page} />
+							<Comment data={reply} {website} {page} />
 						{/each}
 						{#if $repliesQuery.pageInfo.hasNextPage}
 							<div>

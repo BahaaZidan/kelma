@@ -1,5 +1,13 @@
 import { sql, type InferSelectModel } from 'drizzle-orm';
-import { check, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import {
+	check,
+	foreignKey,
+	index,
+	integer,
+	sqliteTable,
+	text,
+	uniqueIndex,
+} from 'drizzle-orm/sqlite-core';
 
 export const userTable = sqliteTable(
 	'user',
@@ -99,44 +107,36 @@ export const pageTable = sqliteTable(
 );
 export type PageSelectModel = InferSelectModel<typeof pageTable>;
 
-export const commentTable = sqliteTable('comment', {
-	id: integer('id').primaryKey(),
-	content: text('content').notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	pageId: integer('page_id')
-		.notNull()
-		.references(() => pageTable.id, { onDelete: 'cascade' }),
-	websiteId: integer('website_id')
-		.notNull()
-		.references(() => websiteTable.id, { onDelete: 'cascade' }),
-	authorId: text('author_id')
-		.notNull()
-		.references(() => userTable.id, { onDelete: 'cascade' }),
-});
+export const commentTable = sqliteTable(
+	'comment',
+	{
+		id: integer('id').primaryKey(),
+		content: text('content').notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.$defaultFn(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		pageId: integer('page_id')
+			.notNull()
+			.references(() => pageTable.id, { onDelete: 'cascade' }),
+		websiteId: integer('website_id')
+			.notNull()
+			.references(() => websiteTable.id, { onDelete: 'cascade' }),
+		authorId: text('author_id')
+			.notNull()
+			.references(() => userTable.id, { onDelete: 'cascade' }),
+		parentId: integer('parent_id'),
+	},
+	(self) => [
+		foreignKey({
+			columns: [self.parentId],
+			foreignColumns: [self.id],
+		}).onDelete('cascade'),
+	]
+);
 export type CommentSelectModel = InferSelectModel<typeof commentTable>;
-
-export const replyTable = sqliteTable('reply', {
-	id: integer('id').primaryKey(),
-	content: text('content').notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.$defaultFn(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	authorId: text('author_id')
-		.notNull()
-		.references(() => userTable.id, { onDelete: 'cascade' }),
-	commentId: integer('comment_id')
-		.notNull()
-		.references(() => commentTable.id, { onDelete: 'cascade' }),
-});
-export type ReplySelectModel = InferSelectModel<typeof replyTable>;
 
 export const membershipTable = sqliteTable(
 	'membership',
@@ -165,12 +165,9 @@ export const likesTable = sqliteTable(
 			.notNull()
 			.references(() => userTable.id, { onDelete: 'cascade' }),
 		commentId: integer('comment_id').references(() => commentTable.id, { onDelete: 'cascade' }),
-		replyId: integer('reply_id').references(() => replyTable.id, { onDelete: 'cascade' }),
 	},
 	(self) => [
 		uniqueIndex('liker_comment_id').on(self.liker, self.commentId),
-		uniqueIndex('liker_reply_id').on(self.liker, self.replyId),
 		index('on_comment_id').on(self.commentId),
-		index('on_reply_id').on(self.replyId),
 	]
 );

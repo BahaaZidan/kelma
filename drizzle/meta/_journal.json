@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1753256886226,
-      "tag": "0000_first_pepper_potts",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1753446095608,
-      "tag": "0001_dizzy_mister_fear",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1753449354704,
-      "tag": "0002_smiling_the_renegades",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1753449859389,
-      "tag": "0003_quiet_angel",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1753453484707,
-      "tag": "0004_blushing_kitty_pryde",
+      "when": 1753522539717,
+      "tag": "0000_workable_crystal",
       "breakpoints": true
     }
   ]

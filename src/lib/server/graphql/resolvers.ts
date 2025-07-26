@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lt, not, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, lt, not, or, sql } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scalars';
 import * as v from 'valibot';
@@ -10,7 +10,6 @@ import {
 	likesTable,
 	membershipTable,
 	pageTable,
-	replyTable,
 	websiteTable,
 } from '$lib/server/db/schema';
 import { contentSchema } from '$lib/validation-schemas';
@@ -49,12 +48,6 @@ export const resolvers: Resolvers = {
 					});
 					return comment ? { ...comment, __typename: 'Comment' } : null;
 				}
-				case 'Reply': {
-					const reply = await db.query.reply.findFirst({
-						where: (t, { eq }) => eq(t.id, Number(dbId)),
-					});
-					return reply ? { ...reply, __typename: 'Reply' } : null;
-				}
 				default:
 					return null;
 			}
@@ -84,27 +77,28 @@ export const resolvers: Resolvers = {
 			if (!page) throw new GraphQLError('NOT_FOUND');
 			if (page.closed) throw new GraphQLError('UNAUTHORIZED');
 
-			// throwIfBanned(db, page.websiteId, locals.session.user.id);
-
 			const banned = await isUserBanned(db, page.websiteId, locals.session.user.id);
 			// this error message is intentional. banned users don't need to know they're banned.
 			// a determined harasser might create another acount after a ban if it's visible.
 			// but if the ban is obscured, they might not even realize they got banned.
 			if (banned) throw new GraphQLError('INTERNAL_SERVER_ERROR');
 
-			const [insertResult] = await db
-				.insert(commentTable)
-				.values({
-					content: inputValidation.output.content,
-					authorId: locals.session.user.id,
-					pageId: page.id,
-					websiteId: page.websiteId,
-				})
-				.returning();
+			try {
+				const [insertResult] = await db
+					.insert(commentTable)
+					.values({
+						content: inputValidation.output.content,
+						authorId: locals.session.user.id,
+						pageId: page.id,
+						websiteId: page.websiteId,
+						...(input.parentId ? { parentId: Number(fromGlobalId(input.parentId).id) } : {}),
+					})
+					.returning();
 
-			if (!insertResult) throw new GraphQLError('INTERNAL_SERVER_ERROR');
-
-			return insertResult;
+				return insertResult;
+			} catch (_e) {
+				throw new GraphQLError('INTERNAL_SERVER_ERROR');
+			}
 		},
 		deleteComment: async (_, args, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
@@ -193,82 +187,6 @@ export const resolvers: Resolvers = {
 
 			return updatedWebsite;
 		},
-		createReply: async (_, { input }, { locals, db }) => {
-			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
-			const inputValidation = v.safeParse(contentSchema, input);
-			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
-
-			const commentId = Number(fromGlobalId(input.commentId).id);
-
-			const [comment] = await db
-				.select({
-					page: {
-						closed: pageTable.closed,
-					},
-				})
-				.from(commentTable)
-				.where(eq(commentTable.id, commentId))
-				.leftJoin(pageTable, eq(commentTable.pageId, pageTable.id))
-				.limit(1);
-			if (!comment || comment.page?.closed) throw new GraphQLError('UNAUTHORIZED');
-
-			const [createdReply] = await db
-				.insert(replyTable)
-				.values({
-					commentId,
-					authorId: locals.session.user.id,
-					content: inputValidation.output.content,
-				})
-				.returning();
-
-			return createdReply;
-		},
-		deleteReply: async (_, args, { locals, db }) => {
-			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
-			const replyId = Number(fromGlobalId(args.id).id);
-
-			const [reply] = await db
-				.select({
-					comment: {
-						websiteId: commentTable.websiteId,
-					},
-				})
-				.from(replyTable)
-				.where(eq(replyTable.id, replyId))
-				.leftJoin(commentTable, eq(replyTable.commentId, commentTable.id))
-				.limit(1);
-			if (!reply.comment?.websiteId) throw new GraphQLError('NOT_FOUND');
-
-			const [deletedReply] = await db
-				.delete(replyTable)
-				.where(
-					locals.session.websitesOwnedByCurrentUser?.includes(reply.comment.websiteId)
-						? eq(replyTable.id, replyId)
-						: and(eq(replyTable.id, replyId), eq(replyTable.authorId, locals.session.user.id))
-				)
-				.returning();
-
-			return deletedReply;
-		},
-		updateReply: async (_, { input }, { locals, db }) => {
-			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
-			const inputValidation = v.safeParse(contentSchema, input);
-			if (!inputValidation.success) throw new GraphQLError('BAD_INPUT');
-			const replyId = Number(fromGlobalId(input.replyId).id);
-
-			const [updatedReply] = await db
-				.update(replyTable)
-				.set({
-					content: inputValidation.output.content,
-					updatedAt: new Date(),
-				})
-				.where(and(eq(replyTable.id, replyId), eq(replyTable.authorId, locals.session.user.id)))
-				.returning();
-
-			if (!updatedReply) throw new GraphQLError('UNAUTHORIZED');
-
-			return updatedReply;
-		},
 		updateUserWebsiteBan: async (_, { input }, { locals, db }) => {
 			if (!locals.session?.user) throw new GraphQLError('UNAUTHORIZED');
 
@@ -302,47 +220,26 @@ export const resolvers: Resolvers = {
 
 			return user;
 		},
-		toggleLike: async (_, { input }, { locals, db }) => {
+		toggleLike: async (_, args, { locals, db }) => {
 			if (!locals.session) throw new GraphQLError('UNAUTHORIZED');
-			if (!!input.commentId === !!input.replyId) throw new GraphQLError('BAD_REQUEST');
 
 			const liker = locals.session.user.id;
 
-			if (input.commentId) {
-				const commentId = Number(fromGlobalId(input.commentId).id);
+			const commentId = Number(fromGlobalId(args.id).id);
 
-				try {
-					await db.insert(likesTable).values({ liker, commentId });
-				} catch (_e) {
-					await db
-						.delete(likesTable)
-						.where(and(eq(likesTable.liker, liker), eq(likesTable.commentId, commentId)));
-				}
-
-				const result = await db.query.comment.findFirst({
-					where: (t, { eq }) => eq(t.id, commentId),
-				});
-				if (!result) throw new Error('SOMETHING_WENT_WRONG');
-				return { ...result, __typename: 'Comment' };
+			try {
+				await db.insert(likesTable).values({ liker, commentId });
+			} catch (_e) {
+				await db
+					.delete(likesTable)
+					.where(and(eq(likesTable.liker, liker), eq(likesTable.commentId, commentId)));
 			}
 
-			if (input.replyId) {
-				const replyId = Number(fromGlobalId(input.replyId).id);
-
-				try {
-					await db.insert(likesTable).values({ liker, replyId });
-				} catch (_e) {
-					await db
-						.delete(likesTable)
-						.where(and(eq(likesTable.liker, liker), eq(likesTable.replyId, replyId)));
-				}
-
-				const result = await db.query.reply.findFirst({
-					where: (t, { eq }) => eq(t.id, replyId),
-				});
-				if (!result) throw new Error('SOMETHING_WENT_WRONG');
-				return { ...result, __typename: 'Reply' };
-			}
+			const result = await db.query.comment.findFirst({
+				where: (t, { eq }) => eq(t.id, commentId),
+			});
+			if (!result) throw new Error('SOMETHING_WENT_WRONG');
+			return result;
 		},
 	},
 	Node: {
@@ -417,6 +314,7 @@ export const resolvers: Resolvers = {
 					and(
 						eq(commentTable.pageId, parent.id),
 						eq(commentTable.websiteId, parent.websiteId),
+						isNull(commentTable.parentId),
 						cursor ? lt(commentTable.id, Number(fromGlobalId(cursor).id)) : undefined
 					)
 				)
@@ -457,12 +355,12 @@ export const resolvers: Resolvers = {
 
 			const resultPlusOne = await db
 				.select()
-				.from(replyTable)
-				.orderBy(desc(replyTable.createdAt))
+				.from(commentTable)
+				.orderBy(desc(commentTable.createdAt))
 				.where(
 					and(
-						eq(replyTable.commentId, parent.id),
-						cursor ? lt(replyTable.id, Number(fromGlobalId(cursor).id)) : undefined
+						eq(commentTable.parentId, parent.id),
+						cursor ? lt(commentTable.id, Number(fromGlobalId(cursor).id)) : undefined
 					)
 				)
 				.limit(pageSize + 1);
@@ -470,40 +368,19 @@ export const resolvers: Resolvers = {
 			const replies = resultPlusOne.slice(0, pageSize);
 
 			return {
-				edges: replies.map((r) => ({ node: r, cursor: toGlobalId('Reply', r.id) })),
+				edges: replies.map((r) => ({ node: r, cursor: toGlobalId('Comment', r.id) })),
 				pageInfo: {
 					hasNextPage: resultPlusOne.length > replies.length,
-					endCursor: replies.length ? toGlobalId('Reply', replies[replies.length - 1].id) : null,
+					endCursor: replies.length ? toGlobalId('Comment', replies[replies.length - 1].id) : null,
 				},
 			};
 		},
 		likedByViewer: (parent, _args, { loaders, locals }) => {
 			if (!locals.session) return null;
 			return loaders.isLikedByUser.load({
-				type: 'Comment',
-				id: parent.id,
+				commentId: parent.id,
 				userId: locals.session.user.id,
 			});
-		},
-	},
-	Reply: {
-		id: (parent) => toGlobalId('Reply', parent.id),
-		author: (parent, _args, { loaders }) => {
-			return throwIfNull(loaders.users.load(parent.authorId));
-		},
-		likedByViewer: (parent, _args, { loaders, locals }) => {
-			if (!locals.session) return null;
-			return loaders.isLikedByUser.load({
-				type: 'Reply',
-				id: parent.id,
-				userId: locals.session.user.id,
-			});
-		},
-	},
-	Likable: {
-		__resolveType(parent) {
-			// @ts-expect-error TODO
-			return parent.__typename;
 		},
 	},
 };

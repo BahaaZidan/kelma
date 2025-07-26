@@ -3,21 +3,18 @@
 	import CornerDownRightIcon from '@lucide/svelte/icons/corner-down-right';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
 	import { onMount } from 'svelte';
-	import { defaults, superForm } from 'sveltekit-superforms';
-	import { valibot } from 'sveltekit-superforms/adapters';
 
 	import { graphql } from '$houdini';
 
 	import { signOut } from '$lib/client/auth';
-	import Textarea from '$lib/client/components/Textarea.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
 	import { route } from '$lib/routes';
-	import { contentSchema } from '$lib/validation-schemas';
 
 	import type { PageProps } from './$houdini';
 	import Comment from './components/Comment.svelte';
+	import CreateCommentForm from './components/CreateCommentForm.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -50,29 +47,6 @@
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 	});
-
-	const CreateComment = graphql(`
-		mutation CreateComment($input: CreateCommentInput!) {
-			createComment(input: $input) {
-				...Embed_Comments_insert @prepend
-			}
-		}
-	`);
-	let disabled = $derived(!viewer || website?.page?.closed || $CreateComment.fetching);
-
-	const superform = superForm(defaults(valibot(contentSchema)), {
-		SPA: true,
-		id: 'create_comment_superform',
-		validators: valibot(contentSchema),
-		async onUpdate({ form }) {
-			if (form.valid && website?.page) {
-				await CreateComment.mutate({
-					input: { pageId: website.page.id, content: form.data.content },
-				});
-			}
-		},
-	});
-	let { isTainted, tainted } = superform;
 </script>
 
 {#if website?.page}
@@ -126,26 +100,8 @@
 			{/if}
 		</div>
 
-		<form method="post" use:superform.enhance class="flex w-full flex-col items-end gap-2">
-			<Textarea
-				{superform}
-				field="content"
-				placeholder={website.page.closed ? m.page_closed_message() : undefined}
-				{disabled}
-			/>
-			<button
-				class={['btn btn-primary btn-sm', { invisible: !isTainted($tainted) }]}
-				type="submit"
-				{disabled}
-			>
-				{m.submit()}
-				{#if $CreateComment.fetching}
-					<span class="loading loading-spinner loading-sm"></span>
-				{/if}
-			</button>
-		</form>
-
 		<div class="flex w-full flex-col gap-4 px-2">
+			<CreateCommentForm page={website.page} />
 			{#each website.page.comments.edges as { node } (node.id)}
 				<Comment data={node} {website} page={website.page} />
 			{/each}

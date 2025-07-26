@@ -35,3 +35,7 @@
 @utility mockup-code {
 	@apply rounded-2xl;
 }
+
+@utility modal-box {
+	@apply rounded-2xl;
+}

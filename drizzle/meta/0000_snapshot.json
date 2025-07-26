@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ccb8ba2c-457e-483c-bbd3-8de0e2267be7",
+  "id": "f4344a6d-bd4a-4fca-b4b1-4af529cc6e6e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -170,6 +170,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -206,6 +213,93 @@
           "tableTo": "user",
           "columnsFrom": [
             "author_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "comment_parent_id_comment_id_fk": {
+          "name": "comment_parent_id_comment_id_fk",
+          "tableFrom": "comment",
+          "tableTo": "comment",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "like": {
+      "name": "like",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "liker": {
+          "name": "liker",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "liker_comment_id": {
+          "name": "liker_comment_id",
+          "columns": [
+            "liker",
+            "comment_id"
+          ],
+          "isUnique": true
+        },
+        "on_comment_id": {
+          "name": "on_comment_id",
+          "columns": [
+            "comment_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "like_liker_user_id_fk": {
+          "name": "like_liker_user_id_fk",
+          "tableFrom": "like",
+          "tableTo": "user",
+          "columnsFrom": [
+            "liker"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "like_comment_id_comment_id_fk": {
+          "name": "like_comment_id_comment_id_fk",
+          "tableFrom": "like",
+          "tableTo": "comment",
+          "columnsFrom": [
+            "comment_id"
           ],
           "columnsTo": [
             "id"
@@ -357,85 +451,6 @@
           "tableTo": "website",
           "columnsFrom": [
             "website_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "reply": {
-      "name": "reply",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "author_id": {
-          "name": "author_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "comment_id": {
-          "name": "comment_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "reply_author_id_user_id_fk": {
-          "name": "reply_author_id_user_id_fk",
-          "tableFrom": "reply",
-          "tableTo": "user",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "reply_comment_id_comment_id_fk": {
-          "name": "reply_comment_id_comment_id_fk",
-          "tableFrom": "reply",
-          "tableTo": "comment",
-          "columnsFrom": [
-            "comment_id"
           ],
           "columnsTo": [
             "id"

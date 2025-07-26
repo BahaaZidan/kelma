@@ -33,7 +33,6 @@ const config: IGraphQLConfig = {
 							Page: '$lib/server/db/schema#PageSelectModel',
 							Comment: '$lib/server/db/schema#CommentSelectModel',
 							User: '$lib/server/db/schema#UserSelectModel',
-							Reply: '$lib/server/db/schema#ReplySelectModel',
 						},
 					} satisfies TypeScriptPluginConfig & TypeScriptResolversPluginConfig,
 				},

@@ -23,11 +23,23 @@ CREATE TABLE `comment` (
 	`page_id` integer NOT NULL,
 	`website_id` integer NOT NULL,
 	`author_id` text NOT NULL,
+	`parent_id` integer,
 	FOREIGN KEY (`page_id`) REFERENCES `page`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`website_id`) REFERENCES `website`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`author_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`author_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`parent_id`) REFERENCES `comment`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `like` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`liker` text NOT NULL,
+	`comment_id` integer,
+	FOREIGN KEY (`liker`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`comment_id`) REFERENCES `comment`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `liker_comment_id` ON `like` (`liker`,`comment_id`);--> statement-breakpoint
+CREATE INDEX `on_comment_id` ON `like` (`comment_id`);--> statement-breakpoint
 CREATE TABLE `membership` (
 	`user_id` text NOT NULL,
 	`website_id` integer NOT NULL,
@@ -49,17 +61,6 @@ CREATE TABLE `page` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `slug_websiteId_uniq` ON `page` (`slug`,`website_id`);--> statement-breakpoint
-CREATE TABLE `reply` (
-	`id` integer PRIMARY KEY NOT NULL,
-	`content` text NOT NULL,
-	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL,
-	`author_id` text NOT NULL,
-	`comment_id` integer NOT NULL,
-	FOREIGN KEY (`author_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`comment_id`) REFERENCES `comment`(`id`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
 CREATE TABLE `session` (
 	`id` text PRIMARY KEY NOT NULL,
 	`expires_at` integer NOT NULL,

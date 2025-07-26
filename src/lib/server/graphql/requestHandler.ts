@@ -24,9 +24,9 @@ export const requestHandler = createYoga<RequestEvent>({
 
 		return { ...event, db, loaders: createLoaders(db) };
 	},
-	graphiql: false,
+	// graphiql: false,
 	plugins: [
-		useDisableIntrospection(),
+		// useDisableIntrospection(),
 		EnvelopArmorPlugin({
 			maxDepth: {
 				n: 10,

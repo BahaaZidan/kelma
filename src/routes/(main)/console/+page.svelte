@@ -25,7 +25,7 @@
 	let query = data.ConsoleQuery;
 	let viewer = $derived($query.data?.viewer);
 
-	let selectedWebsiteId = $derived(viewer?.websites[0].id);
+	let selectedWebsiteId = $derived(viewer?.websites[0]?.id);
 
 	let createWebsiteDialog: HTMLDialogElement;
 	const superform = superForm(defaults(valibot(baseInfoSchema)), {
@@ -163,11 +163,11 @@
 					<pre data-prefix="2"><code>&lt;script defer&gt;</code></pre>
 					<pre data-prefix="3"><code>{`	if (window.embedCommentIframe) {`}</code></pre>
 					<pre data-prefix="4"><code>{`		window.embedCommentIframe({`}</code></pre>
-					<pre data-prefix="5"><code>			container: {embed_config.container},</code></pre>
-					<pre data-prefix="6"><code>			website_id: {selectedWebsiteId},</code></pre>
-					<pre data-prefix="7"><code>			page_id: {embed_config.page_id},</code></pre>
-					<pre data-prefix="8"><code>			language: {embed_config.language},</code></pre>
-					<pre data-prefix="9"><code>			theme: {embed_config.theme},</code></pre>
+					<pre data-prefix="5"><code>			container: "{embed_config.container}",</code></pre>
+					<pre data-prefix="6"><code>			website_id: "{selectedWebsiteId}",</code></pre>
+					<pre data-prefix="7"><code>			page_id: "{embed_config.page_id}",</code></pre>
+					<pre data-prefix="8"><code>			language: "{embed_config.language}",</code></pre>
+					<pre data-prefix="9"><code>			theme: "{embed_config.theme}",</code></pre>
 					<pre data-prefix="10"><code>		&#125;&#41;&#59;</code></pre>
 					<pre data-prefix="11"><code>	&#125;</code></pre>
 					<pre data-prefix="12"><code>&lt;/script&gt;</code></pre>

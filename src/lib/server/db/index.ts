@@ -6,7 +6,6 @@ import {
 	likesTable,
 	membershipTable,
 	pageTable,
-	replyTable,
 	sessionTable,
 	userTable,
 	verificationTable,
@@ -23,7 +22,6 @@ const schema = {
 	website: websiteTable,
 	page: pageTable,
 	comment: commentTable,
-	reply: replyTable,
 	membership: membershipTable,
 	like: likesTable,
 };
