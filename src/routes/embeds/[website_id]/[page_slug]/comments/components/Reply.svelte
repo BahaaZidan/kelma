@@ -1,12 +1,19 @@
 <script lang="ts">
 	import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+	import HeartIcon from '@lucide/svelte/icons/heart';
 	import SquarePenIcon from '@lucide/svelte/icons/square-pen';
 	import Trash2Icon from '@lucide/svelte/icons/trash-2';
 	import { formatDistance } from 'date-fns';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { valibot } from 'sveltekit-superforms/adapters';
 
-	import { fragment, graphql, type ReplyComponent, type WebsiteOwner } from '$houdini';
+	import {
+		fragment,
+		graphql,
+		type IsPageClosed,
+		type ReplyComponent,
+		type WebsiteOwner,
+	} from '$houdini';
 
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import Textarea from '$lib/client/components/Textarea.svelte';
@@ -16,14 +23,15 @@
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { contentSchema } from '$lib/validation-schemas';
 
-	import { website_owner } from './fragments';
+	import { is_page_closed, website_owner } from './fragments';
 
 	type Props = {
 		data: ReplyComponent;
 		website: WebsiteOwner;
+		page: IsPageClosed;
 	};
 
-	let { data, website }: Props = $props();
+	let { data, website, page }: Props = $props();
 
 	let reply = $derived(
 		fragment(
@@ -33,6 +41,7 @@
 					id
 					content
 					createdAt
+					likedByViewer
 					author {
 						id
 						image
@@ -43,6 +52,7 @@
 		)
 	);
 
+	let page_ = $derived(fragment(page, is_page_closed));
 	let website_ = $derived(fragment(website, website_owner));
 	let viewer = getViewerContext();
 	let permissions = $derived({
@@ -83,13 +93,24 @@
 		},
 		resetForm: false,
 	});
+
+	const ToggleReplyLike = graphql(`
+		mutation ToggleReplyLike($replyId: ID!) {
+			toggleLike(input: { replyId: $replyId }) {
+				... on Reply {
+					id
+					likedByViewer
+				}
+			}
+		}
+	`);
 </script>
 
 <div class="flex items-start gap-4">
 	<Avatar
 		src={$reply.author.image || 'https://avatars.githubusercontent.com/u/22656046?v=4'}
 		alt="{$reply.author.name} {m.profile_picture()}"
-		class="mt-1 size-6"
+		class="mt-1 size-7"
 		fallback={$reply.author.name}
 	/>
 	{#if !editing}
@@ -104,6 +125,33 @@
 				</span>
 			</span>
 			<span class="whitespace-pre-wrap">{$reply.content}</span>
+			{#if viewer && !$page_.closed}
+				<div class="flex gap-2">
+					<button
+						class={[
+							'btn btn-xs btn-ghost',
+							{
+								'bg-accent-content': $reply.likedByViewer,
+								'text-accent': $reply.likedByViewer,
+							},
+						]}
+						onclick={() => {
+							ToggleReplyLike.mutate({ replyId: $reply.id });
+						}}
+						disabled={$ToggleReplyLike.fetching}
+					>
+						<HeartIcon
+							size={16}
+							class={[
+								{
+									'fill-accent': $reply.likedByViewer,
+								},
+							]}
+						/>
+						{m.like()}
+					</button>
+				</div>
+			{/if}
 		</div>
 		<div
 			class={['dropdown dropdown-end', { invisible: !Object.values(permissions).includes(true) }]}
@@ -144,13 +192,13 @@
 			<div class="flex justify-end gap-2">
 				<button
 					type="button"
-					class="btn btn-sm"
+					class="btn btn-xs"
 					onclick={() => (editing = false)}
 					disabled={$UpdateReply.fetching}
 				>
 					{m.cancel()}
 				</button>
-				<button type="submit" class="btn btn-primary btn-sm" disabled={$UpdateReply.fetching}>
+				<button type="submit" class="btn btn-primary btn-xs" disabled={$UpdateReply.fetching}>
 					{m.submit()}
 					{#if $UpdateReply.fetching}
 						<span class="loading loading-spinner loading-xs"></span>
