@@ -72,6 +72,7 @@
 			}
 		},
 	});
+	let { isTainted, tainted } = superform;
 </script>
 
 {#if website?.page}
@@ -132,7 +133,11 @@
 				placeholder={website.page.closed ? m.page_closed_message() : undefined}
 				{disabled}
 			/>
-			<button class="btn btn-primary" type="submit" {disabled}>
+			<button
+				class={['btn btn-primary', { invisible: !isTainted($tainted) }]}
+				type="submit"
+				{disabled}
+			>
 				{m.submit()}
 				{#if $CreateComment.fetching}
 					<span class="loading loading-spinner loading-sm"></span>
