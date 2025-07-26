@@ -11,9 +11,9 @@
 	<Avatar
 		src={viewer.image}
 		alt="{viewer.name} {m.profile_picture()}"
-		class="mt-1 size-10"
+		class="mt-1 size-9"
 		fallback={viewer.name}
 	/>
 {:else}
-	<Avatar src="/default_avatar.jpg" class="mt-1 size-10" />
+	<Avatar src="/default_avatar.jpg" class="mt-1 size-9" />
 {/if}

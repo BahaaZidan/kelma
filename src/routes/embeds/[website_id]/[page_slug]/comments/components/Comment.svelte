@@ -32,6 +32,7 @@
 	import { contentSchema } from '$lib/validation-schemas';
 
 	import Comment from './Comment.svelte';
+	import CreateCommentForm from './CreateCommentForm.svelte';
 	import { is_page_closed, website_owner } from './fragments';
 
 	type Props = {
@@ -187,7 +188,7 @@
 	<Avatar
 		src={$comment.author.image}
 		alt="{$comment.author.name} {m.profile_picture()}"
-		class="mt-1 size-10"
+		class="mt-1 size-9"
 		fallback={$comment.author.name}
 	/>
 	{#if !editing}
@@ -236,35 +237,9 @@
 					</button>
 				</div>
 			{/if}
-			<!-- {#if create_reply_form_shown}
-				<form method="post" use:superform_create_reply.enhance class="flex flex-col gap-2">
-					<Textarea
-						superform={superform_create_reply}
-						field="content"
-						disabled={$CreateReplyMutation.fetching}
-					/>
-					<div class="flex justify-end gap-2">
-						<button
-							type="button"
-							class="btn btn-xs"
-							onclick={() => (create_reply_form_shown = false)}
-							disabled={$CreateReplyMutation.fetching}
-						>
-							{m.cancel()}
-						</button>
-						<button
-							type="submit"
-							class="btn btn-xs btn-primary"
-							disabled={$CreateReplyMutation.fetching}
-						>
-							{m.submit()}
-							{#if $CreateReplyMutation.fetching}
-								<span class="loading loading-spinner loading-sm"></span>
-							{/if}
-						</button>
-					</div>
-				</form>
-			{/if} -->
+			{#if create_reply_form_shown}
+				<CreateCommentForm parentId={$comment.id} {page} />
+			{/if}
 			{#if $comment.repliesCount}
 				<details
 					bind:open={replies_list_shown}

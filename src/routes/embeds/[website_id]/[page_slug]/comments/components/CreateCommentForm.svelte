@@ -14,8 +14,9 @@
 
 	interface Props {
 		page: IsPageClosed;
+		parentId?: string;
 	}
-	let { page: page_ }: Props = $props();
+	let { page: page_, parentId }: Props = $props();
 	let page = $derived(fragment(page_, is_page_closed));
 
 	let viewer = getViewerContext();
@@ -32,12 +33,12 @@
 
 	const superform = superForm(defaults(valibot(contentSchema)), {
 		SPA: true,
-		id: 'create_comment_superform',
+		id: `create_comment_superform_${parentId || ''}`,
 		validators: valibot(contentSchema),
 		async onUpdate({ form }) {
 			if (form.valid) {
 				await CreateComment.mutate({
-					input: { pageId: $page.id, content: form.data.content },
+					input: { pageId: $page.id, content: form.data.content, parentId },
 				});
 			}
 		},

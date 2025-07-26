@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import DataLoader from 'dataloader';
-import { and, count, eq, inArray, or } from 'drizzle-orm';
+import { and, count, eq, inArray, isNotNull, or } from 'drizzle-orm';
 import type { YogaInitialContext } from 'graphql-yoga';
 
 import type { DB } from '$lib/server/db';
@@ -43,23 +43,29 @@ export function createLoaders(db: DB) {
 			const websiteMap = new Map(websites.map((site) => [site.id, site]));
 			return keys.map((key) => websiteMap.get(key) ?? null);
 		}),
-		repliesCounts: new DataLoader<number, number>(async (keys) => {
-			const commentIds = [...keys];
+		repliesCounts: new DataLoader<number, number>(async (commentIds) => {
 			const rows = await db
 				.select({
-					commentId: commentTable.id,
+					parentId: commentTable.parentId,
 					count: count(),
 				})
 				.from(commentTable)
-				.where(inArray(commentTable.parentId, commentIds))
+				.where(
+					and(
+						inArray(commentTable.parentId, commentIds as number[]),
+						isNotNull(commentTable.parentId)
+					)
+				)
 				.groupBy(commentTable.parentId);
 
-			const countMap = new Map<number, number>();
+			const countsMap = new Map<number, number>();
 			for (const row of rows) {
-				countMap.set(row.commentId, row.count);
+				if (row.parentId) {
+					countsMap.set(row.parentId, Number(row.count));
+				}
 			}
 
-			return commentIds.map((id) => countMap.get(id) ?? 0);
+			return commentIds.map((id) => countsMap.get(id) ?? 0);
 		}),
 		websiteBannedUsers: new DataLoader<number, UserSelectModel[]>(async (websiteIds) => {
 			const results = await db
