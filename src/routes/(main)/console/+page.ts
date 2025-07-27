@@ -7,7 +7,7 @@ import type { PageLoad } from './$houdini';
 import { topUpSchema } from './schemas';
 
 export const load: PageLoad = async (event) => {
-	const form = await superValidate(valibot(topUpSchema));
+	const form = await superValidate({ amount: 5 }, valibot(topUpSchema));
 
 	return {
 		form,
