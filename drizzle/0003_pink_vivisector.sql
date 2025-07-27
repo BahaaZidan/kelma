@@ -1,0 +1,1 @@
+CREATE INDEX `idx_comment_parent_id` ON `comment` (`parent_id`);

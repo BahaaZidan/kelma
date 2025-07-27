@@ -1,4 +1,4 @@
-import { sql, type InferSelectModel } from 'drizzle-orm';
+import { desc, isNull, sql, type InferSelectModel } from 'drizzle-orm';
 import {
 	check,
 	foreignKey,
@@ -76,17 +76,21 @@ export const verificationTable = sqliteTable('verification', {
 	),
 });
 
-export const websiteTable = sqliteTable('website', {
-	id: integer('id').primaryKey(),
-	ownerId: text('owner_id')
-		.notNull()
-		.references(() => userTable.id, { onDelete: 'cascade' }),
-	name: text().notNull(),
-	domains: text('domains', { mode: 'json' })
-		.notNull()
-		.$type<string[]>()
-		.default(sql`'[]'`),
-});
+export const websiteTable = sqliteTable(
+	'website',
+	{
+		id: integer('id').primaryKey(),
+		ownerId: text('owner_id')
+			.notNull()
+			.references(() => userTable.id, { onDelete: 'cascade' }),
+		name: text().notNull(),
+		domains: text('domains', { mode: 'json' })
+			.notNull()
+			.$type<string[]>()
+			.default(sql`'[]'`),
+	},
+	(self) => [index('idx_website_owner_id').on(self.ownerId)]
+);
 export type WebsiteSelectModel = InferSelectModel<typeof websiteTable>;
 
 export const pageTable = sqliteTable(
@@ -134,6 +138,11 @@ export const commentTable = sqliteTable(
 			columns: [self.parentId],
 			foreignColumns: [self.id],
 		}).onDelete('cascade'),
+		index('idx_comment_page_website_null_parent_created')
+			.on(self.pageId, self.websiteId, desc(self.createdAt))
+			.where(isNull(self.parentId)),
+		index('idx_comment_parent_id').on(self.parentId),
+		index('idx_comment_parent_created').on(self.parentId, desc(self.createdAt)),
 	]
 );
 export type CommentSelectModel = InferSelectModel<typeof commentTable>;

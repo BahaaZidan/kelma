@@ -19,7 +19,6 @@
 	}
 	let { page: page_, parentId, onSuccess }: Props = $props();
 	let page = $derived(fragment(page_, is_page_closed));
-
 	let viewer = getViewerContext();
 
 	const CreateReply = graphql(`
@@ -29,7 +28,6 @@
 			}
 		}
 	`);
-
 	const CreateComment = graphql(`
 		mutation CreateComment($input: CreateCommentInput!) {
 			createComment(input: $input) {
