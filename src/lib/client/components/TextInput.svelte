@@ -71,7 +71,7 @@
 					{superform}
 					field={remover.field}
 					index={remover.index}
-					class="join-item"
+					class="join-item btn-secondary"
 					{disabled}
 				/>
 			{/if}

@@ -3,39 +3,12 @@
 @plugin "daisyui" {
 	themes: all;
 }
-
-@utility btn {
-	@apply rounded-2xl;
-}
-
-@utility card {
-	@apply rounded-2xl;
-}
-
-@utility textarea {
-	@apply rounded-2xl;
-}
-
-@utility input {
-	@apply rounded-2xl;
-}
-
-@utility select {
-	@apply rounded-2xl;
-}
-
-@utility range {
-	@apply rounded-2xl;
-}
-
-@utility alert {
-	@apply rounded-2xl;
-}
-
-@utility mockup-code {
-	@apply rounded-2xl;
-}
-
-@utility modal-box {
-	@apply rounded-2xl;
+@plugin "daisyui/theme" {
+	name: 'business';
+	color-scheme: 'dark';
+	--radius-selector: 1rem;
+	--radius-field: 1rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
 }
