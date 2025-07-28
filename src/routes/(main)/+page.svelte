@@ -6,7 +6,10 @@
 
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
 	import { PAGEVIEW_COST_IN_CENTS } from '$lib/constants';
+	import { LANGS } from '$lib/i18n';
 	import { route } from '$lib/routes';
+
+	import FeatureCard from './FeatureCard.svelte';
 
 	let price_slider_val = $state(100_000);
 
@@ -18,7 +21,7 @@
 	<section class="px-6 py-10 text-center">
 		<h1 class="mb-4 text-4xl font-bold">Drop-in Comment Section for Every Website</h1>
 		<p class="mx-auto mb-6 max-w-2xl text-lg">
-			Ad-free, privacy-respecting, open-source, and insanely fast. Effortless setup with full
+			Ad-free, privacy-respecting, open-source, and insanely fast. Effortless setup with easy
 			customization and fair usage-based pricing.
 		</p>
 		<a href={login_url} class="btn btn-primary btn-lg">Try it for free</a>
@@ -26,30 +29,49 @@
 
 	<section class="bg-base-200 rounded-2xl px-6 py-10">
 		<div class="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
-			{@render featureCard(
-				'🚫 Ad-Free & Private',
-				'We collect minimal telemetry and never sell user data. No ads, ever.'
-			)}
-			{@render featureCard(
-				'🌐 Open Source',
-				'Fully transparent. Auditable by anyone. Hosted or self-hosted — your choice.'
-			)}
-			{@render featureCard(
-				'⚡ Best-in-Class Speed',
-				'Comments load instantly. Built on modern edge tech with zero bloat.'
-			)}
-			{@render featureCard(
-				'💸 Fair Pricing',
-				'Pay only for what you use. No tiers, no plans, no hidden fees, and no monthly subscriptions.'
-			)}
-			{@render featureCard(
-				'🎨 Easily Customizable',
-				'Pick from 35 themes. Integrates seamlessly with your design.'
-			)}
-			{@render featureCard(
-				'🌍 Multi-language',
-				'Support for Arabic, English, and more. Tailor it to your audience.'
-			)}
+			<FeatureCard title="🚫 Ad-Free & Private">
+				We collect minimal telemetry and never sell user data. No ads, ever.
+			</FeatureCard>
+			<FeatureCard title="🌐 Open Source">
+				Fully transparent. Auditable by anyone. Hosted or self-hosted — your choice.
+			</FeatureCard>
+			<FeatureCard title="⚡ Impossibly Snappy">
+				Comments load instantly. Interactions feel fast and smooth.
+			</FeatureCard>
+			<FeatureCard title="💸 Fair Pricing">
+				Pay only for what you use. No tiers, no plans, no hidden fees, and no monthly subscriptions.
+			</FeatureCard>
+			<FeatureCard title="🎨 Easily Customizable">
+				Pick from 35 themes. Integrates seamlessly with your design.
+			</FeatureCard>
+			<FeatureCard title="🌍 Multi-language">
+				Support for 25 languages including <div
+					class="tooltip tooltip-secondary"
+					data-tip="Standard Arabic"
+				>
+					Arabic
+				</div>
+				,
+				<div
+					class="tooltip tooltip-secondary"
+					data-tip="Cantonese, Simplified Chinese, and Traditional Chinese"
+				>
+					Chinese
+				</div>
+				,
+				<div class="tooltip tooltip-secondary" data-tip="Neutral Spanish">Spanish</div>
+				, Hindi, and
+				<div
+					class="tooltip tooltip-secondary"
+					data-tip={Object.values(LANGS)
+						.filter((l) => !['ar', 'es', 'hi', 'yue', 'zh-Hans', 'zh-Hant'].includes(l.code))
+						.map((l) => l.label)
+						.join(', ')}
+				>
+					many more
+				</div>
+				.
+			</FeatureCard>
 		</div>
 	</section>
 
@@ -105,12 +127,3 @@
 		</div>
 	</footer>
 </div>
-
-{#snippet featureCard(title: string, description: string)}
-	<div class="card bg-base-100 shadow">
-		<div class="card-body">
-			<h2 class="card-title">{title}</h2>
-			<p>{description}</p>
-		</div>
-	</div>
-{/snippet}
