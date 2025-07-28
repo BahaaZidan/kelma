@@ -53,7 +53,7 @@
 		<a href={login_url} class="btn btn-primary btn-lg">Try it for free</a>
 	</section>
 
-	<section class="bg-base-200 rounded-2xl px-6 py-10">
+	<section class="bg-base-200 rounded-box px-6 py-10">
 		<div class="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
 			<FeatureCard title="🚫 Ad-Free & Private">
 				We collect minimal telemetry and never sell user data. No ads, ever.
@@ -107,7 +107,7 @@
 		<a href={login_url} class="btn btn-accent btn-lg">Create Free Account</a>
 	</section>
 
-	<section class="bg-base-200 flex flex-col gap-2 rounded-2xl p-6">
+	<section class="bg-base-200 rounded-box flex flex-col items-center gap-2 p-6">
 		<label class="text-xl" for="price_range">
 			For <span class="font-bold">{price_slider_val.toLocaleString()}</span>
 			pageviews
