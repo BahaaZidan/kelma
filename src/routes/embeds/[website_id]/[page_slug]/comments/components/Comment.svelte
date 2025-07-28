@@ -294,7 +294,7 @@
 								let confirmed = confirm(m.delete_comment_confirm());
 								if (!confirmed) return;
 								await DeleteComment.mutate({ id: $comment.id });
-								alert('Comment deleted');
+								alert(m.comment_deleted());
 							}}
 						>
 							<Trash2Icon />

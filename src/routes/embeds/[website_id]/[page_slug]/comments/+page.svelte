@@ -131,7 +131,7 @@
 		</div>
 		<span class="py-6 font-mono">
 			{m.powered_by()}
-			<a href="https://kelma.dev/" class="link-hover font-mono font-bold">kelma</a>
+			<a href="https://kelma.dev/" class="link-hover font-mono font-bold">{m.kelma()}</a>
 		</span>
 	</div>
 {/if}

@@ -27,5 +27,10 @@
 	"delete_comment_confirm": "هل تريد حذف هذا التعليق ؟",
 	"ban_author_confirm": "هل تريد حظر كاتب هذا التعليق ؟",
 	"page_closed_message": "قام مسؤول الموقع بتعطيل التعليقات",
-	"like": "إعجاب"
+	"like": "إعجاب",
+	"login_via": "تسجيل الدخول بواسطة",
+	"kelma": "كلمة",
+	"google": "جوجل",
+	"github": "جت هاب",
+	"comment_deleted": "تم حذف التعليق"
 }
