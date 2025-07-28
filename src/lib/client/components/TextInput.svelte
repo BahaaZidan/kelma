@@ -24,6 +24,7 @@
 			index: number;
 		};
 		disabled?: boolean;
+		prepend?: Snippet;
 	}
 
 	let {
@@ -36,6 +37,7 @@
 		remover,
 		join,
 		disabled,
+		prepend,
 	}: Props = $props();
 
 	const { value, errors, constraints } = formFieldProxy(superform, field);
@@ -49,16 +51,19 @@
 			<legend class="fieldset-legend">{label}</legend>
 		{/if}
 		<div class={{ join: isJoined }}>
-			<input
-				{type}
-				class={['input', { 'input-error': !!$errors, 'join-item': isJoined }]}
-				{placeholder}
-				name={field}
-				bind:value={$value}
-				aria-invalid={!!$errors}
-				{disabled}
-				{...$constraints}
-			/>
+			<label class={['input', { 'input-error': !!$errors, 'join-item': isJoined }]}>
+				{@render prepend?.()}
+				<input
+					{type}
+					class="grow"
+					{placeholder}
+					name={field}
+					bind:value={$value}
+					aria-invalid={!!$errors}
+					{disabled}
+					{...$constraints}
+				/>
+			</label>
 			{#if join}
 				{@render join()}
 			{:else if remover}

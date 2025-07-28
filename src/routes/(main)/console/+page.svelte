@@ -286,7 +286,11 @@
 		<h3 class="mb-4 text-lg font-bold">Topup</h3>
 
 		<form method="post" use:topupSuperform.enhance class="flex flex-col gap-1" id="topup_form">
-			<TextInput superform={topupSuperform} field="amount" type="number" label="Amount" />
+			<TextInput superform={topupSuperform} field="amount" type="number" label="Amount">
+				{#snippet prepend()}
+					<DollarSignIcon size={14} />
+				{/snippet}
+			</TextInput>
 		</form>
 
 		<div class="modal-action">
