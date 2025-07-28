@@ -1,1 +1,0 @@
-CREATE INDEX `idx_website_owner_id` ON `website` (`owner_id`);

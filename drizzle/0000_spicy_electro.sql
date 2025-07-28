@@ -30,6 +30,9 @@ CREATE TABLE `comment` (
 	FOREIGN KEY (`parent_id`) REFERENCES `comment`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE INDEX `idx_comment_page_website_null_parent_created` ON `comment` (`page_id`,`website_id`,"created_at" desc) WHERE "comment"."parent_id" is null;--> statement-breakpoint
+CREATE INDEX `idx_comment_parent_id` ON `comment` (`parent_id`);--> statement-breakpoint
+CREATE INDEX `idx_comment_parent_created` ON `comment` (`parent_id`,"created_at" desc);--> statement-breakpoint
 CREATE TABLE `like` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`liker` text NOT NULL,
@@ -103,3 +106,5 @@ CREATE TABLE `website` (
 	`domains` text DEFAULT '[]' NOT NULL,
 	FOREIGN KEY (`owner_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
+--> statement-breakpoint
+CREATE INDEX `idx_website_owner_id` ON `website` (`owner_id`);

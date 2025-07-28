@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1753522539717,
-      "tag": "0000_workable_crystal",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1753626761945,
-      "tag": "0001_salty_miek",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1753628012648,
-      "tag": "0002_wise_blur",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1753628316999,
-      "tag": "0003_pink_vivisector",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1753629903661,
-      "tag": "0004_cynical_madame_web",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1753629934412,
-      "tag": "0005_outstanding_longshot",
+      "when": 1753695221504,
+      "tag": "0000_spicy_electro",
       "breakpoints": true
     }
   ]

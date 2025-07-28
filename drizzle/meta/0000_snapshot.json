@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "f4344a6d-bd4a-4fca-b4b1-4af529cc6e6e",
+  "id": "31c1d6ed-05ab-4558-be39-85f7814eb2bd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -179,7 +179,33 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_comment_page_website_null_parent_created": {
+          "name": "idx_comment_page_website_null_parent_created",
+          "columns": [
+            "page_id",
+            "website_id",
+            "\"created_at\" desc"
+          ],
+          "isUnique": false,
+          "where": "\"comment\".\"parent_id\" is null"
+        },
+        "idx_comment_parent_id": {
+          "name": "idx_comment_parent_id",
+          "columns": [
+            "parent_id"
+          ],
+          "isUnique": false
+        },
+        "idx_comment_parent_created": {
+          "name": "idx_comment_parent_created",
+          "columns": [
+            "parent_id",
+            "\"created_at\" desc"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "comment_page_id_page_id_fk": {
           "name": "comment_page_id_page_id_fk",
@@ -716,7 +742,15 @@
           "default": "'[]'"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "idx_website_owner_id": {
+          "name": "idx_website_owner_id",
+          "columns": [
+            "owner_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
         "website_owner_id_user_id_fk": {
           "name": "website_owner_id_user_id_fk",
@@ -745,6 +779,21 @@
     "columns": {}
   },
   "internal": {
-    "indexes": {}
+    "indexes": {
+      "idx_comment_page_website_null_parent_created": {
+        "columns": {
+          "\"created_at\" desc": {
+            "isExpression": true
+          }
+        }
+      },
+      "idx_comment_parent_created": {
+        "columns": {
+          "\"created_at\" desc": {
+            "isExpression": true
+          }
+        }
+      }
+    }
   }
 }

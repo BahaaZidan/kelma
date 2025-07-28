@@ -18,8 +18,8 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "gebna_tools_db",
-			"database_id": "d8e2c0a3-c339-4fa8-99e4-5d0360893d6e",
+			"database_name": "kelma_db",
+			"database_id": "c8be5ae7-5a35-4096-9c5d-3719fe645a07",
 			"migrations_dir": "drizzle/migrations",
 		},
 	],
