@@ -10,6 +10,7 @@
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import { route } from '$lib/routes';
 
 	import type { PageProps } from './$houdini';
@@ -91,7 +92,7 @@
 					<a
 						class="link font-bold"
 						target="_top"
-						href="{route('/login')}?callback_url={website.page.url}"
+						href="/{getLocale()}{route('/login')}?callback_url={website.page.url}"
 					>
 						{m.login()}
 					</a>
