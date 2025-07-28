@@ -4,7 +4,7 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
 
 import { PAGEVIEW_COST } from '$lib/constants';
-import { inferDir } from '$lib/i18n';
+import { LANGS } from '$lib/i18n';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { getAuth, type Session } from '$lib/server/auth';
 import { getDB } from '$lib/server/db';
@@ -39,7 +39,7 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 
 		return resolve(event, {
 			transformPageChunk: ({ html }) =>
-				html.replace('%paraglide.lang%', locale).replace('%paraglide.dir%', inferDir(locale)),
+				html.replace('%paraglide.lang%', locale).replace('%paraglide.dir%', LANGS[locale].dir),
 		});
 	});
 
