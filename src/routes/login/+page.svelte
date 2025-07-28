@@ -15,6 +15,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Kelma | Login</title>
+</svelte:head>
+
 <div class="flex h-screen w-screen items-center justify-center">
 	<div class="flex w-full max-w-md flex-col items-center gap-2 p-4 font-mono">
 		{#if $session.data}

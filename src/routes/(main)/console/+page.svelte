@@ -79,6 +79,11 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Kelma | Console</title>
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="flex flex-col gap-4 p-4">
 	{#if viewer}
 		<section class="bg-base-200 flex justify-between rounded-2xl p-6">

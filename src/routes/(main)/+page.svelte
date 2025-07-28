@@ -15,7 +15,33 @@
 
 	const login_url = `${route('/login')}?callback_url=${env.PUBLIC_BASE_URL + route('/console')}`;
 	const iconClass = 'transition-all duration-300 ease-in-out hover:text-gray-700';
+
+	const canonicalURL = 'https://kelma.dev/';
+	const title = 'Kelma';
+	const description =
+		'Drop-in Comment Section for Every Website. Ad-free, privacy-respecting, open-source, and insanely fast. Effortless setup with easy customization and fair usage-based pricing.';
+	const imageURL = new URL('/icon.png', canonicalURL).toString();
 </script>
+
+<svelte:head>
+	<link rel="canonical" href={canonicalURL} />
+
+	<title>{title}</title>
+	<meta name="title" content={title} />
+	<meta name="description" content={description} />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={canonicalURL} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:image" content={imageURL} />
+
+	<meta property="twitter:card" content="summary" />
+	<meta property="twitter:url" content={canonicalURL} />
+	<meta property="twitter:title" content={title} />
+	<meta property="twitter:description" content={description} />
+	<meta property="twitter:image" content={imageURL} />
+</svelte:head>
 
 <div class="flex min-h-screen flex-col justify-between gap-4">
 	<section class="px-6 py-10 text-center">
@@ -82,11 +108,12 @@
 	</section>
 
 	<section class="bg-base-200 flex flex-col gap-2 rounded-2xl p-6">
-		<p class="text-xl">
+		<label class="text-xl" for="price_range">
 			For <span class="font-bold">{price_slider_val.toLocaleString()}</span>
 			pageviews
-		</p>
+		</label>
 		<input
+			id="price_range"
 			type="range"
 			bind:value={price_slider_val}
 			min={10_000}

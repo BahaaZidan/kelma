@@ -50,6 +50,10 @@
 	});
 </script>
 
+<svelte:head>
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 {#if website?.page}
 	<div data-theme={data.theme} class="flex flex-col items-center gap-2 bg-transparent">
 		<div class="flex w-full items-center justify-between">
