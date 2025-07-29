@@ -7,7 +7,7 @@ export function isDomainTrusted(request: RequestEvent['request'], trustedDomains
 	// TODO: this is probably wrong
 	if (request.referrer === 'about:client') return true;
 	const referer = request.headers.get('Referer');
-	if (!referer) return false;
+	if (!referer) return true;
 
 	const domain = new URL(referer).hostname;
 	const result = trustedDomains.includes(domain);
