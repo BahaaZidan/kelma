@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 		logger({ rawBody });
 		event = stripe.webhooks.constructEvent(rawBody, signature!, env.SECRET_STRIPE_WEBHOOK);
 	} catch (_err) {
-		logger({ message: 'Bad signature', status: 400 });
+		logger({ message: 'Bad signature', _err });
 		return new Response('Bad signature', { status: 400 });
 	}
 
