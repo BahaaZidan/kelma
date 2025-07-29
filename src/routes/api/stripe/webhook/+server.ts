@@ -7,21 +7,22 @@ import { PAGEVIEW_COST_SCALER } from '$lib/constants';
 import { logger } from '$lib/logger';
 import { getDB } from '$lib/server/db';
 import { userTable } from '$lib/server/db/schema';
-import { cryptoProvider, getStripe } from '$lib/server/stripe';
+import { getStripe } from '$lib/server/stripe';
 
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, platform }) => {
 	const stripe = getStripe();
+	const payload = await request.arrayBuffer();
+	const signature = request.headers.get('stripe-signature');
+	if (!signature) return new Response('Missing signature', { status: 400 });
 
 	let event: Stripe.Event;
 	try {
 		event = stripe.webhooks.constructEvent(
-			await request.text(),
-			request.headers.get('stripe-signature')!,
-			env.SECRET_STRIPE_WEBHOOK,
-			undefined,
-			cryptoProvider
+			Buffer.from(payload),
+			signature,
+			env.SECRET_STRIPE_WEBHOOK
 		);
 	} catch (_err) {
 		logger({ message: 'Bad signature', _err });
