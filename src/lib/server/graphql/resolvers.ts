@@ -4,6 +4,7 @@ import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scala
 import * as v from 'valibot';
 
 import { PAGEVIEW_COST_IN_CENTS, PAGEVIEW_COST_SCALER } from '$lib/constants';
+import { logger } from '$lib/logger';
 import type { DB } from '$lib/server/db';
 import {
 	commentTable,
@@ -270,6 +271,8 @@ export const resolvers: Resolvers = {
 		},
 		page: async (parent, { input: { slug, overrides } }, { db, request }) => {
 			if (!isDomainTrusted(request, parent.domains)) return null;
+
+			logger(JSON.stringify({ slug, overrides }));
 
 			if (overrides) {
 				const [page] = await db

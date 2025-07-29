@@ -4,6 +4,8 @@ import * as v from 'valibot';
 
 import { load_BigWebsiteQuery } from '$houdini';
 
+import { logger } from '$lib/logger';
+
 import type { PageLoad } from './$houdini';
 
 export const load: PageLoad = async (event) => {
@@ -16,6 +18,8 @@ export const load: PageLoad = async (event) => {
 	if (!searchParamsValidation.success)
 		return error(400, searchParamsValidation.issues.map((i) => i.message).join('\n'));
 	const searchParams = searchParamsValidation.output;
+
+	logger(JSON.stringify({ params, searchParams: searchParamsValidation.output }));
 
 	return {
 		...(await load_BigWebsiteQuery({
