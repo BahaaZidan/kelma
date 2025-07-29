@@ -28,7 +28,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			errortype: typeof _err,
 			props: Object.entries(_err as object),
 		});
-		return new Response('Bad signature', { status: 400 });
+		return new Response(_err, { status: 400, statusText: 'Bad signature test' });
 	}
 
 	if (event.type === 'checkout.session.completed') {
