@@ -12,10 +12,10 @@ import { getStripe } from '$lib/server/stripe';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, platform }) => {
-	const stripe = getStripe();
 	const payload = Buffer.from(await request.arrayBuffer());
 	const signature = request.headers.get('stripe-signature');
 	if (!signature) return new Response('Missing signature', { status: 400 });
+	const stripe = getStripe();
 
 	let event: Stripe.Event;
 	try {
