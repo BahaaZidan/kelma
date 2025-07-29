@@ -22,6 +22,12 @@ export const getAuth = (db: DB) => {
 			},
 		},
 		trustedOrigins: ['*'],
+		advanced: {
+			defaultCookieAttributes: {
+				sameSite: 'None',
+				secure: true,
+			},
+		},
 		baseURL: publicVars.PUBLIC_BASE_URL,
 		user: {
 			additionalFields: {
