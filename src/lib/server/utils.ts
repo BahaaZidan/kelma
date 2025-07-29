@@ -10,5 +10,9 @@ export function isDomainTrusted(request: RequestEvent['request'], trustedDomains
 	if (!referer) return false;
 
 	const domain = new URL(referer).hostname;
-	return trustedDomains.includes(domain);
+	const result = trustedDomains.includes(domain);
+
+	logger(`isDomainTrusted | ${JSON.stringify({ domain, result })}`);
+
+	return result;
 }

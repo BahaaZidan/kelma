@@ -26,6 +26,7 @@ export const resolvers: Resolvers = {
 	Query: {
 		node: async (_parent, { id }, { db }) => {
 			const { type, id: dbId } = fromGlobalId(id);
+			logger({ id, type, dbId });
 			switch (type) {
 				case 'User': {
 					const user = await db.query.user.findFirst({ where: (t, { eq }) => eq(t.id, dbId) });
