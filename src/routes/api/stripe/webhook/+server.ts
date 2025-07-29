@@ -19,6 +19,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 	let event: Stripe.Event;
 	try {
+		logger({ signature, payload });
 		event = stripe.webhooks.constructEvent(payload, signature, env.SECRET_STRIPE_WEBHOOK);
 	} catch (_err) {
 		logger({
