@@ -1,7 +1,15 @@
 <script lang="ts">
-	import { siGithub, siGoogle } from 'simple-icons';
+	import {
+		// siGithub,
+		siGoogle,
+	} from 'simple-icons';
 
-	import { authClient, githubSignIn, googleSignIn, signOut } from '$lib/client/auth';
+	import {
+		authClient,
+		//  githubSignIn,
+		googleSignIn,
+		signOut,
+	} from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
 	import { m } from '$lib/paraglide/messages';
 
@@ -33,10 +41,10 @@
 				<BrandIcon icon={siGoogle} />
 				{m.google()}
 			</button>
-			<button onclick={() => githubSignIn(data.callbackURL)} class="btn btn-block">
+			<!-- <button onclick={() => githubSignIn(data.callbackURL)} class="btn btn-block">
 				<BrandIcon icon={siGithub} />
 				{m.github()}
-			</button>
+			</button> -->
 		{/if}
 
 		<span class="py-6">
