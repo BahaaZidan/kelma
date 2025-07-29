@@ -12,17 +12,13 @@ import { cryptoProvider, getStripe } from '$lib/server/stripe';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, platform }) => {
-	const rawBody = await request.text();
-	const signature = request.headers.get('stripe-signature');
 	const stripe = getStripe();
 
 	let event: Stripe.Event;
 	try {
-		logger({ signature, SECRET_STRIPE_WEBHOOK: env.SECRET_STRIPE_WEBHOOK });
-		logger({ rawBody });
 		event = stripe.webhooks.constructEvent(
-			rawBody,
-			signature!,
+			await request.text(),
+			request.headers.get('stripe-signature')!,
 			env.SECRET_STRIPE_WEBHOOK,
 			undefined,
 			cryptoProvider
