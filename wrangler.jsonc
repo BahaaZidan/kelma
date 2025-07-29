@@ -32,6 +32,7 @@
 	"vars": {
 		"PUBLIC_BASE_URL": "https://kelma.dev",
 		"PUBLIC_GITHUB_CLIENT_ID": "Iv23lido8Xjwy7j8VMV0",
+		"PUBLIC_STRIPE_KEY": "pk_live_51Rq9eEPHWeKZo0VATPfPJjXz24mMzyjh1hkuMszbhkLc5AlDkKlAB3MO93SJTaYQtegJd7cXwT8SQg8ipRTmy8pN00wicObjlQ",
 	},
 	/**
 	 * Smart Placement
