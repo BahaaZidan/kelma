@@ -5,6 +5,7 @@ import { eq, sql } from 'drizzle-orm';
 
 import { PAGEVIEW_COST } from '$lib/constants';
 import { LANGS } from '$lib/i18n';
+import { logger } from '$lib/logger';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { getAuth, type Session } from '$lib/server/auth';
 import { getDB } from '$lib/server/db';
@@ -16,6 +17,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	const db = getDB(event.platform?.env.DB);
 	const auth = getAuth(db);
 	const session = await auth.api.getSession({ headers: event.request.headers });
+	logger({ session });
 	event.locals.session = session as Session;
 
 	if (event.locals.session && session) {
