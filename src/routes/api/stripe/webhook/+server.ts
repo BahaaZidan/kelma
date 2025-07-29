@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { env } from '$env/dynamic/private';
 
 import { PAGEVIEW_COST_SCALER } from '$lib/constants';
+import { logger } from '$lib/logger';
 import { getDB } from '$lib/server/db';
 import { userTable } from '$lib/server/db/schema';
 import { getStripe } from '$lib/server/stripe';
@@ -17,8 +18,11 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 	let event: Stripe.Event;
 	try {
+		logger({ signature, SECRET_STRIPE_WEBHOOK: env.SECRET_STRIPE_WEBHOOK });
+		logger({ rawBody });
 		event = stripe.webhooks.constructEvent(rawBody, signature!, env.SECRET_STRIPE_WEBHOOK);
 	} catch (_err) {
+		logger({ message: 'Bad signature', status: 400 });
 		return new Response('Bad signature', { status: 400 });
 	}
 
@@ -26,6 +30,8 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 		const session = event.data.object;
 		const userId = session.metadata?.userId;
 		const amount_in_cents = session.amount_total!;
+
+		logger({ session, userId, amount_in_cents });
 
 		if (userId && amount_in_cents) {
 			try {
@@ -35,6 +41,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 					.set({ balance: sql`${userTable.balance} + ${amount_in_cents * PAGEVIEW_COST_SCALER}` })
 					.where(eq(userTable.id, userId));
 			} catch (_e) {
+				logger({ db_error: _e });
 				return new Response('Something went wrong!', { status: 500 });
 			}
 		}
