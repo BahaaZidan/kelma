@@ -51,7 +51,7 @@
 		// const canonicalURL = getCanonicalURL();
 
 		iframe = document.createElement('iframe');
-		iframe.src = `http://localhost:5173/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(pageTitle)}&url=${encodeParam(window.location.href)}&theme=${theme}`;
+		iframe.src = `https://kelma.dev/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(pageTitle)}&url=${encodeParam(window.location.href)}&theme=${theme}`;
 		iframe.width = '100%';
 		iframe.style.border = 'none';
 		iframe.style.display = 'block';
