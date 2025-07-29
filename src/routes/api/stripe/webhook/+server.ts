@@ -13,17 +13,13 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, platform }) => {
 	const stripe = getStripe();
-	const payload = await request.arrayBuffer();
+	const payload = Buffer.from(await request.arrayBuffer());
 	const signature = request.headers.get('stripe-signature');
 	if (!signature) return new Response('Missing signature', { status: 400 });
 
 	let event: Stripe.Event;
 	try {
-		event = stripe.webhooks.constructEvent(
-			Buffer.from(payload),
-			signature,
-			env.SECRET_STRIPE_WEBHOOK
-		);
+		event = stripe.webhooks.constructEvent(payload, signature, env.SECRET_STRIPE_WEBHOOK);
 	} catch (_err) {
 		logger({ message: 'Bad signature', _err });
 		return new Response('Bad signature', { status: 400 });
