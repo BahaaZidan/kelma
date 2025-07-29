@@ -67,7 +67,7 @@
 		<Textarea
 			{superform}
 			field="content"
-			placeholder={$page.closed ? m.page_closed_message() : undefined}
+			placeholder={$page.closed ? m.page_closed_message() : m.write_a_comment()}
 			{disabled}
 		/>
 		<button
