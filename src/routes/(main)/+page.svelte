@@ -75,18 +75,18 @@
 					class="tooltip tooltip-secondary"
 					data-tip="Standard Arabic"
 				>
-					Arabic
+					Arabic,
 				</div>
-				,
+
 				<div
 					class="tooltip tooltip-secondary"
 					data-tip="Cantonese, Simplified Chinese, and Traditional Chinese"
 				>
-					Chinese
+					Chinese,
 				</div>
-				,
-				<div class="tooltip tooltip-secondary" data-tip="Neutral Spanish">Spanish</div>
-				, Hindi, and
+
+				<div class="tooltip tooltip-secondary" data-tip="Neutral Spanish">Spanish,</div>
+				Hindi, and
 				<div
 					class="tooltip tooltip-secondary"
 					data-tip={Object.values(LANGS)
@@ -94,9 +94,8 @@
 						.map((l) => l.label)
 						.join(', ')}
 				>
-					many more
+					many more.
 				</div>
-				.
 			</FeatureCard>
 		</div>
 	</section>
