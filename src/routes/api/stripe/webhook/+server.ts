@@ -21,7 +21,12 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	try {
 		event = stripe.webhooks.constructEvent(payload, signature, env.SECRET_STRIPE_WEBHOOK);
 	} catch (_err) {
-		logger({ message: 'Bad signature', _err, errortype: typeof _err });
+		logger({
+			message: 'Bad signature',
+			_err,
+			errortype: typeof _err,
+			props: Object.entries(_err as object),
+		});
 		return new Response('Bad signature', { status: 400 });
 	}
 
