@@ -14,7 +14,8 @@
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
 	import TextInput from '$lib/client/components/TextInput.svelte';
-	import { locales, type Locale } from '$lib/paraglide/runtime';
+	import { LANGS } from '$lib/i18n';
+	import { type Locale } from '$lib/paraglide/runtime';
 
 	import type { PageProps } from './$houdini';
 	import BaseInfoForm from './BaseInfoForm.svelte';
@@ -147,8 +148,8 @@
 						<legend class="fieldset-legend">Language</legend>
 						<select class="select" bind:value={embed_config.language}>
 							<option disabled selected>Language</option>
-							{#each locales as locale (locale)}
-								<option>{locale}</option>
+							{#each Object.values(LANGS) as locale (locale)}
+								<option value={locale.code}>{locale.native_label}</option>
 							{/each}
 						</select>
 					</fieldset>
