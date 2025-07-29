@@ -273,8 +273,6 @@ export const resolvers: Resolvers = {
 		page: async (parent, { input: { slug, overrides } }, { db, request }) => {
 			if (!isDomainTrusted(request, parent.domains)) return null;
 
-			logger(JSON.stringify({ slug, overrides }));
-
 			if (overrides) {
 				const [page] = await db
 					.insert(pageTable)
