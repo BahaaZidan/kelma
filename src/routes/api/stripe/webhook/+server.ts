@@ -7,7 +7,7 @@ import { PAGEVIEW_COST_SCALER } from '$lib/constants';
 import { logger } from '$lib/logger';
 import { getDB } from '$lib/server/db';
 import { userTable } from '$lib/server/db/schema';
-import { getStripe } from '$lib/server/stripe';
+import { cryptoProvider, getStripe } from '$lib/server/stripe';
 
 import type { RequestHandler } from './$types';
 
@@ -20,7 +20,13 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	try {
 		logger({ signature, SECRET_STRIPE_WEBHOOK: env.SECRET_STRIPE_WEBHOOK });
 		logger({ rawBody });
-		event = stripe.webhooks.constructEvent(rawBody, signature!, env.SECRET_STRIPE_WEBHOOK);
+		event = stripe.webhooks.constructEvent(
+			rawBody,
+			signature!,
+			env.SECRET_STRIPE_WEBHOOK,
+			undefined,
+			cryptoProvider
+		);
 	} catch (_err) {
 		logger({ message: 'Bad signature', _err });
 		return new Response('Bad signature', { status: 400 });
