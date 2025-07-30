@@ -5,22 +5,18 @@
 	} from 'simple-icons';
 
 	import {
-		authClient,
 		//  githubSignIn,
 		googleSignIn,
 		signOut,
 	} from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
+	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	const session = authClient.useSession();
-
-	$effect(() => {
-		if ($session.data) window.close();
-	});
+	const viewer = getViewerContext();
 </script>
 
 <svelte:head>
@@ -29,10 +25,10 @@
 
 <div class="flex h-screen w-screen items-center justify-center">
 	<div class="flex w-full max-w-md flex-col items-center gap-2 p-4 font-mono">
-		{#if $session.data}
+		{#if viewer}
 			<div>
 				{m.logged_in_as()}
-				<b>{$session.data.user.name}</b>
+				<b>{viewer.name}</b>
 			</div>
 			<button class="btn btn-ghost" onclick={signOut}>{m.logout()}</button>
 		{:else}
