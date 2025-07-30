@@ -19,15 +19,6 @@
 
 	let { data }: PageProps = $props();
 
-	const TogglePageClosed = graphql(`
-		mutation TogglePageClosed($id: ID!) {
-			togglePageClosed(id: $id) {
-				id
-				closed
-			}
-		}
-	`);
-	let viewer = getViewerContext();
 	let query = graphql(`
 		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
 			node(id: $websiteId) {
@@ -57,9 +48,6 @@
 		}
 	`);
 
-	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
-	let fetchingMore = $state(false);
-
 	function sendHeight() {
 		const height = document.body.scrollHeight;
 		window.parent.postMessage(
@@ -79,6 +67,19 @@
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 	});
+
+	const TogglePageClosed = graphql(`
+		mutation TogglePageClosed($id: ID!) {
+			togglePageClosed(id: $id) {
+				id
+				closed
+			}
+		}
+	`);
+	let viewer = getViewerContext();
+
+	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
+	let fetchingMore = $state(false);
 </script>
 
 <svelte:head>
