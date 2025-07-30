@@ -28,7 +28,37 @@
 		}
 	`);
 	let viewer = getViewerContext();
-	let query = data.BigWebsiteQuery;
+	let query = graphql(`
+		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
+			node(id: $websiteId) {
+				... on Website {
+					...WebsiteOwner
+					id
+					name
+					owner {
+						id
+					}
+					page(input: $pageInput) {
+						...IsPageClosed
+						id
+						closed
+						url
+						comments(first: 10) @paginate(name: "Embed_Comments") {
+							edges {
+								node {
+									id
+									...CommentComponent
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	`);
+	onMount(async () => {
+		await query.fetch({ variables: data.queryVariables });
+	});
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
 	let fetchingMore = $state(false);
 

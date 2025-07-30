@@ -2,8 +2,6 @@ import { error } from '@sveltejs/kit';
 import themeObject from 'daisyui/theme/object';
 import * as v from 'valibot';
 
-import { load_BigWebsiteQuery } from '$houdini';
-
 import type { PageLoad } from './$houdini';
 
 export const load: PageLoad = async (event) => {
@@ -17,19 +15,16 @@ export const load: PageLoad = async (event) => {
 	const searchParams = searchParamsValidation.output;
 
 	return {
-		...(await load_BigWebsiteQuery({
-			event,
-			variables: {
-				websiteId: website_id,
-				pageInput: {
-					slug,
-					overrides: {
-						name: searchParams.name,
-						url: searchParams.url,
-					},
+		queryVariables: {
+			websiteId: website_id,
+			pageInput: {
+				slug,
+				overrides: {
+					name: searchParams.name,
+					url: searchParams.url,
 				},
 			},
-		})),
+		},
 		theme: searchParams.theme,
 	};
 };
