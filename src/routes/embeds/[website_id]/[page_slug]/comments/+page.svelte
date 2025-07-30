@@ -61,7 +61,7 @@
 	}
 	onMount(async () => {
 		await query.fetch({ variables: data.queryVariables });
-
+		sendHeight();
 		window.addEventListener('load', sendHeight);
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
