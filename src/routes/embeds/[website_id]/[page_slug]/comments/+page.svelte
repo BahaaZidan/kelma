@@ -61,7 +61,6 @@
 	}
 	onMount(async () => {
 		await query.fetch({ variables: data.queryVariables });
-		console.log({ website, data: $query.data });
 
 		window.addEventListener('load', sendHeight);
 		const observer = new MutationObserver(sendHeight);
@@ -166,12 +165,16 @@
 				</div>
 			{/if}
 		</div>
-		<span class="py-6 font-mono">
+		<span class="py-3 font-mono">
 			{m.powered_by()}
 			<a href="https://kelma.dev/" target="_blank" class="link-hover font-mono font-bold">
 				{m.kelma()}
 			</a>
 		</span>
+	</div>
+{:else if $query.fetching}
+	<div class="flex h-56 items-center justify-center">
+		<span class="loading loading-spinner loading-xl"></span>
 	</div>
 {/if}
 
