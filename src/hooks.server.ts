@@ -1,4 +1,4 @@
-import { redirect, type Handle } from '@sveltejs/kit';
+import { type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
@@ -30,7 +30,6 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		event.locals.session.websitesOwnedByCurrentUser = websitesOwnedByCurrentUser;
 	}
 
-	if (event.url.pathname.includes('console') && !session?.user) throw redirect(303, '/');
 	return svelteKitHandler({ event, resolve, auth });
 };
 
@@ -46,8 +45,8 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 
 const handleEmbedPageview: Handle = async ({ event, resolve }) => {
 	const response = resolve(event);
-	const not_found = new Response('not_found', { status: 404 });
-	const payment_required = new Response('payment_required', { status: 402 });
+	const not_found = new Response(null, { status: 404 });
+	const payment_required = new Response(null, { status: 402 });
 
 	if (event.route.id === '/embeds/[website_id]/[page_slug]/comments' && event.params.website_id) {
 		const website_id = Number(fromGlobalId(event.params.website_id).id);

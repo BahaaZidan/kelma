@@ -13,8 +13,7 @@ export const load: PageLoad = async (event) => {
 		searchParamsSchema,
 		Object.fromEntries(url.searchParams.entries())
 	);
-	if (!searchParamsValidation.success)
-		return error(400, searchParamsValidation.issues.map((i) => i.message).join('\n'));
+	if (!searchParamsValidation.success) return error(400);
 	const searchParams = searchParamsValidation.output;
 
 	return {
