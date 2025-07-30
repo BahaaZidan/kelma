@@ -4,7 +4,6 @@ import { DateTimeResolver, URLResolver, USCurrencyResolver } from 'graphql-scala
 import * as v from 'valibot';
 
 import { PAGEVIEW_COST_IN_CENTS, PAGEVIEW_COST_SCALER } from '$lib/constants';
-import { logger } from '$lib/logger';
 import type { DB } from '$lib/server/db';
 import {
 	commentTable,
@@ -26,7 +25,6 @@ export const resolvers: Resolvers = {
 	Query: {
 		node: async (_parent, { id }, { db }) => {
 			const { type, id: dbId } = fromGlobalId(id);
-			logger({ id, type, dbId });
 			switch (type) {
 				case 'User': {
 					const user = await db.query.user.findFirst({ where: (t, { eq }) => eq(t.id, dbId) });

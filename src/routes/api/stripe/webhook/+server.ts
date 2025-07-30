@@ -19,28 +19,20 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 	let event: Stripe.Event;
 	try {
-		logger({ signature, payload });
 		event = await stripe.webhooks.constructEventAsync(
 			payload,
 			signature,
 			env.SECRET_STRIPE_WEBHOOK
 		);
-	} catch (_err) {
-		logger({
-			message: 'Bad signature',
-			_err,
-			errortype: typeof _err,
-			props: Object.entries(_err as object),
-		});
-		return new Response(_err, { status: 400, statusText: 'Bad signature test' });
+	} catch (error) {
+		logger('ERROR', { error, signature });
+		return new Response(error as BodyInit, { status: 400, statusText: 'Bad signature' });
 	}
 
 	if (event.type === 'checkout.session.completed') {
 		const session = event.data.object;
 		const userId = session.metadata?.userId;
 		const amount_in_cents = session.amount_total!;
-
-		logger({ session, userId, amount_in_cents });
 
 		if (userId && amount_in_cents) {
 			try {
@@ -49,8 +41,8 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 					.update(userTable)
 					.set({ balance: sql`${userTable.balance} + ${amount_in_cents * PAGEVIEW_COST_SCALER}` })
 					.where(eq(userTable.id, userId));
-			} catch (_e) {
-				logger({ db_error: _e });
+			} catch (error) {
+				logger('ERROR', { db_error: error, userId });
 				return new Response('Something went wrong!', { status: 500 });
 			}
 		}
