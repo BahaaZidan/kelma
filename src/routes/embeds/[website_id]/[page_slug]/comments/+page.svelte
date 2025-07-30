@@ -56,9 +56,7 @@
 			}
 		}
 	`);
-	onMount(async () => {
-		await query.fetch({ variables: data.queryVariables });
-	});
+
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
 	let fetchingMore = $state(false);
 
@@ -73,7 +71,9 @@
 			'*'
 		);
 	}
-	onMount(() => {
+	onMount(async () => {
+		await query.fetch({ variables: data.queryVariables });
+
 		window.addEventListener('load', sendHeight);
 		const observer = new MutationObserver(sendHeight);
 		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
