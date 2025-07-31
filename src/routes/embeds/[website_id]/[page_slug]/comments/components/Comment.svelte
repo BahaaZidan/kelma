@@ -24,9 +24,8 @@
 
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import Textarea from '$lib/client/components/Textarea.svelte';
-	import { dateLocaleMap } from '$lib/client/i18n';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
-	import { getDir } from '$lib/i18n';
+	import { dateLocaleMap, getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
 	import { contentSchema } from '$lib/validation-schemas';

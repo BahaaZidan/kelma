@@ -1,3 +1,27 @@
+import {
+	ar,
+	bn,
+	de,
+	enUS,
+	es,
+	faIR,
+	fr,
+	hi,
+	id,
+	ja,
+	ko,
+	pt,
+	ru,
+	ta,
+	te,
+	tr,
+	vi,
+	zhCN,
+	zhHK,
+	zhTW,
+	type Locale as DateLocale,
+} from 'date-fns/locale';
+
 import { getLocale, type Locale } from '$lib/paraglide/runtime';
 
 export const LANGS: Record<
@@ -40,3 +64,37 @@ export function getDir() {
 	const locale = getLocale();
 	return LANGS[locale].dir;
 }
+
+export const dateLocaleMap: Record<Locale, Pick<DateLocale, 'formatDistance'>> = {
+	ar,
+	en: enUS,
+	// TODO: missing
+	'fa-AF': faIR,
+	fa: faIR,
+	// TODO: probably missed up
+	'zh-Hans': zhCN,
+	'zh-Hant': zhHK,
+	yue: zhTW,
+	// TODO: missing
+	am: enUS,
+	bn,
+	de,
+	es,
+	fr,
+	hi,
+	id,
+	ja,
+	ko,
+	// TODO: missing
+	mr: enUS,
+	pt,
+	ru,
+	// TODO: missing
+	sw: enUS,
+	ta,
+	te,
+	tr,
+	// TODO: missing
+	ur: enUS,
+	vi,
+} as const;
