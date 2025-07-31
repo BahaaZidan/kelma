@@ -8,5 +8,7 @@ export function isDomainTrusted(request: RequestEvent['request'], trustedDomains
 	if (!referer) return true;
 
 	const domain = new URL(referer).hostname;
-	return [...trustedDomains, 'kelma.dev'].includes(domain);
+	if (domain === 'kelma.dev') return true;
+
+	return trustedDomains.includes(domain);
 }
