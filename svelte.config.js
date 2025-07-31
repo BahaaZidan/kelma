@@ -15,6 +15,19 @@ const config = {
 		alias: {
 			$houdini: '.houdini/',
 		},
+
+		csp: {
+			directives: {
+				'default-src': ['self'],
+				'script-src': ['self'],
+				'object-src': ['none'],
+				'img-src': ['self', 'data:', 'https:'],
+				'style-src': ['self', 'unsafe-inline'],
+				'base-uri': ['none'],
+				'connect-src': ['self', 'https:', 'http:'],
+				'frame-ancestors': ['*'],
+			},
+		},
 	},
 };
 
