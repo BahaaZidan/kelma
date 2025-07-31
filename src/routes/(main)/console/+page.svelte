@@ -16,6 +16,7 @@
 	import TextInput from '$lib/client/components/TextInput.svelte';
 	import { LANGS } from '$lib/i18n';
 	import { type Locale } from '$lib/paraglide/runtime';
+	import { route } from '$lib/routes';
 
 	import type { PageProps } from './$houdini';
 	import BaseInfoForm from './BaseInfoForm.svelte';
@@ -251,6 +252,19 @@
 				</div>
 			</section>
 		{/if}
+	{:else}
+		<div role="alert" class="alert alert-info">
+			<CircleAlertIcon />
+			<span>
+				<a
+					href="{route('/login')}?callback_url={env.PUBLIC_BASE_URL + route('/console')}"
+					class="btn btn-link p-0 align-baseline"
+				>
+					Login
+				</a>
+				to get started.
+			</span>
+		</div>
 	{/if}
 </div>
 
