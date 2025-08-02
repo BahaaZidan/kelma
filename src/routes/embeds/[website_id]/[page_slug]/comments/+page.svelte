@@ -6,8 +6,7 @@
 
 	import { graphql } from '$houdini';
 
-	import { signOut } from '$lib/client/auth';
-	import { getViewerContext } from '$lib/client/viewer.svelte';
+	import { fetchWithAuth, signOut } from '$lib/client/auth';
 	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -47,6 +46,15 @@
 			}
 		}
 	`);
+	let viewerQuery = graphql(`
+		query EmbedViewerQuery {
+			viewer {
+				id
+				name
+				image
+			}
+		}
+	`);
 
 	function sendHeight() {
 		const height = document.body.scrollHeight;
@@ -60,7 +68,11 @@
 		);
 	}
 	onMount(async () => {
-		await query.fetch({ variables: data.queryVariables });
+		await Promise.all([
+			query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth }),
+			viewerQuery.fetch({ fetch: fetchWithAuth }),
+		]);
+		console.log({ viewer });
 		sendHeight();
 		window.addEventListener('load', sendHeight);
 		const observer = new MutationObserver(sendHeight);
@@ -75,9 +87,9 @@
 			}
 		}
 	`);
-	let viewer = getViewerContext();
 
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
+	let viewer = $derived($viewerQuery.data?.viewer);
 	let fetchingMore = $state(false);
 </script>
 
@@ -107,7 +119,11 @@
 											class="toggle"
 											disabled={$TogglePageClosed.fetching}
 											onchange={() => {
-												if (website.page) TogglePageClosed.mutate({ id: website.page.id });
+												if (website.page)
+													TogglePageClosed.mutate(
+														{ id: website.page.id },
+														{ fetch: fetchWithAuth }
+													);
 											}}
 										/>
 										{m.closed()}

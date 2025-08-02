@@ -22,6 +22,7 @@
 		type WebsiteOwner,
 	} from '$houdini';
 
+	import { fetchWithAuth } from '$lib/client/auth';
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import Textarea from '$lib/client/components/Textarea.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
@@ -125,9 +126,12 @@
 			id: `edit_comment_superform_${$comment.id}`,
 			async onUpdate({ form }) {
 				if (form.valid) {
-					await UpdateCommentContent.mutate({
-						input: { commentId: $comment.id, content: form.data.content },
-					});
+					await UpdateCommentContent.mutate(
+						{
+							input: { commentId: $comment.id, content: form.data.content },
+						},
+						{ fetch: fetchWithAuth }
+					);
 					editing = false;
 				}
 			},
@@ -189,7 +193,7 @@
 							},
 						]}
 						onclick={() => {
-							ToggleCommentLike.mutate({ id: $comment.id });
+							ToggleCommentLike.mutate({ id: $comment.id }, { fetch: fetchWithAuth });
 						}}
 						disabled={$ToggleCommentLike.fetching}
 					>
@@ -234,7 +238,7 @@
 					bind:open={replies_list_shown}
 					ontoggle={(e) => {
 						if (!e.currentTarget.open) return;
-						repliesQuery.fetch({ variables: { id: $comment.id } });
+						repliesQuery.fetch({ variables: { id: $comment.id }, fetch: fetchWithAuth });
 					}}
 				>
 					<summary class="btn btn-ghost btn-xs w-24 p-1">
@@ -292,7 +296,7 @@
 							onclick={async () => {
 								let confirmed = confirm(m.delete_comment_confirm());
 								if (!confirmed) return;
-								await DeleteComment.mutate({ id: $comment.id });
+								await DeleteComment.mutate({ id: $comment.id }, { fetch: fetchWithAuth });
 								alert(m.comment_deleted());
 							}}
 						>
@@ -315,9 +319,12 @@
 							onclick={() => {
 								let confirmed = confirm(m.ban_author_confirm());
 								if (confirmed)
-									UpdateUserWebsiteBan.mutate({
-										input: { userId: $comment.author.id, websiteId: $website_.id, banned: true },
-									});
+									UpdateUserWebsiteBan.mutate(
+										{
+											input: { userId: $comment.author.id, websiteId: $website_.id, banned: true },
+										},
+										{ fetch: fetchWithAuth }
+									);
 							}}
 						>
 							<BanIcon />

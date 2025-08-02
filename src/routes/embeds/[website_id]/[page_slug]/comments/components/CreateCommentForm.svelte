@@ -4,6 +4,7 @@
 
 	import { fragment, graphql, type IsPageClosed } from '$houdini';
 
+	import { fetchWithAuth } from '$lib/client/auth';
 	import Textarea from '$lib/client/components/Textarea.svelte';
 	import ViewerAvatar from '$lib/client/components/ViewerAvatar.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
@@ -45,14 +46,20 @@
 		async onUpdate({ form }) {
 			if (!form.valid) return;
 			if (!parentId) {
-				await CreateComment.mutate({
-					input: { pageId: $page.id, content: form.data.content },
-				});
+				await CreateComment.mutate(
+					{
+						input: { pageId: $page.id, content: form.data.content },
+					},
+					{ fetch: fetchWithAuth }
+				);
 			} else {
-				await CreateReply.mutate({
-					parentId,
-					input: { pageId: $page.id, content: form.data.content, parentId },
-				});
+				await CreateReply.mutate(
+					{
+						parentId,
+						input: { pageId: $page.id, content: form.data.content, parentId },
+					},
+					{ fetch: fetchWithAuth }
+				);
 			}
 
 			onSuccess?.();
