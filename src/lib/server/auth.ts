@@ -1,5 +1,9 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter, type DB } from 'better-auth/adapters/drizzle';
+import {
+	bearer,
+	// createAuthMiddleware
+} from 'better-auth/plugins';
 
 import { env as privateVars } from '$env/dynamic/private';
 import { env as publicVars } from '$env/dynamic/public';
@@ -21,6 +25,7 @@ export const getAuth = (db: DB) => {
 				clientSecret: privateVars.AUTH_GOOGLE_SECRET,
 			},
 		},
+		plugins: [bearer()],
 		trustedOrigins: ['*'],
 		advanced: {
 			defaultCookieAttributes: {
@@ -38,6 +43,13 @@ export const getAuth = (db: DB) => {
 				},
 			},
 		},
+		// hooks: {
+		// 	after: createAuthMiddleware(async (ctx) => {
+		// 		if (ctx.path.startsWith('/callback') && ctx.context.newSession) {
+		// 			throw ctx.redirect(`/hat?token=${ctx.context.newSession.session.token}`);
+		// 		}
+		// 	}),
+		// },
 	});
 };
 
