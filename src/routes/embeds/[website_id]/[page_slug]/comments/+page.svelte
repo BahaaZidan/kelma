@@ -19,7 +19,12 @@
 	let { data }: PageProps = $props();
 
 	let query = graphql(`
-		query BigWebsiteQuery($websiteId: ID!, $pageInput: PageInput!) {
+		query CommentEmbedQuery($websiteId: ID!, $pageInput: PageInput!) {
+			viewer {
+				id
+				name
+				image
+			}
 			node(id: $websiteId) {
 				... on Website {
 					...WebsiteOwner
@@ -46,15 +51,6 @@
 			}
 		}
 	`);
-	let viewerQuery = graphql(`
-		query EmbedViewerQuery {
-			viewer {
-				id
-				name
-				image
-			}
-		}
-	`);
 
 	function sendHeight() {
 		const height = document.body.scrollHeight;
@@ -73,10 +69,7 @@
 				console.log(data.token);
 				SessionToken.value = data.token;
 			}
-			await Promise.all([
-				query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth }),
-				viewerQuery.fetch({ fetch: fetchWithAuth }),
-			]);
+			await query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth });
 
 			sendHeight();
 			window.addEventListener('load', sendHeight);
@@ -97,7 +90,7 @@
 	`);
 
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
-	let viewer = $derived($viewerQuery.data?.viewer);
+	let viewer = $derived($query.data?.viewer);
 	let fetchingMore = $state(false);
 </script>
 
