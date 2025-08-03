@@ -234,6 +234,7 @@
 						create_reply_form_shown = false;
 						replies_list_shown = true;
 					}}
+					{viewer}
 				/>
 			{/if}
 			{#if $comment.repliesCount}

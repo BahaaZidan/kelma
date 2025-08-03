@@ -5,9 +5,8 @@
 	import { fragment, graphql, type IsPageClosed } from '$houdini';
 
 	import { fetchWithAuth } from '$lib/client/auth';
+	import Avatar from '$lib/client/components/Avatar.svelte';
 	import Textarea from '$lib/client/components/Textarea.svelte';
-	import ViewerAvatar from '$lib/client/components/ViewerAvatar.svelte';
-	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { contentSchema } from '$lib/validation-schemas';
 
@@ -17,10 +16,14 @@
 		page: IsPageClosed;
 		parentId?: string;
 		onSuccess?: () => unknown;
+		viewer?: {
+			id: string;
+			name: string;
+			image?: string | null;
+		} | null;
 	}
-	let { page: page_, parentId, onSuccess }: Props = $props();
+	let { page: page_, parentId, onSuccess, viewer }: Props = $props();
 	let page = $derived(fragment(page_, is_page_closed));
-	let viewer = getViewerContext();
 
 	const CreateReply = graphql(`
 		mutation CreateReply($input: CreateCommentInput!, $parentId: ID!) {
@@ -69,7 +72,17 @@
 </script>
 
 <div class="flex w-full gap-4">
-	<ViewerAvatar />
+	{#if viewer}
+		<Avatar
+			src={viewer.image}
+			alt="{viewer.name} {m.profile_picture()}"
+			class="mt-1 size-9"
+			fallback={viewer.name}
+		/>
+	{:else}
+		<Avatar src="/default_avatar.jpg" class="mt-1 size-9" />
+	{/if}
+
 	<form method="post" use:superform.enhance class="flex w-full flex-col items-end gap-2">
 		<Textarea
 			{superform}

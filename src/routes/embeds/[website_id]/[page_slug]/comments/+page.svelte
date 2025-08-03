@@ -148,7 +148,7 @@
 		</div>
 
 		<div class="flex w-full flex-col gap-4 px-2">
-			<CreateCommentForm page={website.page} />
+			<CreateCommentForm page={website.page} {viewer} />
 			{#each website.page.comments.edges as { node } (node.id)}
 				<Comment data={node} {website} page={website.page} {viewer} />
 			{/each}
