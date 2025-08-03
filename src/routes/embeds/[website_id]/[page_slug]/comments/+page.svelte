@@ -86,6 +86,7 @@
 	let website = $derived($query.data?.node?.__typename === 'Website' ? $query.data?.node : null);
 	let viewer = $derived($query.data?.viewer);
 	let fetchingMore = $state(false);
+	let signing_out = $state(false);
 </script>
 
 <svelte:head>
@@ -131,7 +132,20 @@
 						</details>
 					{/if}
 				</div>
-				<button class="btn btn-ghost" onclick={signOut}>{m.logout()}</button>
+				<button
+					class="btn btn-ghost"
+					disabled={signing_out}
+					onclick={async () => {
+						signing_out = true;
+						await signOut();
+						signing_out = false;
+					}}
+				>
+					{#if signing_out}
+						<span class="loading loading-spinner loading-sm"></span>
+					{/if}
+					{m.logout()}
+				</button>
 			{:else}
 				<span>
 					{m.you_must()}
