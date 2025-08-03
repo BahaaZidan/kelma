@@ -61,9 +61,7 @@ const plugin = () => {
 						return context.path === '/callback/:id';
 					},
 					handler: createAuthMiddleware(async (context) => {
-						const token =
-							context.context.newSession?.session.token ||
-							context.context.responseHeaders?.get('set-auth-token');
+						const token = context.context.newSession?.session.token;
 						const location = context.context.responseHeaders?.get('location');
 
 						const dist = new URL(`?token=${token}`, location!).toString();

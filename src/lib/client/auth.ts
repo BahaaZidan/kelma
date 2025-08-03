@@ -29,7 +29,13 @@ export const fetchWithAuth: typeof fetch = (input, init = {}) => {
 };
 
 export async function signOut() {
-	await authClient.signOut();
+	await authClient.signOut({
+		fetchOptions: {
+			headers: {
+				Authorization: `Bearer ${SessionToken.value}`,
+			},
+		},
+	});
 	SessionToken.value = '';
 	window.location.reload();
 }
