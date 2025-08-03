@@ -3,6 +3,8 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { eq, sql } from 'drizzle-orm';
 
+import { building } from '$app/environment';
+
 import { PAGEVIEW_COST } from '$lib/constants';
 import { LANGS } from '$lib/i18n';
 import { paraglideMiddleware } from '$lib/paraglide/server';
@@ -30,7 +32,7 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		event.locals.session.websitesOwnedByCurrentUser = websitesOwnedByCurrentUser;
 	}
 
-	return svelteKitHandler({ event, resolve, auth });
+	return svelteKitHandler({ event, resolve, auth, building });
 };
 
 const handleParaglide: Handle = ({ event, resolve }) =>
