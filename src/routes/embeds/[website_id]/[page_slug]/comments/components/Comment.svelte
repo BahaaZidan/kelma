@@ -25,7 +25,6 @@
 	import { fetchWithAuth } from '$lib/client/auth';
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import Textarea from '$lib/client/components/Textarea.svelte';
-	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { dateLocaleMap, getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -39,9 +38,14 @@
 		data: CommentComponent;
 		website: WebsiteOwner;
 		page: IsPageClosed;
+		viewer?: {
+			id: string;
+			name: string;
+			image?: string | null;
+		} | null;
 	};
 
-	let { data, website, page }: Props = $props();
+	let { data, website, page, viewer }: Props = $props();
 
 	let comment = $derived(
 		fragment(
@@ -65,7 +69,6 @@
 
 	let page_ = $derived(fragment(page, is_page_closed));
 	let website_ = $derived(fragment(website, website_owner));
-	let viewer = getViewerContext();
 	let permissions = $derived({
 		delete: $comment.author.id === viewer?.id || viewer?.id === $website_.owner.id,
 		edit: $comment.author.id === viewer?.id,
@@ -254,7 +257,7 @@
 					</summary>
 					<div class="flex flex-col gap-2">
 						{#each replies as reply (reply.id)}
-							<Comment data={reply} {website} {page} />
+							<Comment data={reply} {website} {page} {viewer} />
 						{/each}
 						{#if $repliesQuery.pageInfo.hasNextPage}
 							<div>

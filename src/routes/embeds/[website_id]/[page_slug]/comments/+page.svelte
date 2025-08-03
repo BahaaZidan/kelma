@@ -64,20 +64,14 @@
 		);
 	}
 	onMount(async () => {
-		try {
-			if (data.token) {
-				console.log(data.token);
-				SessionToken.value = data.token;
-			}
-			await query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth });
+		if (data.token) SessionToken.value = data.token;
 
-			sendHeight();
-			window.addEventListener('load', sendHeight);
-			const observer = new MutationObserver(sendHeight);
-			observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-		} catch (e) {
-			console.error({ e });
-		}
+		await query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth });
+
+		sendHeight();
+		window.addEventListener('load', sendHeight);
+		const observer = new MutationObserver(sendHeight);
+		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
 	});
 
 	const TogglePageClosed = graphql(`
@@ -156,7 +150,7 @@
 		<div class="flex w-full flex-col gap-4 px-2">
 			<CreateCommentForm page={website.page} />
 			{#each website.page.comments.edges as { node } (node.id)}
-				<Comment data={node} {website} page={website.page} />
+				<Comment data={node} {website} page={website.page} {viewer} />
 			{/each}
 
 			{#if $query.pageInfo.hasNextPage}
