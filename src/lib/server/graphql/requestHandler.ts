@@ -1,5 +1,4 @@
 import { EnvelopArmorPlugin } from '@escape.tech/graphql-armor';
-import { useDisableIntrospection } from '@graphql-yoga/plugin-disable-introspection';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createSchema, createYoga } from 'graphql-yoga';
 
@@ -21,12 +20,9 @@ export const requestHandler = createYoga<RequestEvent>({
 	fetchAPI: { Response },
 	context: (event) => {
 		const db = getDB(event.platform?.env.DB);
-
 		return { ...event, db, loaders: createLoaders(db) };
 	},
-	// graphiql: false,
 	plugins: [
-		// useDisableIntrospection(),
 		EnvelopArmorPlugin({
 			maxDepth: {
 				n: 10,
