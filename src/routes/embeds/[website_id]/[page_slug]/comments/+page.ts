@@ -26,6 +26,7 @@ export const load: PageLoad = async (event) => {
 			},
 		},
 		theme: searchParams.theme,
+		token: searchParams.token,
 	};
 };
 
@@ -35,4 +36,5 @@ const searchParamsSchema = v.object({
 	name: v.pipe(v.string(), v.trim(), v.nonEmpty()),
 	url: v.pipe(v.string(), v.trim(), v.url()),
 	theme: v.optional(v.picklist(supportedThemes), 'business'),
+	token: v.optional(v.string()),
 });

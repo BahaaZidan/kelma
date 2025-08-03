@@ -47,11 +47,12 @@
 			return;
 		}
 
-		const pageTitle = document.title;
-		// const canonicalURL = getCanonicalURL();
+		const page_title = document.title;
+		const host_url = window.location.href;
+		const token = new URL(host_url).searchParams.get('token');
 
 		iframe = document.createElement('iframe');
-		iframe.src = `https://kelma.dev/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(pageTitle)}&url=${encodeParam(window.location.href)}&theme=${theme}`;
+		iframe.src = `https://kelma.dev/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(page_title)}&url=${encodeParam(host_url)}&theme=${theme}&token=${token}`;
 		iframe.width = '100%';
 		iframe.style.border = 'none';
 		iframe.style.display = 'block';
@@ -60,6 +61,7 @@
 		iframe.style.background = 'transparent';
 		iframe.allowTransparency = 'true';
 		iframe.setAttribute('frameborder', '0');
+		iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-top-navigation';
 
 		el.innerHTML = ''; // Clear existing content
 		el.appendChild(iframe);

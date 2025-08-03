@@ -1,9 +1,7 @@
 import { betterAuth } from 'better-auth';
+import type { BetterAuthPlugin } from 'better-auth';
 import { drizzleAdapter, type DB } from 'better-auth/adapters/drizzle';
-import {
-	bearer,
-	// createAuthMiddleware
-} from 'better-auth/plugins';
+import { bearer, createAuthMiddleware } from 'better-auth/plugins';
 
 import { env as privateVars } from '$env/dynamic/private';
 import { env as publicVars } from '$env/dynamic/public';
@@ -25,7 +23,7 @@ export const getAuth = (db: DB) => {
 				clientSecret: privateVars.AUTH_GOOGLE_SECRET,
 			},
 		},
-		plugins: [bearer()],
+		plugins: [bearer(), plugin()],
 		trustedOrigins: ['*'],
 		advanced: {
 			defaultCookieAttributes: {
@@ -43,13 +41,6 @@ export const getAuth = (db: DB) => {
 				},
 			},
 		},
-		// hooks: {
-		// 	after: createAuthMiddleware(async (ctx) => {
-		// 		if (ctx.path.startsWith('/callback') && ctx.context.newSession) {
-		// 			throw ctx.redirect(`/hat?token=${ctx.context.newSession.session.token}`);
-		// 		}
-		// 	}),
-		// },
 	});
 };
 
@@ -58,4 +49,26 @@ type SessionBase = Auth['$Infer']['Session'];
 
 export type Session = Pick<SessionBase, 'session'> & { user: UserSelectModel } & {
 	websitesOwnedByCurrentUser?: number[];
+};
+
+const plugin = () => {
+	return {
+		id: 'my-plugin',
+		hooks: {
+			after: [
+				{
+					matcher(context) {
+						return context.path === '/callback/:id';
+					},
+					handler: createAuthMiddleware(async (context) => {
+						const token = context.context.responseHeaders?.get('set-auth-token');
+						const location = context.context.responseHeaders?.get('location');
+
+						const dist = new URL(`?token=${token}`, location!).toString();
+						throw context.redirect(dist);
+					}),
+				},
+			],
+		},
+	} satisfies BetterAuthPlugin;
 };

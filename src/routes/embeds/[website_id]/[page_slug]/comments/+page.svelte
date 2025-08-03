@@ -6,7 +6,7 @@
 
 	import { graphql } from '$houdini';
 
-	import { fetchWithAuth, signOut } from '$lib/client/auth';
+	import { fetchWithAuth, SessionToken, signOut } from '$lib/client/auth';
 	import { getDir } from '$lib/i18n';
 	import { m } from '$lib/paraglide/messages.js';
 	import { getLocale } from '$lib/paraglide/runtime';
@@ -68,11 +68,12 @@
 		);
 	}
 	onMount(async () => {
+		if (data.token) SessionToken.value = data.token;
 		await Promise.all([
 			query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth }),
 			viewerQuery.fetch({ fetch: fetchWithAuth }),
 		]);
-		console.log({ viewer });
+
 		sendHeight();
 		window.addEventListener('load', sendHeight);
 		const observer = new MutationObserver(sendHeight);
