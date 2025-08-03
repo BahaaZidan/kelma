@@ -68,16 +68,23 @@
 		);
 	}
 	onMount(async () => {
-		if (data.token) SessionToken.value = data.token;
-		await Promise.all([
-			query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth }),
-			viewerQuery.fetch({ fetch: fetchWithAuth }),
-		]);
+		try {
+			if (data.token) {
+				console.log(data.token);
+				SessionToken.value = data.token;
+			}
+			await Promise.all([
+				query.fetch({ variables: data.queryVariables, fetch: fetchWithAuth }),
+				viewerQuery.fetch({ fetch: fetchWithAuth }),
+			]);
 
-		sendHeight();
-		window.addEventListener('load', sendHeight);
-		const observer = new MutationObserver(sendHeight);
-		observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+			sendHeight();
+			window.addEventListener('load', sendHeight);
+			const observer = new MutationObserver(sendHeight);
+			observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+		} catch (e) {
+			console.error({ e });
+		}
 	});
 
 	const TogglePageClosed = graphql(`
