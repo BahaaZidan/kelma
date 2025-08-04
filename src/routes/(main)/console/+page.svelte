@@ -11,7 +11,6 @@
 	import { env } from '$env/dynamic/public';
 	import { graphql } from '$houdini';
 
-	import { fetchWithAuth } from '$lib/client/auth';
 	import Avatar from '$lib/client/components/Avatar.svelte';
 	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
 	import TextInput from '$lib/client/components/TextInput.svelte';
@@ -36,12 +35,9 @@
 		validators: valibot(baseInfoSchema),
 		async onUpdate({ form }) {
 			if (form.valid) {
-				const result = await CreateWebsite.mutate(
-					{
-						input: { name: form.data.name, domains: form.data.domains },
-					},
-					{ fetch: fetchWithAuth }
-				);
+				const result = await CreateWebsite.mutate({
+					input: { name: form.data.name, domains: form.data.domains },
+				});
 				selectedWebsiteId = result.data?.createWebsite.id;
 				createWebsiteDialog.close();
 			}
@@ -228,17 +224,14 @@
 															class="btn btn-sm btn-primary"
 															disabled={$UpdateUserWebsiteBan.fetching}
 															onclick={() => {
-																UpdateUserWebsiteBan.mutate(
-																	{
+																UpdateUserWebsiteBan.mutate({
+																	websiteId: website.id,
+																	input: {
+																		banned: false,
+																		userId: bannedUser.id,
 																		websiteId: website.id,
-																		input: {
-																			banned: false,
-																			userId: bannedUser.id,
-																			websiteId: website.id,
-																		},
 																	},
-																	{ fetch: fetchWithAuth }
-																);
+																});
 															}}
 														>
 															Unban
