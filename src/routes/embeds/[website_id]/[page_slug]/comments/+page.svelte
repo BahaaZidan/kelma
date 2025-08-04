@@ -191,7 +191,12 @@
 		</div>
 		<span class="py-3 font-mono">
 			{m.powered_by()}
-			<a href="https://kelma.dev/" target="_blank" class="link-hover font-mono font-bold">
+			<a
+				href="https://kelma.dev/"
+				target="_blank"
+				class="link-hover font-mono font-bold"
+				rel="noopener noreferrer"
+			>
 				{m.kelma()}
 			</a>
 		</span>
