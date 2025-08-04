@@ -28,14 +28,18 @@ export const fetchWithAuth: typeof fetch = (input, init = {}) => {
 	return fetch(input, modifiedInit);
 };
 
-export async function signOut() {
-	await authClient.signOut({
-		fetchOptions: {
-			headers: {
-				Authorization: `Bearer ${SessionToken.value}`,
-			},
-		},
-	});
+export async function signOut(sendBearer?: boolean) {
+	await authClient.signOut(
+		sendBearer
+			? {
+					fetchOptions: {
+						headers: {
+							Authorization: `Bearer ${SessionToken.value}`,
+						},
+					},
+				}
+			: undefined
+	);
 	SessionToken.value = '';
 	window.location.reload();
 }

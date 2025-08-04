@@ -137,7 +137,7 @@
 					disabled={signing_out}
 					onclick={async () => {
 						signing_out = true;
-						await signOut();
+						await signOut(true);
 						signing_out = false;
 					}}
 				>

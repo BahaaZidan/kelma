@@ -40,7 +40,7 @@
 						<li>
 							<a href={route('/console')}><LayoutDashboardIcon /> Console</a>
 						</li>
-						<li><button onclick={signOut}><LogOutIcon /> Logout</button></li>
+						<li><button onclick={() => signOut()}><LogOutIcon /> Logout</button></li>
 					</ul>
 				</div>
 			{:else}

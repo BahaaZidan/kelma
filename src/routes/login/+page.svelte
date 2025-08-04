@@ -30,7 +30,7 @@
 				{m.logged_in_as()}
 				<b>{viewer.name}</b>
 			</div>
-			<button class="btn btn-ghost" onclick={signOut}>{m.logout()}</button>
+			<button class="btn btn-ghost" onclick={() => signOut()}>{m.logout()}</button>
 		{:else}
 			<h1>{m.login_via()}</h1>
 			<button onclick={() => googleSignIn(data.callbackURL)} class="btn btn-block">
