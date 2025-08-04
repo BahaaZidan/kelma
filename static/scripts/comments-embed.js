@@ -52,7 +52,7 @@
 		const token = new URL(host_url).searchParams.get('token');
 
 		iframe = document.createElement('iframe');
-		iframe.src = `https://kelma.dev/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(page_title)}&url=${encodeParam(host_url)}&theme=${theme}&token=${token}`;
+		iframe.src = `https://kelma.dev/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(page_title)}&url=${encodeParam(host_url)}&theme=${theme}${token ? `&token=${token}` : ''}`;
 		iframe.width = '100%';
 		iframe.style.border = 'none';
 		iframe.style.display = 'block';
