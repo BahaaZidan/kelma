@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { siGoogle } from 'simple-icons';
 
-	import { authClient, signOut } from '$lib/client/auth';
+	import { authClient } from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
-	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages';
 
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	const viewer = getViewerContext();
 </script>
 
 <svelte:head>
@@ -18,24 +16,16 @@
 
 <div class="flex h-screen w-screen items-center justify-center">
 	<div class="flex w-full max-w-md flex-col items-center gap-2 p-4 font-mono">
-		{#if viewer}
-			<div>
-				{m.logged_in_as()}
-				<b>{viewer.name}</b>
-			</div>
-			<button class="btn btn-ghost" onclick={() => signOut()}>{m.logout()}</button>
-		{:else}
-			<h1>{m.login_via()}</h1>
-			<button
-				onclick={async () => {
-					await authClient.signIn.social({ provider: 'google', callbackURL: data.callbackURL });
-				}}
-				class="btn btn-block"
-			>
-				<BrandIcon icon={siGoogle} />
-				{m.google()}
-			</button>
-		{/if}
+		<h1>{m.login_via()}</h1>
+		<button
+			onclick={async () => {
+				await authClient.signIn.social({ provider: 'google', callbackURL: data.callbackURL });
+			}}
+			class="btn btn-block"
+		>
+			<BrandIcon icon={siGoogle} />
+			{m.google()}
+		</button>
 
 		<span class="py-6">
 			{m.powered_by()}
