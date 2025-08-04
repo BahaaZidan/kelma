@@ -244,7 +244,6 @@ export const resolvers: Resolvers = {
 	},
 	Node: {
 		__resolveType(parent) {
-			// @ts-expect-error TODO
 			return parent.__typename;
 		},
 	},

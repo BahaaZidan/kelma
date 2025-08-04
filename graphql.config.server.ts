@@ -34,6 +34,7 @@ const config: IGraphQLConfig = {
 							Comment: '$lib/server/db/schema#CommentSelectModel',
 							User: '$lib/server/db/schema#UserSelectModel',
 						},
+						resolversNonOptionalTypename: true,
 					} satisfies TypeScriptPluginConfig & TypeScriptResolversPluginConfig,
 				},
 			},

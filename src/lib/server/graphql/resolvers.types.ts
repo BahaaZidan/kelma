@@ -291,9 +291,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  Connection: ( Omit<CommentsConnection, 'edges'> & { edges: Array<_RefType['CommentEdge']> } );
-  Edge: ( Omit<CommentEdge, 'node'> & { node: _RefType['Comment'] } );
-  Node: ( CommentSelectModel ) | ( PageSelectModel ) | ( UserSelectModel ) | ( WebsiteSelectModel );
+  Connection: ( Omit<CommentsConnection, 'edges'> & { edges: Array<_RefType['CommentEdge']> } & { __typename: 'CommentsConnection' } );
+  Edge: ( Omit<CommentEdge, 'node'> & { node: _RefType['Comment'] } & { __typename: 'CommentEdge' } );
+  Node: ( CommentSelectModel & { __typename: 'Comment' } ) | ( PageSelectModel & { __typename: 'Page' } ) | ( UserSelectModel & { __typename: 'User' } ) | ( WebsiteSelectModel & { __typename: 'Website' } );
 };
 
 /** Mapping between all available schema types and the resolvers types */
