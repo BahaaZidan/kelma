@@ -4,7 +4,6 @@
 
 	import { fragment, graphql, type BaseInfoFormComponent } from '$houdini';
 
-	import { fetchWithAuth } from '$lib/client/auth';
 	import TextArrayInput from '$lib/client/components/TextArrayInput.svelte';
 	import TextInput from '$lib/client/components/TextInput.svelte';
 	import { Toasts } from '$lib/client/toasts.svelte';
@@ -36,16 +35,13 @@
 		dataType: 'json',
 		async onUpdate({ form }) {
 			if (form.valid) {
-				const result = await UpdateWebsiteBasicInfo.mutate(
-					{
-						input: {
-							id: $website.id,
-							name: form.data.name,
-							domains: form.data.domains,
-						},
+				const result = await UpdateWebsiteBasicInfo.mutate({
+					input: {
+						id: $website.id,
+						name: form.data.name,
+						domains: form.data.domains,
 					},
-					{ fetch: fetchWithAuth }
-				);
+				});
 				Toasts.add({
 					type: result.errors ? 'error' : 'success',
 					message: result.errors
