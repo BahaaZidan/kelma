@@ -1,6 +1,6 @@
 import { createAuthClient } from 'better-auth/svelte';
 
-const authClient = createAuthClient();
+export const authClient = createAuthClient();
 
 class SessionTokenBase {
 	private key = 'auth-token';
@@ -42,11 +42,4 @@ export async function signOut(sendBearer?: boolean) {
 	);
 	SessionToken.value = '';
 	window.location.reload();
-}
-
-export async function githubSignIn(callbackURL?: string) {
-	await authClient.signIn.social({ provider: 'github', callbackURL });
-}
-export async function googleSignIn(callbackURL?: string) {
-	await authClient.signIn.social({ provider: 'google', callbackURL });
 }

@@ -1,14 +1,7 @@
 <script lang="ts">
-	import {
-		// siGithub,
-		siGoogle,
-	} from 'simple-icons';
+	import { siGoogle } from 'simple-icons';
 
-	import {
-		//  githubSignIn,
-		googleSignIn,
-		signOut,
-	} from '$lib/client/auth';
+	import { authClient, signOut } from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
 	import { getViewerContext } from '$lib/client/viewer.svelte';
 	import { m } from '$lib/paraglide/messages';
@@ -33,14 +26,15 @@
 			<button class="btn btn-ghost" onclick={() => signOut()}>{m.logout()}</button>
 		{:else}
 			<h1>{m.login_via()}</h1>
-			<button onclick={() => googleSignIn(data.callbackURL)} class="btn btn-block">
+			<button
+				onclick={async () => {
+					await authClient.signIn.social({ provider: 'google', callbackURL: data.callbackURL });
+				}}
+				class="btn btn-block"
+			>
 				<BrandIcon icon={siGoogle} />
 				{m.google()}
 			</button>
-			<!-- <button onclick={() => githubSignIn(data.callbackURL)} class="btn btn-block">
-				<BrandIcon icon={siGithub} />
-				{m.github()}
-			</button> -->
 		{/if}
 
 		<span class="py-6">
