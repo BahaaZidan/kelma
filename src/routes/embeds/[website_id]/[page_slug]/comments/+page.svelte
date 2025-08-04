@@ -59,7 +59,6 @@
 				type: 'resize',
 				height: height,
 			},
-			// TODO: send only the origin of the customer
 			'*'
 		);
 	}
