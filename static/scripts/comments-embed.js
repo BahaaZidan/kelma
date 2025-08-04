@@ -61,7 +61,8 @@
 		iframe.style.background = 'transparent';
 		iframe.allowTransparency = 'true';
 		iframe.setAttribute('frameborder', '0');
-		iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-top-navigation';
+		iframe.sandbox =
+			'allow-scripts allow-same-origin allow-forms allow-top-navigation allow-popups';
 
 		el.innerHTML = ''; // Clear existing content
 		el.appendChild(iframe);
