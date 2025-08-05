@@ -7,7 +7,7 @@ import { env } from '$env/dynamic/public';
 import { route } from '$lib/routes';
 import { getStripe } from '$lib/server/stripe';
 
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { topUpSchema } from './schemas';
 
 export const actions: Actions = {
@@ -41,4 +41,8 @@ export const actions: Actions = {
 
 		return redirect(303, session.url!);
 	},
+};
+
+export const load: PageServerLoad = async ({ locals }) => {
+	if (!locals.session?.user) return redirect(303, '/');
 };

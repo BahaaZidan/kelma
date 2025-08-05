@@ -1,15 +1,18 @@
 <script lang="ts">
 	import MailIcon from '@lucide/svelte/icons/mail';
-	import { siGithub } from 'simple-icons';
+	import { siGithub, siGoogle } from 'simple-icons';
 
+	import { env } from '$env/dynamic/public';
+
+	import { authClient } from '$lib/client/auth';
 	import BrandIcon from '$lib/client/components/BrandIcon.svelte';
 	import { PAGEVIEW_COST_IN_CENTS } from '$lib/constants';
 	import { LANGS } from '$lib/i18n';
+	import { m } from '$lib/paraglide/messages';
+	import { route } from '$lib/routes';
 
-	import type { PageProps } from './$types';
 	import FeatureCard from './FeatureCard.svelte';
 
-	let { data }: PageProps = $props();
 	let price_slider_val = $state(100_000);
 
 	const iconClass = 'transition-all duration-300 ease-in-out hover:text-gray-700';
@@ -19,6 +22,9 @@
 	const description =
 		'Drop-in Comment Section for Every Website. Ad-free, privacy-respecting, open-source, and insanely fast. Effortless setup with easy customization and fair usage-based pricing.';
 	const imageURL = new URL('/icon.png', canonicalURL).toString();
+
+	let cta_modal: HTMLDialogElement;
+	const callbackURL = env.PUBLIC_BASE_URL + route('/console');
 </script>
 
 <svelte:head>
@@ -48,7 +54,9 @@
 			Ad-free, privacy-respecting, open-source, and insanely fast. Effortless setup with easy
 			customization and fair usage-based pricing.
 		</p>
-		<a href={data.cta_route} class="btn btn-primary btn-lg">Try it for free</a>
+		<button class="btn btn-primary btn-lg" onclick={() => cta_modal.showModal()}>
+			Try it for free
+		</button>
 	</section>
 
 	<section class="bg-base-200 rounded-box px-6 py-10">
@@ -101,7 +109,9 @@
 	<section id="get-started" class="px-6 py-6 text-center">
 		<h2 class="mb-4 text-3xl font-bold">Get 10,000 Free Page Views</h2>
 		<p class="mb-6">No credit card required. Start engaging your audience today.</p>
-		<a href={data.cta_route} class="btn btn-accent btn-lg">Create Free Account</a>
+		<button class="btn btn-accent btn-lg" onclick={() => cta_modal.showModal()}>
+			Create Free Account
+		</button>
 	</section>
 
 	<section class="bg-base-200 rounded-box flex flex-col items-center gap-2 p-6">
@@ -151,3 +161,25 @@
 		</div>
 	</footer>
 </div>
+
+<dialog bind:this={cta_modal} class="modal">
+	<div class="modal-box">
+		<div class="flex flex-col items-center justify-center gap-2 py-2">
+			<h3 class="text-lg font-bold">Sign up via</h3>
+			<button
+				onclick={async () => {
+					await authClient.signIn.social({ provider: 'google', callbackURL });
+				}}
+				class="btn btn-block btn-primary"
+			>
+				<BrandIcon icon={siGoogle} />
+				{m.google()}
+			</button>
+		</div>
+		<div class="modal-action">
+			<form method="dialog">
+				<button class="btn">Close</button>
+			</form>
+		</div>
+	</div>
+</dialog>
