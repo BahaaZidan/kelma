@@ -25,6 +25,7 @@
 	 * @property {string} page_id - A string that uniquely identifies your page.
 	 * @property {string|null} language - The locale
 	 * @property {string|null} theme - A valid theme name. We support all DaisyUI themes.
+	 * @property {string|null} base_url - The base url for the embed. Change it to be your instance if you're self-hosting (kelma.dev by default)
 	 */
 
 	/**
@@ -38,6 +39,7 @@
 		page_id,
 		language = 'en',
 		theme = 'business',
+		base_url = 'https://kelma.dev',
 	}) {
 		const el = typeof container === 'string' ? document.getElementById(container) : container;
 
@@ -52,7 +54,7 @@
 		const token = new URL(host_url).searchParams.get('token');
 
 		iframe = document.createElement('iframe');
-		iframe.src = `https://kelma.dev/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(page_title)}&url=${encodeParam(host_url)}&theme=${theme}${token ? `&token=${token}` : ''}`;
+		iframe.src = `${base_url}/${language}/embeds/${website_id}/${page_id}/comments?name=${encodeParam(page_title)}&url=${encodeParam(host_url)}&theme=${theme}${token ? `&token=${token}` : ''}`;
 		iframe.width = '100%';
 		iframe.style.border = 'none';
 		iframe.style.display = 'block';
@@ -62,7 +64,7 @@
 		iframe.allowTransparency = 'true';
 		iframe.setAttribute('frameborder', '0');
 
-		el.innerHTML = ''; // Clear existing content
+		el.innerHTML = '';
 		el.appendChild(iframe);
 	};
 
